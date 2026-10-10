@@ -4,7 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Atelier Pile</title>
-<script>try { const t = localStorage.getItem('atelier-pile-theme'); if (t && t !== 'auto') document.documentElement.dataset.theme = t === 'neo' ? 'neon' : t; } catch (e) {}</script>
+<script>/* thème commun à tous les Ateliers ; reprend une fois l'ancien réglage propre à cette page */
+try { let t = localStorage.getItem('ateliers-ti301-theme');
+  if (t === null) { t = localStorage.getItem('atelier-pile-theme'); if (t) localStorage.setItem('ateliers-ti301-theme', t === 'neo' ? 'neon' : t); }
+  localStorage.removeItem('atelier-pile-theme');
+  if (t && t !== 'auto') document.documentElement.dataset.theme = t === 'neo' ? 'neon' : t; } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
@@ -732,7 +736,7 @@ themeSel.addEventListener('change', () => {
   const t = themeSel.value;
   if (t === 'auto') delete document.documentElement.dataset.theme;
   else document.documentElement.dataset.theme = t;
-  try { localStorage.setItem('atelier-pile-theme', t); } catch (e) {}
+  try { localStorage.setItem('ateliers-ti301-theme', t); } catch (e) {}
 });
 
 /* ---------- Démarrage : la liste d'exemples est construite, le lecteur se place au début ---------- */
