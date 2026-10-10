@@ -7,7 +7,11 @@
 <meta name="description" content="TI301 – Projet Informatique et Mathématiques : la forêt et la lumière, partie 1.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap">
+<!-- KaTeX : rendu des formules écrites entre \( … \) (dans le texte) ou $$ … $$ (centrées) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 <link rel="stylesheet" href="style.css">
 <script src="script.js" defer></script>
 </head>
@@ -25,6 +29,7 @@
           <option value="auto">Automatique</option>
           <option value="light">Clair</option>
           <option value="dark">Sombre</option>
+          <option value="neon">Neon</option>
         </select>
       </label>
     </div>
@@ -77,9 +82,9 @@
 
   <h3>Les rameaux</h3>
   <p>Un arbre est fait de <strong>rameaux</strong>. Chaque rameau est un petit segment, qui part de l'extrémité de son rameau <strong>parent</strong>. Le premier rameau, appelé le <strong>pied</strong>, part du sol.</p>
-  <p>On regarde la forêt <strong>de profil</strong> : l'axe x suit la rangée d'arbres (de gauche à droite), l'axe y mesure l'altitude au-dessus du sol. Pour chaque rameau, on retient :</p>
+  <p>On regarde la forêt <strong>de profil</strong> : l'axe \(x\) suit la rangée d'arbres (de gauche à droite), l'axe \(y\) mesure l'altitude au-dessus du sol. Pour chaque rameau, on retient :</p>
   <ul>
-    <li>la <strong>position de son extrémité</strong> : x et y ;</li>
+    <li>la <strong>position de son extrémité</strong> : \(x\) et \(y\) ;</li>
     <li>sa <strong>direction</strong> : un angle en degrés, 0 pour un rameau vertical, positif s'il penche vers la droite, négatif s'il penche vers la gauche ;</li>
     <li>la <strong>saison</strong> à laquelle il est apparu (0 pour le pied) ;</li>
     <li>son <strong>état</strong> :
@@ -89,10 +94,9 @@
       </ul>
     </li>
   </ul>
-  <p>Un nouveau rameau de direction θ (en degrés) et de longueur ℓ, qui part de l'extrémité (x ; y) de son parent, a pour extrémité :</p>
+  <p>Un nouveau rameau de direction \(\theta\) (en degrés) et de longueur \(\ell\), qui part de l'extrémité \((x\,;\,y)\) de son parent, a pour extrémité :</p>
   <div class="formula">
-    <span>x′ = x + ℓ × sin(θ)</span>
-    <span>y′ = y + ℓ × cos(θ)</span>
+    $$x' = x + \ell \times \sin(\theta) \qquad\qquad y' = y + \ell \times \cos(\theta)$$
   </div>
   <p>Ce calcul est déjà programmé dans le code fourni (voir plus loin).</p>
 
@@ -126,7 +130,7 @@
     </tbody>
   </table>
   </div>
-  <p>Par exemple, le rameau 2 part de l'extrémité du rameau 0, avec une direction de −45° et une longueur de 0,8 : x = 4,5 + 0,8 × sin(−45°) ≈ 3,93 et y = 1,0 + 0,8 × cos(−45°) ≈ 1,57.</p>
+  <p>Par exemple, le rameau 2 part de l'extrémité du rameau 0, avec une direction de −45° et une longueur de 0,8 : \(x = 4{,}5 + 0{,}8 \times \sin(-45^\circ) \approx 3{,}93\) et \(y = 1{,}0 + 0{,}8 \times \cos(-45^\circ) \approx 1{,}57\).</p>
 
   <h3>Lien entre l'arbre informatique et l'arbre que l'on fait pousser</h3>
   <p>Chaque <strong>nœud</strong> de l'arbre informatique est un <strong>rameau</strong> ; un <strong>lien</strong> de l'arbre informatique n'est pas un rameau, il indique seulement qu'un rameau est né à l'extrémité d'un autre. Survolez un nœud ou un rameau pour voir ses caractéristiques.</p>
@@ -409,7 +413,7 @@
     </div>
     <p class="pleg"><i class="p3"></i>3 rameaux : 4,75 % <i class="p0"></i>ne pousse pas : 5 %</p>
   </div>
-  <p>Les rameaux nés pendant une saison ne peuvent pousser qu'à partir de la saison suivante. L'arbre est planté avec un seul rameau : son pied, vertical, d'extrémité (0 ; 1), qui est un bourgeon à la saison 0. Il pousse ensuite pendant S saisons, numérotées de 1 à S.</p>
+  <p>Les rameaux nés pendant une saison ne peuvent pousser qu'à partir de la saison suivante. L'arbre est planté avec un seul rameau : son pied, vertical, d'extrémité \((0\,;\,1)\), qui est un bourgeon à la saison 0. Il pousse ensuite pendant \(S\) saisons, numérotées de 1 à \(S\).</p>
 </section>
 
 <!-- ================================================================ HASARD -->
@@ -424,7 +428,7 @@
       <tr><td><code>void alea_init(uint64_t graine)</code></td><td>initialise le générateur de nombres au hasard avec une <strong>graine</strong></td></tr>
       <tr><td><code>double alea_reel(void)</code></td><td>renvoie un nombre à virgule au hasard, entre 0 (compris) et 1 (non compris)</td></tr>
       <tr><td><code>double alea_entre(double a, double b)</code></td><td>renvoie un nombre à virgule au hasard, entre a (compris) et b (non compris)</td></tr>
-      <tr><td><code>int alea_entier(int n)</code></td><td>renvoie un entier au hasard entre 0 et n − 1, chaque valeur ayant la même chance d'être choisie</td></tr>
+      <tr><td><code>int alea_entier(int n)</code></td><td>renvoie un entier au hasard entre 0 et \(n - 1\), chaque valeur ayant la même chance d'être choisie</td></tr>
     </tbody>
   </table>
   </div>
@@ -434,7 +438,7 @@
   </div>
 
   <h3 class="caption-title">Tirer dans une table</h3>
-  <p>Pour choisir 1, 2 ou 3 nouveaux rameaux dans 70 %, 25 % et 5 % des cas, on tire un nombre u = <code>alea_reel()</code>, puis on renvoie 1 si u &lt; 0,70 ; sinon 2 si u &lt; 0,70 + 0,25 = 0,95 ; sinon 3. Chaque résultat correspond à une « tranche » de l'intervalle entre 0 et 1, dont la largeur est le pourcentage voulu.</p>
+  <p>Pour choisir 1, 2 ou 3 nouveaux rameaux dans 70 %, 25 % et 5 % des cas, on tire un nombre \(u\) = <code>alea_reel()</code>, puis on renvoie 1 si \(u &lt; 0{,}70\) ; sinon 2 si \(u &lt; 0{,}70 + 0{,}25 = 0{,}95\) ; sinon 3. Chaque résultat correspond à une « tranche » de l'intervalle entre 0 et 1, dont la largeur est le pourcentage voulu.</p>
   <div class="slices" aria-hidden="true">
     <span style="--w:70">1</span><span style="--w:25">2</span><span style="--w:5">3</span>
     <em style="--at:0">0</em><em style="--at:70">0,70</em><em style="--at:95">0,95</em><em style="--at:100">1</em>
@@ -473,7 +477,7 @@ typedef struct Rameau {
     int num;                 // numéro du rameau (ordre d'apparition)
     struct Rameau *fils[3];  // rameaux nés à son extrémité
 } Rameau;</code></pre>
-  <p>Pour retrouver rapidement le rameau qui correspond à un numéro, l'arbre garde aussi un <strong>tableau dynamique de pointeurs</strong> : la case i contient l'adresse du rameau numéro i. Ce tableau est agrandi avec <code>realloc</code> (en doublant sa taille) quand il est plein.</p>
+  <p>Pour retrouver rapidement le rameau qui correspond à un numéro, l'arbre garde aussi un <strong>tableau dynamique de pointeurs</strong> : la case \(i\) contient l'adresse du rameau numéro \(i\). Ce tableau est agrandi avec <code>realloc</code> (en doublant sa taille) quand il est plein.</p>
 <pre class="code"><code>typedef struct {
     Rameau *pied;      // premier rameau : la racine de l'arbre
     Rameau **rameaux;  // rameaux[i] = adresse du rameau numéro i
@@ -559,7 +563,7 @@ typedef struct Rameau {
   <p>La fonction <code>animer_svg</code> produit un fichier SVG <strong>animé</strong>, qui montre l'arbre pousser saison après saison quand on l'ouvre dans un navigateur web (touche <kbd>F5</kbd> pour revoir l'animation). Elle utilise la saison d'apparition de chaque rameau (champ <code>saison</code>) :</p>
   <ul>
     <li>chaque saison dure <code>duree_saison</code> secondes ; un compteur « Saison s » est affiché en haut à gauche ;</li>
-    <li>pendant toute la saison s, les rameaux apparus à la saison s « poussent » : leur segment s'allonge régulièrement, sans pause d'une saison à la suivante ;</li>
+    <li>pendant toute la saison \(s\), les rameaux apparus à la saison \(s\) « poussent » : leur segment s'allonge régulièrement, sans pause d'une saison à la suivante ;</li>
     <li>un bourgeon apparaît quand son rameau a fini de pousser, et disparaît quand son premier fils a fini de pousser : les bourgeons des nouveaux rameaux prennent alors le relais. Les bourgeons en dormance restent visibles.</li>
   </ul>
   <p>L'animation est décrite en <strong>CSS</strong>, dans un élément <code>&lt;style&gt;</code> placé au début du fichier SVG. Chaque élément porte une classe (<code>r</code> pour un segment, <code>b</code> pour un bourgeon) et un délai (<code>animation-delay</code>) qui dépend de sa saison :</p>
@@ -571,7 +575,7 @@ typedef struct Rameau {
 &lt;/style&gt;
 &lt;path class="r" pathLength="1" style="animation-delay:1.20s"
       d="M313.2 376.8 L322.9 321.7"/&gt;</code></pre>
-  <p>Voici quatre images de l'animation fournie <code>animation_15_saisons.svg</code> (graine 3, S = 15, une saison = 0,6 seconde), à la fin des saisons 4, 8, 12 et 15 :</p>
+  <p>Voici quatre images de l'animation fournie <code>animation_15_saisons.svg</code> (graine 3, \(S = 15\), une saison = 0,6 seconde), à la fin des saisons 4, 8, 12 et 15 :</p>
   <figure class="fig">
     <img src="img/animation_15_saisons.png" width="1155" height="795" loading="lazy" alt="Quatre images de l'animation : l'arbre à la fin des saisons 4, 8, 12 et 15">
     <figcaption>La pousse d'un arbre en pleine lumière, saison après saison</figcaption>
@@ -618,7 +622,7 @@ Rameau 9 (saison 4, generation 4, bourgeon) (5.08 ; 4.49)</code></pre>
     <h3><span class="step-n">Étape 2</span>Faire pousser un arbre en pleine lumière</h3>
     <p>Il s'agit maintenant de faire pousser un arbre <strong>au hasard</strong>, en suivant les règles présentées plus haut. Pour trouver les bourgeons, on parcourt simplement le tableau des rameaux par numéro.</p>
     <h4>L'algorithme à implémenter</h4>
-    <p>Voici ce que fait une saison s pour un arbre. Pour que tout le monde obtienne exactement les mêmes arbres avec la même graine, <strong>les tirages doivent être faits dans cet ordre</strong> :</p>
+    <p>Voici ce que fait une saison \(s\) pour un arbre. Pour que tout le monde obtienne exactement les mêmes arbres avec la même graine, <strong>les tirages doivent être faits dans cet ordre</strong> :</p>
 <pre class="code algo"><code><b>n</b> = nombre de rameaux de l'arbre au début de la saison
 <b>Pour</b> i <b>de</b> 0 <b>à</b> n - 1
     b = rameau numéro i
@@ -639,19 +643,19 @@ Rameau 9 (saison 4, generation 4, bourgeon) (5.08 ; 4.49)</code></pre>
     <div class="todo">
       <h4>Fonctions à créer</h4>
       <ul>
-        <li>une fonction <code>int nb_nouveaux_rameaux(void)</code> qui renvoie 0 si le bourgeon ne pousse pas, et sinon le nombre de nouveaux rameaux (1, 2 ou 3). Elle tire d'abord u = <code>alea_reel()</code> : le bourgeon ne pousse pas si u ≥ 0,95. S'il pousse, elle tire un second nombre avec <code>alea_reel()</code> pour choisir 1, 2 ou 3 dans la table ;</li>
+        <li>une fonction <code>int nb_nouveaux_rameaux(void)</code> qui renvoie 0 si le bourgeon ne pousse pas, et sinon le nombre de nouveaux rameaux (1, 2 ou 3). Elle tire d'abord \(u\) = <code>alea_reel()</code> : le bourgeon ne pousse pas si \(u \geq 0{,}95\). S'il pousse, elle tire un second nombre avec <code>alea_reel()</code> pour choisir 1, 2 ou 3 dans la table ;</li>
         <li>une fonction qui ramène une direction entre −80° et 80° ;</li>
-        <li>une fonction <code>void saison(t_arbre *a, int s)</code> qui fait jouer la saison s ;</li>
-        <li>une fonction <code>t_arbre simuler_arbre(uint64_t graine, int S)</code> qui initialise le hasard avec la graine, crée un arbre de pied d'extrémité (0 ; 1), puis fait jouer les saisons 1 à S.</li>
+        <li>une fonction <code>void saison(t_arbre *a, int s)</code> qui fait jouer la saison \(s\) ;</li>
+        <li>une fonction <code>t_arbre simuler_arbre(uint64_t graine, int S)</code> qui initialise le hasard avec la graine, crée un arbre de pied d'extrémité \((0\,;\,1)\), puis fait jouer les saisons 1 à \(S\).</li>
       </ul>
     </div>
     <div class="check">
       <h4>Validation de l'étape 2</h4>
       <ul>
-        <li>Appelez 1 000 000 de fois <code>nb_nouveaux_rameaux</code> et comptez les résultats. Vous devez obtenir des nombres proches (à environ 2 000 près) de 50 000 fois 0 ; 665 000 fois 1 ; 237 500 fois 2 et 47 500 fois 3. Par exemple, on attend 1 rameau dans 0,95 × 0,70 = 66,5 % des tirages.</li>
+        <li>Appelez 1 000 000 de fois <code>nb_nouveaux_rameaux</code> et comptez les résultats. Vous devez obtenir des nombres proches (à environ 2 000 près) de 50 000 fois 0 ; 665 000 fois 1 ; 237 500 fois 2 et 47 500 fois 3. Par exemple, on attend 1 rameau dans \(0{,}95 \times 0{,}70 = 66{,}5\,\%\) des tirages.</li>
         <li>Deux simulations avec la <strong>même graine</strong> donnent exactement le même arbre ; deux graines différentes donnent (presque toujours) des arbres différents.</li>
-        <li>Avec la graine 5 et S = 3, <code>afficher_arbre</code> doit afficher le même arbre que pour le fichier fourni <code>arbre_petit.txt</code> (les valeurs affichées sont arrondies à 2 chiffres après la virgule). De même, avec la graine 3 et S = 8, vous devez retrouver <code>arbre_moyen.txt</code>, et avec la graine 4 et S = 30, <code>arbre_grand.txt</code> (5 518 rameaux).</li>
-        <li>Dessinez les arbres obtenus avec <code>dessiner_svg</code>, et animez leur pousse avec <code>animer_svg</code>. Avec la graine 3, vous devez retrouver les animations fournies <code>animation_8_saisons.svg</code> (S = 8) et <code>animation_15_saisons.svg</code> (S = 15). Les 8 premières saisons des deux animations sont identiques : expliquez pourquoi dans votre rapport.</li>
+        <li>Avec la graine 5 et \(S = 3\), <code>afficher_arbre</code> doit afficher le même arbre que pour le fichier fourni <code>arbre_petit.txt</code> (les valeurs affichées sont arrondies à 2 chiffres après la virgule). De même, avec la graine 3 et \(S = 8\), vous devez retrouver <code>arbre_moyen.txt</code>, et avec la graine 4 et \(S = 30\), <code>arbre_grand.txt</code> (5 518 rameaux).</li>
+        <li>Dessinez les arbres obtenus avec <code>dessiner_svg</code>, et animez leur pousse avec <code>animer_svg</code>. Avec la graine 3, vous devez retrouver les animations fournies <code>animation_8_saisons.svg</code> (\(S = 8\)) et <code>animation_15_saisons.svg</code> (\(S = 15\)). Les 8 premières saisons des deux animations sont identiques : expliquez pourquoi dans votre rapport.</li>
       </ul>
     </div>
   </article>
@@ -661,7 +665,7 @@ Rameau 9 (saison 4, generation 4, bourgeon) (5.08 ; 4.49)</code></pre>
     <h3><span class="step-n">Étape 3</span>Mesurer l'arbre avec des fonctions récursives</h3>
     <h4>3.1 Les mesures</h4>
     <p>Il s'agit maintenant de calculer <strong>toutes les caractéristiques</strong> de l'arbre présentées dans le tableau plus haut, <strong>sans utiliser</strong> le tableau des rameaux par numéro : on part du pied et on suit les pointeurs <code>fils</code>.</p>
-    <p>Un arbre se prête très bien à la <strong>récursivité</strong> : chaque fils d'un rameau est lui-même le pied d'un « petit arbre », appelé <strong>sous-arbre</strong>. Par exemple, la taille du sous-arbre d'un rameau r vaut 1 (le rameau r lui-même) plus la somme des tailles des sous-arbres de ses fils. Pour un bourgeon, qui n'a pas de fils, elle vaut 1 : la récursivité s'arrête d'elle-même.</p>
+    <p>Un arbre se prête très bien à la <strong>récursivité</strong> : chaque fils d'un rameau est lui-même le pied d'un « petit arbre », appelé <strong>sous-arbre</strong>. Par exemple, la taille du sous-arbre d'un rameau \(r\) vaut 1 (le rameau \(r\) lui-même) plus la somme des tailles des sous-arbres de ses fils. Pour un bourgeon, qui n'a pas de fils, elle vaut 1 : la récursivité s'arrête d'elle-même.</p>
 <pre class="code"><code>int taille(Rameau *r) {
     int t = 1;   // le rameau r lui-même
     for (int i = 0; i &lt; r-&gt;nb_fils; i++)
@@ -673,7 +677,7 @@ Rameau 9 (saison 4, generation 4, bourgeon) (5.08 ; 4.49)</code></pre>
       <h4>Structures et fonctions à créer</h4>
       <ul>
         <li>une fonction récursive pour chaque caractéristique : taille, hauteur, altitude de la cime, nombre de bourgeons, nombre de rameaux de bois ;</li>
-        <li>une fonction récursive qui remplit le <strong>tableau des rameaux par génération</strong> : ce tableau, de taille « hauteur + 1 » et rempli de zéros au départ, est passé en paramètre, et chaque rameau ajoute 1 dans la case de sa génération ;</li>
+        <li>une fonction récursive qui remplit le <strong>tableau des rameaux par génération</strong> : ce tableau, de taille « \(\text{hauteur} + 1\) » et rempli de zéros au départ, est passé en paramètre, et chaque rameau ajoute 1 dans la case de sa génération ;</li>
         <li>une structure « mesures » qui regroupe toutes les caractéristiques, une fonction qui calcule les mesures d'un arbre et une fonction qui les affiche.</li>
       </ul>
     </div>
@@ -702,7 +706,7 @@ Rameau 9 (saison 4, generation 4, bourgeon) (5.08 ; 4.49)</code></pre>
 
     <div class="option">
       <h4><span class="badge">En option</span>3.2 L'arbre à une saison donnée</h4>
-      <p>On veut maintenant mesurer l'arbre <strong>tel qu'il était</strong> à une saison s donnée : on ne tient compte que des rameaux apparus à la saison s ou avant. Attention : un rameau qui est aujourd'hui du bois était peut-être encore un bourgeon à la saison s, si tous ses fils sont apparus après s. Avec <code>exemple1.txt</code>, vous devez obtenir :</p>
+      <p>On veut maintenant mesurer l'arbre <strong>tel qu'il était</strong> à une saison \(s\) donnée : on ne tient compte que des rameaux apparus à la saison \(s\) ou avant. Attention : un rameau qui est aujourd'hui du bois était peut-être encore un bourgeon à la saison \(s\), si tous ses fils sont apparus après \(s\). Avec <code>exemple1.txt</code>, vous devez obtenir :</p>
       <div class="table-wrap">
       <table class="data num">
         <thead><tr><th>Saison</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
@@ -728,7 +732,7 @@ Rameau 9 (saison 4, generation 4, bourgeon) (5.08 ; 4.49)</code></pre>
     </ul>
     <p>La structure <code>Rameau</code> ne contient ni le numéro du parent, ni la longueur. Écrivez donc d'abord une <strong>fonction récursive</strong> qui parcourt l'arbre à partir du pied et qui remplit deux tableaux, indicés par le numéro du rameau (champ <code>num</code>) : le numéro du parent de chaque rameau et sa longueur. La longueur d'un rameau se calcule à partir de son extrémité et de celle de son parent :</p>
     <div class="formula">
-      <span>ℓ = √( (x − x<sub>parent</sub>)² + (y − y<sub>parent</sub>)² )</span>
+      $$\ell = \sqrt{(x - x_{\text{parent}})^2 + (y - y_{\text{parent}})^2}$$
       <small>fonction <code>sqrt</code> de <code>&lt;math.h&gt;</code></small>
     </div>
     <p>Il ne reste plus qu'à écrire les lignes dans l'ordre des numéros.</p>
@@ -736,7 +740,7 @@ Rameau 9 (saison 4, generation 4, bourgeon) (5.08 ; 4.49)</code></pre>
       <h4>Validation de l'étape 4</h4>
       <ul>
         <li>Lisez <code>exemple1.txt</code>, enregistrez-le dans un nouveau fichier, relisez ce fichier : l'affichage est identique.</li>
-        <li>Simulez un arbre avec la graine 5 et S = 3 et enregistrez-le : le fichier obtenu est <strong>le même</strong> que <code>arbre_petit.txt</code> (comparez-les avec la commande <code>fc</code> sous Windows ou <code>diff</code> sous Linux et macOS). De même avec <code>arbre_moyen.txt</code>. Pour <code>arbre_grand.txt</code>, quelques longueurs peuvent différer sur leur dernier chiffre, selon que vous faites le calcul avec des <code>float</code> ou des <code>double</code>.</li>
+        <li>Simulez un arbre avec la graine 5 et \(S = 3\) et enregistrez-le : le fichier obtenu est <strong>le même</strong> que <code>arbre_petit.txt</code> (comparez-les avec la commande <code>fc</code> sous Windows ou <code>diff</code> sous Linux et macOS). De même avec <code>arbre_moyen.txt</code>. Pour <code>arbre_grand.txt</code>, quelques longueurs peuvent différer sur leur dernier chiffre, selon que vous faites le calcul avec des <code>float</code> ou des <code>double</code>.</li>
         <li>Un arbre simulé, enregistré puis relu, a les mêmes mesures (la cime à 0,001 près).</li>
       </ul>
     </div>
@@ -748,7 +752,7 @@ Rameau 9 (saison 4, generation 4, bourgeon) (5.08 ; 4.49)</code></pre>
     <p>Écrivez une fonction qui libère <strong>toute</strong> la mémoire utilisée par un arbre : tous les rameaux et le tableau des rameaux par numéro. Pour vous entraîner, libérez les rameaux avec une <strong>fonction récursive</strong> qui parcourt l'arbre à partir du pied, et non avec le tableau des rameaux par numéro. Attention à l'ordre : on ne peut plus lire les fils d'un rameau une fois qu'il a été libéré.</p>
     <div class="check">
       <h4>Validation de l'étape 5</h4>
-      <p>Simulez puis libérez 100 000 arbres de suite dans une boucle (graines 1 à 100 000, S = 8). La mémoire utilisée par votre programme (visible dans le Gestionnaire des tâches) doit rester stable.</p>
+      <p>Simulez puis libérez 100 000 arbres de suite dans une boucle (graines 1 à 100 000, \(S = 8\)). La mémoire utilisée par votre programme (visible dans le Gestionnaire des tâches) doit rester stable.</p>
     </div>
   </article>
 
@@ -787,9 +791,9 @@ flowchart TD
       <tbody>
         <tr><td><code>arbre.h</code>, <code>arbre.c</code>, <code>dessin.h</code>, <code>dessin.c</code>, <code>alea.h</code>, <code>alea.c</code>, <code>main.c</code></td><td>le code fourni (seul <code>main.c</code> est à modifier)</td></tr>
         <tr><td><code>exemple1.txt</code></td><td>l'arbre de l'exemple (10 rameaux, hauteur 4)</td></tr>
-        <tr><td><code>arbre_petit.txt</code></td><td>un petit arbre (10 rameaux, hauteur 3) : graine 5, S = 3</td></tr>
-        <tr><td><code>arbre_moyen.txt</code></td><td>un arbre moyen (38 rameaux, hauteur 8) : graine 3, S = 8</td></tr>
-        <tr><td><code>arbre_grand.txt</code></td><td>un grand arbre (5 518 rameaux, hauteur 30) : graine 4, S = 30</td></tr>
+        <tr><td><code>arbre_petit.txt</code></td><td>un petit arbre (10 rameaux, hauteur 3) : graine 5, \(S = 3\)</td></tr>
+        <tr><td><code>arbre_moyen.txt</code></td><td>un arbre moyen (38 rameaux, hauteur 8) : graine 3, \(S = 8\)</td></tr>
+        <tr><td><code>arbre_grand.txt</code></td><td>un grand arbre (5 518 rameaux, hauteur 30) : graine 4, \(S = 30\)</td></tr>
         <tr><td><code>animation_8_saisons.svg</code>, <code>animation_15_saisons.svg</code></td><td>la pousse animée de l'arbre de graine 3, pendant 8 saisons (c'est <code>arbre_moyen.txt</code>) puis 15 saisons</td></tr>
       </tbody>
     </table>

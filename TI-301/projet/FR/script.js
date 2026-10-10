@@ -1,9 +1,10 @@
 /* TI301 — Projet « La forêt et la lumière », partie 1.
-   - thème clair / sombre (mémorisé, même clé que les Ateliers TI301)
+   - thème clair / sombre / Neon (mémorisé, même clé que les Ateliers TI301)
+   - formules LaTeX rendues par KaTeX
    - sommaire actif, boutons « Copier », coloration du code C */
 
 const THEME_KEY = 'ateliers-ti301-theme';
-try { const t = localStorage.getItem(THEME_KEY); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+try { const t = localStorage.getItem(THEME_KEY); if (t === 'light' || t === 'dark' || t === 'neon') document.documentElement.dataset.theme = t; } catch (e) {}
 
 /* ------------------------------------------------------------------
    Coloration minimale du code C (commentaires et mots-clés)
@@ -33,6 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const t = sel.value;
       if (t === 'auto') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
       try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+    });
+  }
+
+  // formules : \( … \) dans le texte, $$ … $$ centrées (pre et code sont ignorés par KaTeX)
+  if (window.renderMathInElement) {
+    renderMathInElement(document.body, {
+      delimiters: [{ left: '$$', right: '$$', display: true }, { left: '\\(', right: '\\)', display: false }],
+      throwOnError: false,
     });
   }
 
