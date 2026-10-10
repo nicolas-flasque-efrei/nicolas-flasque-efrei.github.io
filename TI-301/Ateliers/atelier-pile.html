@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Atelier Pile</title>
-<script>try { const t = localStorage.getItem('atelier-pile-theme'); if (t && t !== 'auto') document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<script>try { const t = localStorage.getItem('atelier-pile-theme'); if (t && t !== 'auto') document.documentElement.dataset.theme = t === 'neo' ? 'neon' : t; } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
 <style>
 /* Même poste de travail que l'Atelier AVL : commandes à gauche, expression et pile animées à droite */
 :root{
@@ -22,7 +22,7 @@
   --f-mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
   --f-node:var(--f-mono);
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="neo"]){
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="neon"]){
   --bg:#0D1219; --panel:#141B25; --soft:#1A2230; --ink:#E4EAF2; --muted:#8F9CAE; --line:#263142;
   --accent:#7D9BFF; --accent-soft:#22325A; --on-accent:#0D1219;
   --cmp:#F0B23A; --cmp-soft:#46340F; --on-cmp:#1A1200;
@@ -34,24 +34,30 @@
   --cmp:#F0B23A; --cmp-soft:#46340F; --on-cmp:#1A1200;
   --new:#3FC48E; --new-soft:#123D2C; --bad:#FF6F86; --bad-soft:#4A1C26;
   --node:#1A2230; --edge:#56647C; --dot:#212B39; color-scheme:dark}
-/* Neo : fond uni, pastels désaturés, traits fins, ombres douces */
-:root[data-theme="neo"]{
-  --bg:#F6F7F9; --panel:#FFFFFF; --soft:#F3F4F6; --ink:#1F2937; --muted:#6B7280; --line:#E5E7EB;
-  --accent:#5B6BD6; --accent-soft:#ECEEFC; --on-accent:#FFFFFF;
+/* Neon : d'après le style Neo de Mermaid Chart — fond blanc, polices fines, dégradés du bleu vers le rouge, ombres douces */
+:root[data-theme="neon"]{
+  --bg:#FFFFFF; --panel:#FFFFFF; --soft:#F6F7FB; --ink:#1F2937; --muted:#6B7280; --line:#E5E7EB;
+  --accent:#3B5BDB; --accent-soft:#EEF2FF; --on-accent:#FFFFFF;
   --cmp:#D29B3A; --cmp-soft:#FDF4E1; --on-cmp:#3A2A08;
   --new:#3E9F79; --new-soft:#E5F5EE; --bad:#D4677B; --bad-soft:#FCEBEE;
   --node:#FFFFFF; --edge:#C3C9D3; --dot:transparent;
-  --f-display:"Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,sans-serif;
-  --f-body:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  --f-node:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --f-display:"Inter","Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-body:"Inter","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --f-node:"Inter","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --grad:linear-gradient(90deg,#2F6BFF 0%,#7C4DFF 50%,#F0326E 100%);
   color-scheme:light}
-:root[data-theme="neo"] .block,:root[data-theme="neo"] .stage{border-color:transparent;border-radius:14px;
+:root[data-theme="neon"] .block,:root[data-theme="neon"] .stage{border-color:transparent;border-radius:14px;
   box-shadow:0 1px 3px rgba(16,24,40,.08),0 1px 2px rgba(16,24,40,.04)}
-:root[data-theme="neo"] .toolbar,:root[data-theme="neo"] .narr{border-color:var(--line)}
-:root[data-theme="neo"] button{border-radius:9px}
-:root[data-theme="neo"] .ib.play{border-radius:50%}
-:root[data-theme="neo"] .canvas{background-image:none}
-:root[data-theme="neo"] :is(.cell,.item){border-width:1.5px;box-shadow:0 1.5px 4px rgba(16,24,40,.12)}
+:root[data-theme="neon"] .toolbar,:root[data-theme="neon"] .narr{border-color:var(--line)}
+:root[data-theme="neon"] button{border-radius:9px}
+:root[data-theme="neon"] .ib.play{border-radius:50%}
+:root[data-theme="neon"] .canvas{background-image:none}
+/* Neon : polices fines, titres et boutons principaux en dégradé du bleu vers le rouge */
+:root[data-theme="neon"] body{font-weight:300}
+:root[data-theme="neon"] :is(h1,h2,h3){font-weight:500}
+:root[data-theme="neon"] :is(.brand,.head) h1{width:fit-content;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+:root[data-theme="neon"] :is(button.primary,.ib.play,.badge.t-strong){background:var(--grad);border-color:transparent;color:#fff}
+:root[data-theme="neon"] :is(.cell,.item){border-width:1.5px;box-shadow:0 1.5px 4px rgba(16,24,40,.12)}
 
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -207,7 +213,7 @@ button.ghost{background:transparent;color:var(--muted)}
     <div class="opts">
       <span class="conv">ouvrantes ( [ · fermantes ) ]</span>
       <label for="optTheme">Thème
-        <select id="optTheme"><option value="auto">Auto</option><option value="light">Clair</option><option value="dark">Sombre</option><option value="neo">Neo</option></select></label>
+        <select id="optTheme"><option value="auto">Auto</option><option value="light">Clair</option><option value="dark">Sombre</option><option value="neon">Neon</option></select></label>
       <label class="chk"><input type="checkbox" id="optD"> détailler les autres caractères</label>
     </div>
   </header>

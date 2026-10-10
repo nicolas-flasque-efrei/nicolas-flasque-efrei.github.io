@@ -4,7 +4,11 @@
    - sommaire actif, boutons « Copier », coloration du code C */
 
 const THEME_KEY = 'ateliers-ti301-theme';
-try { const t = localStorage.getItem(THEME_KEY); if (t === 'light' || t === 'dark' || t === 'neon') document.documentElement.dataset.theme = t; } catch (e) {}
+try {
+  let t = localStorage.getItem(THEME_KEY);
+  if (t === 'neo') t = 'neon';   // ancien thème « Neo » des Ateliers, remplacé par « Neon »
+  if (t === 'light' || t === 'dark' || t === 'neon') document.documentElement.dataset.theme = t;
+} catch (e) {}
 
 /* ------------------------------------------------------------------
    Coloration minimale du code C (commentaires et mots-clés)
