@@ -176,6 +176,7 @@
   /* ---------- Survol : nœud <-> rameau, fenêtre d'information ---------- */
   const pop = racine.querySelector('.al-pop');
   let courant = null;
+  const ligneTableau = n => document.querySelector(`#tabExemple tbody tr[data-r="${n}"]`);
 
   function montrer(n, ancre) {
     if (courant === n) return;
@@ -185,6 +186,7 @@
     racine.classList.add('actif');
     vues.noeuds[n].forEach(e => e.classList.add('hl'));
     vues.rameaux[n].forEach(e => { e.classList.add('hl'); e.parentNode.appendChild(e); });
+    ligneTableau(n)?.classList.add('hl');   // ligne du tableau de l'exemple, si la page en contient un
     depart.setAttribute('cx', px(r.base.x)); depart.setAttribute('cy', py(r.base.y));
 
     const fils = r.fils.length ? r.fils.join(', ') : 'aucun';
@@ -212,6 +214,7 @@
     if (courant === null) return;
     vues.noeuds[courant].forEach(e => e.classList.remove('hl'));
     vues.rameaux[courant].forEach(e => e.classList.remove('hl'));
+    ligneTableau(courant)?.classList.remove('hl');
     // remet les rameaux dans l'ordre des numéros
     for (const [g, b] of vues.rameaux) { segs.appendChild(g); bouts.appendChild(b); }
     racine.classList.remove('actif');
