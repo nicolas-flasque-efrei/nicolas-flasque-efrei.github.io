@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La forêt et la lumière – Partie 1</title>
+<meta name="description" content="TI301 – Projet Informatique et Mathématiques : la forêt et la lumière, partie 1.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="script.js" defer></script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <p class="kicker">TI301 – Algorithmique et Structures de données 2 · Projet Informatique et Mathématiques</p>
+    <h1>La forêt et la lumière <span class="part">Partie 1</span></h1>
+    <p class="lede">Ce projet est rédigé en commun avec le département de mathématiques.</p>
+    <div class="hero-tools">
+      <label class="theme">Thème
+        <select id="optTheme">
+          <option value="auto">Automatique</option>
+          <option value="light">Clair</option>
+          <option value="dark">Sombre</option>
+        </select>
+      </label>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<nav class="toc" aria-label="Sommaire">
+  <p class="toc-title">Sommaire</p>
+  <ol>
+    <li><a href="#intro">Introduction</a></li>
+    <li><a href="#arbre">Qu'est-ce qu'un arbre ?</a></li>
+    <li><a href="#pousse">La pousse en pleine lumière</a></li>
+    <li><a href="#hasard">Le hasard en C</a></li>
+    <li><a href="#code">Le code fourni</a></li>
+    <li><a href="#cahier">Cahier des charges</a>
+      <ol>
+        <li><a href="#etape1">Étape 1 – Code fourni</a></li>
+        <li><a href="#etape2">Étape 2 – Pousse</a></li>
+        <li><a href="#etape3">Étape 3 – Mesures</a></li>
+        <li><a href="#etape4">Étape 4 – Enregistrer</a></li>
+        <li><a href="#etape5">Étape 5 – Libérer</a></li>
+        <li><a href="#mermaid">Option – Mermaid</a></li>
+        <li><a href="#fichiers">Fichiers fournis</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ================================================================ INTRO -->
+<section id="intro">
+  <p>On plante une rangée de jeunes arbres et on les laisse pousser, saison après saison. Pour pousser, un arbre a besoin de <strong>lumière</strong> ; or les arbres se font de l'ombre. Un arbre qui prend un peu d'avance reçoit plus de lumière, pousse plus vite et prend encore plus d'avance ; un arbre dépassé ne reçoit presque plus de lumière et s'arrête de pousser.</p>
+  <p>Un arbre, au sens botanique, est aussi un <strong>arbre au sens informatique</strong> : le premier rameau sort du sol, puis de nouveaux rameaux naissent à son extrémité, et ainsi de suite. Le but de ce projet est de <strong>simuler</strong> la pousse de forêts entières, de représenter chaque arbre par une structure d'arbre en C, d'en <strong>mesurer</strong> les caractéristiques et de les <strong>visualiser</strong>. Les outils et les résultats que vous produirez seront ensuite utilisés dans le projet de mathématiques.</p>
+  <p class="note"><u>Dans ce sujet ne seront présentées que les notions essentielles pour la partie informatique.</u></p>
+
+  <h3 class="caption-title">Organisation du projet</h3>
+  <ol class="parts">
+    <li class="is-current"><b>Partie 1</b> faire pousser au hasard un arbre seul, en pleine lumière, le mesurer et l'enregistrer dans un fichier ;</li>
+    <li><b>Partie 2</b> faire pousser une forêt entière, dans laquelle les arbres se font de l'ombre ;</li>
+    <li><b>Partie 3</b> simuler des milliers de forêts, analyser et visualiser les résultats.</li>
+  </ol>
+</section>
+
+<!-- ================================================================ ARBRE -->
+<section id="arbre">
+  <h2><span class="num">1</span>Qu'est-ce qu'un arbre ?</h2>
+
+  <h3>Les rameaux</h3>
+  <p>Un arbre est fait de <strong>rameaux</strong>. Chaque rameau est un petit segment, qui part de l'extrémité de son rameau <strong>parent</strong>. Le premier rameau, appelé le <strong>pied</strong>, part du sol.</p>
+  <p>On regarde la forêt <strong>de profil</strong> : l'axe x suit la rangée d'arbres (de gauche à droite), l'axe y mesure l'altitude au-dessus du sol. Pour chaque rameau, on retient :</p>
+  <ul>
+    <li>la <strong>position de son extrémité</strong> : x et y ;</li>
+    <li>sa <strong>direction</strong> : un angle en degrés, 0 pour un rameau vertical, positif s'il penche vers la droite, négatif s'il penche vers la gauche ;</li>
+    <li>la <strong>saison</strong> à laquelle il est apparu (0 pour le pied) ;</li>
+    <li>son <strong>état</strong> :
+      <ul>
+        <li><span class="tag tag-bud">bourgeon</span> son extrémité porte un bourgeon, qui pourra encore donner naissance à de nouveaux rameaux ;</li>
+        <li><span class="tag tag-wood">bois</span> de nouveaux rameaux sont déjà nés à son extrémité.</li>
+      </ul>
+    </li>
+  </ul>
+  <p>Un nouveau rameau de direction θ (en degrés) et de longueur ℓ, qui part de l'extrémité (x ; y) de son parent, a pour extrémité :</p>
+  <div class="formula">
+    <span>x′ = x + ℓ × sin(θ)</span>
+    <span>y′ = y + ℓ × cos(θ)</span>
+  </div>
+  <p>Ce calcul est déjà programmé dans le code fourni (voir plus loin).</p>
+
+  <h3>L'arbre informatique</h3>
+  <ul>
+    <li>le pied est la <strong>racine</strong> de l'arbre ;</li>
+    <li>les <strong>fils</strong> d'un rameau sont les rameaux nés à son extrémité ; un rameau a <strong>au plus 3 fils</strong> ;</li>
+    <li>les <strong>feuilles</strong> de l'arbre (les rameaux sans fils) sont exactement les rameaux qui portent un <strong>bourgeon</strong>.</li>
+  </ul>
+  <div class="callout">
+    <p>La <strong>génération</strong> d'un rameau est sa distance au pied dans l'arbre : le pied est de génération 0, ses fils de génération 1, les fils de ses fils de génération 2, et ainsi de suite.</p>
+    <p>La <strong>hauteur</strong> de l'arbre est la plus grande génération de ses rameaux. Attention à ne pas la confondre avec l'<strong>altitude</strong> de la cime, qui est mesurée en unités de longueur.</p>
+  </div>
+
+  <h3 class="caption-title">Exemple</h3>
+  <p>Voici un arbre de 10 rameaux, qui a poussé pendant 4 saisons. Le pied a son extrémité en (4,5 ; 1,0). Les rameaux sont numérotés dans l'ordre où ils sont apparus :</p>
+  <div class="table-wrap">
+  <table id="tabExemple" class="data">
+    <thead><tr><th>Rameau</th><th>Saison</th><th>Parent</th><th>Direction</th><th>Longueur</th><th>Extrémité (x ; y)</th><th>Génération</th><th>État</th></tr></thead>
+    <tbody>
+      <tr data-r="0"><td>0</td><td>0</td><td>–</td><td>0</td><td>–</td><td>(4,50 ; 1,00)</td><td>0</td><td>bois</td></tr>
+      <tr data-r="1"><td>1</td><td>1</td><td>0</td><td>0</td><td>1,0</td><td>(4,50 ; 2,00)</td><td>1</td><td>bois</td></tr>
+      <tr data-r="2"><td>2</td><td>1</td><td>0</td><td>−45</td><td>0,8</td><td>(3,93 ; 1,57)</td><td>1</td><td>bois</td></tr>
+      <tr data-r="3"><td>3</td><td>2</td><td>1</td><td>5</td><td>1,0</td><td>(4,59 ; 3,00)</td><td>2</td><td>bois</td></tr>
+      <tr data-r="4"><td>4</td><td>2</td><td>1</td><td>50</td><td>0,8</td><td>(5,11 ; 2,51)</td><td>2</td><td>bourgeon</td></tr>
+      <tr data-r="5"><td>5</td><td>2</td><td>1</td><td>−40</td><td>0,7</td><td>(4,05 ; 2,54)</td><td>2</td><td>bourgeon</td></tr>
+      <tr data-r="6"><td>6</td><td>3</td><td>3</td><td>0</td><td>1,0</td><td>(4,59 ; 4,00)</td><td>3</td><td>bois</td></tr>
+      <tr data-r="7"><td>7</td><td>3</td><td>2</td><td>−50</td><td>0,6</td><td>(3,47 ; 1,95)</td><td>2</td><td>bourgeon</td></tr>
+      <tr data-r="8"><td>8</td><td>4</td><td>6</td><td>−5</td><td>0,9</td><td>(4,51 ; 4,89)</td><td>4</td><td>bourgeon</td></tr>
+      <tr data-r="9"><td>9</td><td>4</td><td>6</td><td>45</td><td>0,7</td><td>(5,08 ; 4,49)</td><td>4</td><td>bourgeon</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Par exemple, le rameau 2 part de l'extrémité du rameau 0, avec une direction de −45° et une longueur de 0,8 : x = 4,5 + 0,8 × sin(−45°) ≈ 3,93 et y = 1,0 + 0,8 × cos(−45°) ≈ 1,57.</p>
+
+  <h3>Lien entre l'arbre informatique et l'arbre que l'on fait pousser</h3>
+  <figure class="fig">
+    <!-- Figure générée par script.js à partir des données de l'exemple (survol : les deux vues sont liées) -->
+    <div id="figExemple" class="fig-exemple" aria-label="L'arbre de l'exemple, de profil et sous forme d'arbre informatique"></div>
+    <figcaption>L'arbre de l'exemple, de profil et sous forme d'arbre informatique <span class="hint">— survolez un rameau</span></figcaption>
+  </figure>
+
+  <h3>Les caractéristiques d'un arbre</h3>
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Caractéristique</th><th>Signification</th><th>Exemple</th></tr></thead>
+    <tbody>
+      <tr><td>Taille</td><td>nombre de rameaux (nœuds de l'arbre)</td><td>10</td></tr>
+      <tr><td>Hauteur</td><td>plus grande génération</td><td>4</td></tr>
+      <tr><td>Altitude de la cime</td><td>plus grande altitude y atteinte par l'extrémité d'un rameau</td><td>4,89 (rameau 8)</td></tr>
+      <tr><td>Nombre de bourgeons</td><td>nombre de feuilles de l'arbre</td><td>5 (rameaux 4, 5, 7, 8, 9)</td></tr>
+      <tr><td>Nombre de rameaux de bois</td><td>nombre de nœuds internes de l'arbre</td><td>5</td></tr>
+      <tr><td>Rameaux par génération</td><td>nombre de rameaux de chaque génération</td><td>1, 2, 4, 1, 2</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ================================================================ POUSSE -->
+<section id="pousse">
+  <h2><span class="num">2</span>La pousse d'un arbre en pleine lumière</h2>
+  <p>Dans cette partie, l'arbre pousse <strong>seul</strong>, sans rien qui lui fasse de l'ombre. À chaque saison, <strong>chaque bourgeon</strong> de l'arbre « tente sa chance » :</p>
+  <ul class="rules">
+    <li>il <strong>pousse dans 95 % des cas</strong> ; sinon, il reste bourgeon et retentera sa chance à la saison suivante ;</li>
+    <li>s'il pousse, il donne <strong>1 nouveau rameau</strong> dans 70 % des cas, <strong>2</strong> dans 25 % des cas et <strong>3</strong> dans 5 % des cas ;</li>
+    <li>son rameau devient alors du <strong>bois</strong>, et chaque nouveau rameau porte un <strong>bourgeon</strong> et devient un <strong>fils</strong> du rameau qui l'a produit ;</li>
+    <li>le <strong>premier</strong> nouveau rameau prolonge son parent : sa direction est celle du parent, modifiée d'un angle tiré au hasard entre −10° et +10° ;</li>
+    <li>chacun des <strong>autres</strong> nouveaux rameaux part sur le côté, à gauche ou à droite (une chance sur deux), en tournant d'un angle tiré au hasard entre 30° et 60° ;</li>
+    <li>une direction est toujours ramenée entre −80° et +80° (une direction de 95° devient 80°) ;</li>
+    <li>chaque nouveau rameau a une longueur tirée au hasard entre 0,7 et 1,3.</li>
+  </ul>
+  <div class="probas" aria-hidden="true">
+    <div class="pbar">
+      <span style="--w:66.5" class="p1">1 rameau<b>66,5 %</b></span>
+      <span style="--w:23.75" class="p2">2<b>23,75 %</b></span>
+      <span style="--w:4.75" class="p3"></span>
+      <span style="--w:5" class="p0"></span>
+    </div>
+    <p class="pleg"><i class="p3"></i>3 rameaux : 4,75 % <i class="p0"></i>ne pousse pas : 5 %</p>
+  </div>
+  <p>Les rameaux nés pendant une saison ne peuvent pousser qu'à partir de la saison suivante. L'arbre est planté avec un seul rameau : son pied, vertical, d'extrémité (0 ; 1), qui est un bourgeon à la saison 0. Il pousse ensuite pendant S saisons, numérotées de 1 à S.</p>
+</section>
+
+<!-- ================================================================ HASARD -->
+<section id="hasard">
+  <h2><span class="num">3</span>Le hasard en C</h2>
+  <p class="warn">La fonction <code>rand()</code> de la bibliothèque standard ne convient pas à ce projet : sous Windows, elle ne fournit que des nombres compris entre 0 et 32 767. <strong>Son utilisation est interdite.</strong></p>
+  <p>Vous disposez d'un module <strong>fourni</strong>, <code>alea.h</code> / <code>alea.c</code>, à utiliser tel quel :</p>
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Fonction</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><code>void alea_init(uint64_t graine)</code></td><td>initialise le générateur de nombres au hasard avec une <strong>graine</strong></td></tr>
+      <tr><td><code>double alea_reel(void)</code></td><td>renvoie un nombre à virgule au hasard, entre 0 (compris) et 1 (non compris)</td></tr>
+      <tr><td><code>double alea_entre(double a, double b)</code></td><td>renvoie un nombre à virgule au hasard, entre a (compris) et b (non compris)</td></tr>
+      <tr><td><code>int alea_entier(int n)</code></td><td>renvoie un entier au hasard entre 0 et n − 1, chaque valeur ayant la même chance d'être choisie</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <p><strong>La graine.</strong> Un ordinateur ne fait pas vraiment de hasard : il calcule une suite de nombres qui <em>ont l'air</em> pris au hasard. Cette suite est entièrement déterminée par la graine : <strong>avec la même graine, on obtient exactement la même simulation</strong>. C'est très utile pour chercher une erreur, ou pour qu'une autre personne puisse refaire la même expérience.</p>
+    <p>Votre programme doit donc toujours permettre de choisir la graine.</p>
+  </div>
+
+  <h3 class="caption-title">Tirer dans une table</h3>
+  <p>Pour choisir 1, 2 ou 3 nouveaux rameaux dans 70 %, 25 % et 5 % des cas, on tire un nombre u = <code>alea_reel()</code>, puis on renvoie 1 si u &lt; 0,70 ; sinon 2 si u &lt; 0,70 + 0,25 = 0,95 ; sinon 3. Chaque résultat correspond à une « tranche » de l'intervalle entre 0 et 1, dont la largeur est le pourcentage voulu.</p>
+  <div class="slices" aria-hidden="true">
+    <span style="--w:70">1</span><span style="--w:25">2</span><span style="--w:5">3</span>
+    <em style="--at:0">0</em><em style="--at:70">0,70</em><em style="--at:95">0,95</em><em style="--at:100">1</em>
+  </div>
+</section>
+
+<!-- ================================================================ CODE -->
+<section id="code">
+  <h2><span class="num">4</span>Le code fourni</h2>
+  <p>Pour que vous puissiez vous concentrer sur la pousse et les mesures de l'arbre, une partie du code vous est <strong>fournie</strong>. Lisez-la attentivement : elle vous montre comment l'arbre est représenté en mémoire.</p>
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Fichier</th><th>Contenu</th></tr></thead>
+    <tbody>
+      <tr><td><code>arbre.h</code>, <code>arbre.c</code></td><td>les structures <code>Rameau</code> et <code>t_arbre</code>, la construction d'un arbre, la lecture d'un fichier d'arbre et l'affichage</td></tr>
+      <tr><td><code>dessin.h</code>, <code>dessin.c</code></td><td>le dessin de profil d'un arbre au format SVG, fixe ou animé</td></tr>
+      <tr><td><code>alea.h</code>, <code>alea.c</code></td><td>les nombres au hasard</td></tr>
+      <tr><td><code>main.c</code></td><td>un exemple d'utilisation : lire <code>exemple1.txt</code>, l'afficher, le dessiner et animer sa pousse</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Le programme se compile avec la commande suivante (l'option <code>-lm</code> est nécessaire pour les fonctions <code>sin</code> et <code>cos</code>) :</p>
+<pre class="code shell"><code>gcc -std=c11 -O2 -Wall -Wextra main.c arbre.c dessin.c alea.c -o foret -lm</code></pre>
+
+  <h3>Les structures de données</h3>
+  <p>Chaque rameau est un <strong>nœud</strong> de l'arbre. Un rameau ayant au plus 3 fils, ses fils sont rangés dans un <strong>tableau de 3 pointeurs</strong> (les cases inutilisées valent <code>NULL</code>). Cette structure sera réutilisée telle quelle dans les parties 2 et 3.</p>
+<pre class="code"><code>enum { BOURGEON = 0, BOIS = 1 };
+
+typedef struct Rameau {
+    float x, y;              // extrémité du rameau : position et altitude
+    float dir;               // direction en degrés (0 = vertical)
+    short saison;            // saison d'apparition
+    short gen;               // génération (profondeur dans l'arbre)
+    unsigned char etat;      // BOURGEON ou BOIS
+    unsigned char nb_fils;   // 0 à 3
+    int num;                 // numéro du rameau (ordre d'apparition)
+    struct Rameau *fils[3];  // rameaux nés à son extrémité
+} Rameau;</code></pre>
+  <p>Pour retrouver rapidement le rameau qui correspond à un numéro, l'arbre garde aussi un <strong>tableau dynamique de pointeurs</strong> : la case i contient l'adresse du rameau numéro i. Ce tableau est agrandi avec <code>realloc</code> (en doublant sa taille) quand il est plein.</p>
+<pre class="code"><code>typedef struct {
+    Rameau *pied;      // premier rameau : la racine de l'arbre
+    Rameau **rameaux;  // rameaux[i] = adresse du rameau numéro i
+    int nb_rameaux;    // nombre de rameaux de l'arbre
+    int capacite;      // nombre de cases allouées pour le tableau rameaux
+} t_arbre;</code></pre>
+
+  <h3>Les fonctions fournies</h3>
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Fonction</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><code>creer_rameau</code></td><td>crée un rameau (bourgeon, sans fils) avec <code>malloc</code></td></tr>
+      <tr><td><code>ajouter_fils</code></td><td>ajoute un fils à un rameau (refuse d'en ajouter un quatrième)</td></tr>
+      <tr><td><code>t_arbre creer_arbre(float x, float y)</code></td><td>crée un arbre ne contenant que son pied, d'extrémité (x ; y)</td></tr>
+      <tr><td><code>Rameau *pousser_rameau(t_arbre *a, Rameau *parent, int saison, float dir, float longueur)</code></td><td>fait pousser un nouveau rameau à l'extrémité de <code>parent</code> : calcule son extrémité, sa génération et son numéro, l'ajoute aux fils de <code>parent</code>, fait passer <code>parent</code> à l'état bois et range le nouveau rameau dans le tableau de l'arbre</td></tr>
+      <tr><td><code>t_arbre lire_arbre(const char *nom)</code></td><td>construit l'arbre décrit dans un fichier (voir ci-dessous)</td></tr>
+      <tr><td><code>void afficher_arbre(t_arbre a)</code></td><td>affiche tous les rameaux de l'arbre, par numéro</td></tr>
+      <tr><td><code>void dessiner_svg(Rameau *pied, const char *nom)</code></td><td>écrit le dessin de profil de l'arbre dans un fichier SVG</td></tr>
+      <tr><td><code>void animer_svg(Rameau *pied, const char *nom, double duree_saison)</code></td><td>écrit une animation de la pousse de l'arbre, saison par saison, dans un fichier SVG</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Les fichiers d'arbres</h3>
+  <p>Un arbre peut être décrit dans un fichier texte, qui a le format suivant :</p>
+  <ul>
+    <li>Ligne 1 : <code>x y</code> : la position de l'extrémité du pied ;</li>
+    <li>Lignes suivantes, une par nouveau rameau, dans l'ordre où les rameaux sont apparus : <code>saison parent direction longueur</code>.</li>
+  </ul>
+  <p>Les rameaux sont numérotés automatiquement : le pied porte le numéro 0, le rameau décrit à la ligne 2 porte le numéro 1, celui de la ligne 3 le numéro 2, etc. Le champ <code>parent</code> est le numéro du rameau à l'extrémité duquel le nouveau rameau est né. Par exemple, l'arbre décrit plus haut est contenu dans le fichier <code>exemple1.txt</code> :</p>
+<pre class="code file" data-name="exemple1.txt"><code>4.5 1.0
+1 0 0 1.0
+1 0 -45 0.8
+2 1 5 1.0
+2 1 50 0.8
+2 1 -40 0.7
+3 3 0 1.0
+3 2 -50 0.6
+4 6 -5 0.9
+4 6 45 0.7</code></pre>
+  <p>Voici la fonction fournie qui lit un tel fichier. Remarquez qu'il suffit d'appeler <code>pousser_rameau</code> pour chaque ligne :</p>
+<pre class="code"><code>t_arbre lire_arbre(const char *nom_fichier) {
+    FILE *f = fopen(nom_fichier, "rt");   // lecture seule, texte
+    float x, y, dir, longueur;
+    int saison, parent;
+    t_arbre a;
+
+    if (f == NULL) {
+        perror("Impossible d'ouvrir le fichier");
+        exit(EXIT_FAILURE);
+    }
+    if (fscanf(f, "%f %f", &amp;x, &amp;y) != 2) {
+        perror("Impossible de lire la position du pied");
+        exit(EXIT_FAILURE);
+    }
+    a = creer_arbre(x, y);
+    while (fscanf(f, "%d %d %f %f", &amp;saison, &amp;parent, &amp;dir, &amp;longueur) == 4) {
+        // une ligne = un nouveau rameau, fils du rameau numéro 'parent'
+        pousser_rameau(&amp;a, a.rameaux[parent], saison, dir, longueur);
+    }
+    fclose(f);
+    return a;
+}</code></pre>
+  <p>Les fichiers fournis décrivent tous des arbres corrects : la fonction ne vérifie pas leur contenu.</p>
+
+  <h3>Le dessin au format SVG</h3>
+  <p>Le format <strong>SVG</strong> est un simple fichier texte, que l'on ouvre avec un navigateur web. Le module de dessin y écrit un segment par rameau et un petit disque vert pour chaque bourgeon. Il parcourt l'arbre à l'aide d'une <strong>fonction récursive</strong> : elle dessine les segments qui vont de l'extrémité d'un rameau à celles de ses fils, puis <strong>s'appelle elle-même</strong> pour dessiner chacun des fils.</p>
+<pre class="code"><code>static void dessiner_rameau(FILE *f, Rameau *r, float rayon) {
+    for (int i = 0; i &lt; r-&gt;nb_fils; i++) {
+        Rameau *fils = r-&gt;fils[i];
+        fprintf(f, "  &lt;line x1=\"%.1f\" y1=\"%.1f\" x2=\"%.1f\" y2=\"%.1f\"/&gt;\n",
+                px(r-&gt;x), py(r-&gt;y), px(fils-&gt;x), py(fils-&gt;y));
+        dessiner_rameau(f, fils, rayon);
+    }
+    if (r-&gt;etat == BOURGEON)   // un bourgeon : un petit disque vert
+        fprintf(f, "  &lt;circle cx=\"%.1f\" cy=\"%.1f\" r=\"%.1f\" .../&gt;\n",
+                px(r-&gt;x), py(r-&gt;y), rayon);
+}</code></pre>
+  <p>Les fonctions <code>px</code> et <code>py</code> transforment les coordonnées de l'arbre en pixels de l'image. L'échelle est choisie automatiquement pour que l'arbre tienne dans l'image, qu'il ait 10 ou 10 000 rameaux.</p>
+
+  <h4>L'animation de la pousse</h4>
+  <p>La fonction <code>animer_svg</code> produit un fichier SVG <strong>animé</strong>, qui montre l'arbre pousser saison après saison quand on l'ouvre dans un navigateur web (touche <kbd>F5</kbd> pour revoir l'animation). Elle utilise la saison d'apparition de chaque rameau (champ <code>saison</code>) :</p>
+  <ul>
+    <li>chaque saison dure <code>duree_saison</code> secondes ; un compteur « Saison s » est affiché en haut à gauche ;</li>
+    <li>pendant toute la saison s, les rameaux apparus à la saison s « poussent » : leur segment s'allonge régulièrement, sans pause d'une saison à la suivante ;</li>
+    <li>un bourgeon apparaît quand son rameau a fini de pousser, et disparaît quand son premier fils a fini de pousser : les bourgeons des nouveaux rameaux prennent alors le relais. Les bourgeons en dormance restent visibles.</li>
+  </ul>
+  <p>L'animation est décrite en <strong>CSS</strong>, dans un élément <code>&lt;style&gt;</code> placé au début du fichier SVG. Chaque élément porte une classe (<code>r</code> pour un segment, <code>b</code> pour un bourgeon) et un délai (<code>animation-delay</code>) qui dépend de sa saison :</p>
+<pre class="code"><code>&lt;style&gt;
+  .r { fill: none; stroke-dasharray: 1 1; stroke-dashoffset: 1;
+       animation: pousse 0.60s linear forwards; }
+  @keyframes pousse { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  ...
+&lt;/style&gt;
+&lt;path class="r" pathLength="1" style="animation-delay:1.20s"
+      d="M313.2 376.8 L322.9 321.7"/&gt;</code></pre>
+  <p>Voici quatre images de l'animation fournie <code>animation_15_saisons.svg</code> (graine 3, S = 15, une saison = 0,6 seconde), à la fin des saisons 4, 8, 12 et 15 :</p>
+  <figure class="fig">
+    <img src="img/animation_15_saisons.png" width="1155" height="795" loading="lazy" alt="Quatre images de l'animation : l'arbre à la fin des saisons 4, 8, 12 et 15">
+    <figcaption>La pousse d'un arbre en pleine lumière, saison après saison</figcaption>
+  </figure>
+</section>
+
+<!-- ================================================================ CAHIER -->
+<section id="cahier">
+  <h2><span class="num">5</span>Cahier des charges</h2>
+
+  <!-- Étape 1 -->
+  <article id="etape1" class="step">
+    <h3><span class="step-n">Étape 1</span>Prendre en main le code fourni</h3>
+    <p>Récupérez les fichiers fournis, compilez-les et exécutez le programme d'exemple.</p>
+    <ul>
+      <li>Ouvrez le fichier <code>exemple1.svg</code> produit dans un navigateur web.</li>
+      <li>Modifiez <code>main.c</code> pour lire, afficher et dessiner les trois autres arbres fournis : <code>arbre_petit.txt</code>, <code>arbre_moyen.txt</code> et <code>arbre_grand.txt</code>.</li>
+      <li>Dans votre rapport, faites un schéma de la mémoire après la lecture de <code>exemple1.txt</code> : la variable de type <code>t_arbre</code>, son tableau <code>rameaux</code> et les 10 rameaux, avec les pointeurs <code>fils</code>.</li>
+    </ul>
+    <div class="check">
+      <h4>Validation de l'étape 1</h4>
+      <p>Avec <code>exemple1.txt</code>, le programme affiche :</p>
+<pre class="code console"><code>Arbre : 10 rameaux
+Rameau 0 (saison 0, generation 0, bois) (4.50 ; 1.00) fils -&gt; 1 -&gt; 2
+Rameau 1 (saison 1, generation 1, bois) (4.50 ; 2.00) fils -&gt; 3 -&gt; 4 -&gt; 5
+Rameau 2 (saison 1, generation 1, bois) (3.93 ; 1.57) fils -&gt; 7
+Rameau 3 (saison 2, generation 2, bois) (4.59 ; 3.00) fils -&gt; 6
+Rameau 4 (saison 2, generation 2, bourgeon) (5.11 ; 2.51)
+Rameau 5 (saison 2, generation 2, bourgeon) (4.05 ; 2.54)
+Rameau 6 (saison 3, generation 3, bois) (4.59 ; 4.00) fils -&gt; 8 -&gt; 9
+Rameau 7 (saison 3, generation 2, bourgeon) (3.47 ; 1.95)
+Rameau 8 (saison 4, generation 4, bourgeon) (4.51 ; 4.89)
+Rameau 9 (saison 4, generation 4, bourgeon) (5.08 ; 4.49)</code></pre>
+      <p>et les dessins des trois arbres fournis sont les suivants :</p>
+      <figure class="fig">
+        <img src="img/arbres_fournis.png" width="1859" height="573" loading="lazy" alt="Dessins de profil des arbres arbre_petit, arbre_moyen et arbre_grand">
+        <figcaption><code>arbre_petit.txt</code> (hauteur 3), <code>arbre_moyen.txt</code> (hauteur 8) et <code>arbre_grand.txt</code> (hauteur 30)</figcaption>
+      </figure>
+    </div>
+  </article>
+
+  <!-- Étape 2 -->
+  <article id="etape2" class="step">
+    <h3><span class="step-n">Étape 2</span>Faire pousser un arbre en pleine lumière</h3>
+    <p>Il s'agit maintenant de faire pousser un arbre <strong>au hasard</strong>, en suivant les règles présentées plus haut. Pour trouver les bourgeons, on parcourt simplement le tableau des rameaux par numéro.</p>
+    <h4>L'algorithme à implémenter</h4>
+    <p>Voici ce que fait une saison s pour un arbre. Pour que tout le monde obtienne exactement les mêmes arbres avec la même graine, <strong>les tirages doivent être faits dans cet ordre</strong> :</p>
+<pre class="code algo"><code><b>n</b> = nombre de rameaux de l'arbre au début de la saison
+<b>Pour</b> i <b>de</b> 0 <b>à</b> n - 1
+    b = rameau numéro i
+    <b>Si</b> b est un bourgeon
+        k = nb_nouveaux_rameaux()
+        <b>Pour</b> j <b>de</b> 0 <b>à</b> k - 1
+            <b>Si</b> j == 0
+                direction = direction de b + alea_entre(-10, 10)
+            <b>Sinon</b>
+                cote = alea_entier(2)
+                angle = alea_entre(30, 60)
+                <b>Si</b> cote == 0 : direction = direction de b - angle
+                <b>Sinon</b> : direction = direction de b + angle
+            Ramener la direction entre -80 et 80
+            longueur = alea_entre(0.7, 1.3)
+            pousser_rameau(arbre, b, s, direction, longueur)</code></pre>
+    <p>La boucle s'arrête au nombre de rameaux du <strong>début</strong> de la saison : les rameaux nés pendant la saison (rangés à la fin du tableau) ne poussent donc pas.</p>
+    <div class="todo">
+      <h4>Fonctions à créer</h4>
+      <ul>
+        <li>une fonction <code>int nb_nouveaux_rameaux(void)</code> qui renvoie 0 si le bourgeon ne pousse pas, et sinon le nombre de nouveaux rameaux (1, 2 ou 3). Elle tire d'abord u = <code>alea_reel()</code> : le bourgeon ne pousse pas si u ≥ 0,95. S'il pousse, elle tire un second nombre avec <code>alea_reel()</code> pour choisir 1, 2 ou 3 dans la table ;</li>
+        <li>une fonction qui ramène une direction entre −80° et 80° ;</li>
+        <li>une fonction <code>void saison(t_arbre *a, int s)</code> qui fait jouer la saison s ;</li>
+        <li>une fonction <code>t_arbre simuler_arbre(uint64_t graine, int S)</code> qui initialise le hasard avec la graine, crée un arbre de pied d'extrémité (0 ; 1), puis fait jouer les saisons 1 à S.</li>
+      </ul>
+    </div>
+    <div class="check">
+      <h4>Validation de l'étape 2</h4>
+      <ul>
+        <li>Appelez 1 000 000 de fois <code>nb_nouveaux_rameaux</code> et comptez les résultats. Vous devez obtenir des nombres proches (à environ 2 000 près) de 50 000 fois 0 ; 665 000 fois 1 ; 237 500 fois 2 et 47 500 fois 3. Par exemple, on attend 1 rameau dans 0,95 × 0,70 = 66,5 % des tirages.</li>
+        <li>Deux simulations avec la <strong>même graine</strong> donnent exactement le même arbre ; deux graines différentes donnent (presque toujours) des arbres différents.</li>
+        <li>Avec la graine 5 et S = 3, <code>afficher_arbre</code> doit afficher le même arbre que pour le fichier fourni <code>arbre_petit.txt</code> (les valeurs affichées sont arrondies à 2 chiffres après la virgule). De même, avec la graine 3 et S = 8, vous devez retrouver <code>arbre_moyen.txt</code>, et avec la graine 4 et S = 30, <code>arbre_grand.txt</code> (5 518 rameaux).</li>
+        <li>Dessinez les arbres obtenus avec <code>dessiner_svg</code>, et animez leur pousse avec <code>animer_svg</code>. Avec la graine 3, vous devez retrouver les animations fournies <code>animation_8_saisons.svg</code> (S = 8) et <code>animation_15_saisons.svg</code> (S = 15). Les 8 premières saisons des deux animations sont identiques : expliquez pourquoi dans votre rapport.</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- Étape 3 -->
+  <article id="etape3" class="step">
+    <h3><span class="step-n">Étape 3</span>Mesurer l'arbre avec des fonctions récursives</h3>
+    <h4>3.1 Les mesures</h4>
+    <p>Il s'agit maintenant de calculer <strong>toutes les caractéristiques</strong> de l'arbre présentées dans le tableau plus haut, <strong>sans utiliser</strong> le tableau des rameaux par numéro : on part du pied et on suit les pointeurs <code>fils</code>.</p>
+    <p>Un arbre se prête très bien à la <strong>récursivité</strong> : chaque fils d'un rameau est lui-même le pied d'un « petit arbre », appelé <strong>sous-arbre</strong>. Par exemple, la taille du sous-arbre d'un rameau r vaut 1 (le rameau r lui-même) plus la somme des tailles des sous-arbres de ses fils. Pour un bourgeon, qui n'a pas de fils, elle vaut 1 : la récursivité s'arrête d'elle-même.</p>
+<pre class="code"><code>int taille(Rameau *r) {
+    int t = 1;   // le rameau r lui-même
+    for (int i = 0; i &lt; r-&gt;nb_fils; i++)
+        <i class="hole">ajouter à t la taille du sous-arbre du fils numéro i</i>
+    return t;
+}</code></pre>
+    <p>La taille de l'arbre entier est <code>taille(a.pied)</code>. Inspirez-vous aussi de la fonction <code>dessiner_rameau</code> du module de dessin.</p>
+    <div class="todo">
+      <h4>Structures et fonctions à créer</h4>
+      <ul>
+        <li>une fonction récursive pour chaque caractéristique : taille, hauteur, altitude de la cime, nombre de bourgeons, nombre de rameaux de bois ;</li>
+        <li>une fonction récursive qui remplit le <strong>tableau des rameaux par génération</strong> : ce tableau, de taille « hauteur + 1 » et rempli de zéros au départ, est passé en paramètre, et chaque rameau ajoute 1 dans la case de sa génération ;</li>
+        <li>une structure « mesures » qui regroupe toutes les caractéristiques, une fonction qui calcule les mesures d'un arbre et une fonction qui les affiche.</li>
+      </ul>
+    </div>
+    <div class="check">
+      <h4>Validation de l'étape 3.1</h4>
+      <p>Vous devez obtenir les valeurs suivantes :</p>
+      <div class="table-wrap">
+      <table class="data num">
+        <thead><tr><th>Fichier</th><th>Taille</th><th>Hauteur</th><th>Cime</th><th>Bourgeons</th><th>Bois</th><th>Rameaux par génération</th></tr></thead>
+        <tbody>
+          <tr><td><code>exemple1.txt</code></td><td>10</td><td>4</td><td>4,89</td><td>5</td><td>5</td><td>1, 2, 4, 1, 2</td></tr>
+          <tr><td><code>arbre_petit.txt</code></td><td>10</td><td>3</td><td>4,13</td><td>4</td><td>6</td><td>1, 2, 3, 4</td></tr>
+          <tr><td><code>arbre_moyen.txt</code></td><td>38</td><td>8</td><td>8,38</td><td>10</td><td>28</td><td>1, 2, 2, 3, 4, 5, 5, 7, 9</td></tr>
+          <tr><td><code>arbre_grand.txt</code></td><td>5 518</td><td>30</td><td>30,84</td><td>1 432</td><td>4 086</td><td>1, 2, 2, 2, 2, 2, 4, 5, 5, 6, 8, 9, …</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Votre programme vérifie aussi automatiquement les égalités suivantes, qui doivent <strong>toujours</strong> être vraies :</p>
+      <ul>
+        <li>la somme des rameaux de toutes les générations est égale à la taille de l'arbre ;</li>
+        <li>la taille calculée par votre fonction récursive est égale au champ <code>nb_rameaux</code> de l'arbre ;</li>
+        <li>le nombre de bourgeons + le nombre de rameaux de bois est égal à la taille ;</li>
+        <li>pour un arbre simulé pendant S saisons, la hauteur ne dépasse jamais S, et elle augmente d'au plus 1 à chaque saison (testez-le pour 100 graines différentes).</li>
+      </ul>
+    </div>
+
+    <div class="option">
+      <h4><span class="badge">En option</span>3.2 L'arbre à une saison donnée</h4>
+      <p>On veut maintenant mesurer l'arbre <strong>tel qu'il était</strong> à une saison s donnée : on ne tient compte que des rameaux apparus à la saison s ou avant. Attention : un rameau qui est aujourd'hui du bois était peut-être encore un bourgeon à la saison s, si tous ses fils sont apparus après s. Avec <code>exemple1.txt</code>, vous devez obtenir :</p>
+      <div class="table-wrap">
+      <table class="data num">
+        <thead><tr><th>Saison</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+        <tbody>
+          <tr><td>Taille</td><td>1</td><td>3</td><td>6</td><td>8</td><td>10</td></tr>
+          <tr><td>Hauteur</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+          <tr><td>Altitude de la cime</td><td>1,00</td><td>2,00</td><td>3,00</td><td>4,00</td><td>4,89</td></tr>
+          <tr><td>Nombre de bourgeons</td><td>1</td><td>2</td><td>4</td><td>4</td><td>5</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </article>
+
+  <!-- Étape 4 -->
+  <article id="etape4" class="step">
+    <h3><span class="step-n">Étape 4</span>Enregistrer un arbre dans un fichier</h3>
+    <p>Écrivez une fonction <code>void sauver_arbre(t_arbre a, const char *nom)</code> qui écrit l'arbre dans un fichier, <strong>au format des fichiers d'arbres</strong>, pour qu'il puisse être relu par <code>lire_arbre</code> :</p>
+    <ul>
+      <li>la première ligne contient la position de l'extrémité du pied ;</li>
+      <li>puis une ligne par rameau, du numéro 1 au dernier numéro : saison, numéro du parent, direction et longueur ;</li>
+      <li>les nombres à virgule sont écrits avec 4 chiffres après la virgule (<code>%.4f</code>).</li>
+    </ul>
+    <p>La structure <code>Rameau</code> ne contient ni le numéro du parent, ni la longueur. Écrivez donc d'abord une <strong>fonction récursive</strong> qui parcourt l'arbre à partir du pied et qui remplit deux tableaux, indicés par le numéro du rameau (champ <code>num</code>) : le numéro du parent de chaque rameau et sa longueur. La longueur d'un rameau se calcule à partir de son extrémité et de celle de son parent :</p>
+    <div class="formula">
+      <span>ℓ = √( (x − x<sub>parent</sub>)² + (y − y<sub>parent</sub>)² )</span>
+      <small>fonction <code>sqrt</code> de <code>&lt;math.h&gt;</code></small>
+    </div>
+    <p>Il ne reste plus qu'à écrire les lignes dans l'ordre des numéros.</p>
+    <div class="check">
+      <h4>Validation de l'étape 4</h4>
+      <ul>
+        <li>Lisez <code>exemple1.txt</code>, enregistrez-le dans un nouveau fichier, relisez ce fichier : l'affichage est identique.</li>
+        <li>Simulez un arbre avec la graine 5 et S = 3 et enregistrez-le : le fichier obtenu est <strong>le même</strong> que <code>arbre_petit.txt</code> (comparez-les avec la commande <code>fc</code> sous Windows ou <code>diff</code> sous Linux et macOS). De même avec <code>arbre_moyen.txt</code>. Pour <code>arbre_grand.txt</code>, quelques longueurs peuvent différer sur leur dernier chiffre, selon que vous faites le calcul avec des <code>float</code> ou des <code>double</code>.</li>
+        <li>Un arbre simulé, enregistré puis relu, a les mêmes mesures (la cime à 0,001 près).</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- Étape 5 -->
+  <article id="etape5" class="step">
+    <h3><span class="step-n">Étape 5</span>Libérer la mémoire</h3>
+    <p>Écrivez une fonction qui libère <strong>toute</strong> la mémoire utilisée par un arbre : tous les rameaux et le tableau des rameaux par numéro. Pour vous entraîner, libérez les rameaux avec une <strong>fonction récursive</strong> qui parcourt l'arbre à partir du pied, et non avec le tableau des rameaux par numéro. Attention à l'ordre : on ne peut plus lire les fils d'un rameau une fois qu'il a été libéré.</p>
+    <div class="check">
+      <h4>Validation de l'étape 5</h4>
+      <p>Simulez puis libérez 100 000 arbres de suite dans une boucle (graines 1 à 100 000, S = 8). La mémoire utilisée par votre programme (visible dans le Gestionnaire des tâches) doit rester stable.</p>
+    </div>
+  </article>
+
+  <!-- Option Mermaid -->
+  <article id="mermaid" class="step option">
+    <h3><span class="badge">En option</span>Dessiner l'arbre informatique avec Mermaid</h3>
+    <p>Pour dessiner l'arbre informatique (et non plus l'arbre de profil), on peut utiliser l'outil en ligne et gratuit Mermaid : <a href="https://www.mermaidchart.com/" target="_blank" rel="noopener">https://www.mermaidchart.com/</a>. Voici le fichier à produire pour l'exemple :</p>
+<pre class="code"><code>---
+config:
+  theme: neo
+  look: neo
+---
+flowchart TD
+    R0((0))
+    R1((1))
+    ...
+    R9((9))
+    R0 --&gt; R1
+    R0 --&gt; R2
+    R1 --&gt; R3
+    R1 --&gt; R4
+    R1 --&gt; R5
+    R2 --&gt; R7
+    R3 --&gt; R6
+    R6 --&gt; R8
+    R6 --&gt; R9</code></pre>
+    <p>On y retrouve des directives de configuration (à conserver), les rameaux (<code>R</code> suivi du numéro du rameau, puis le numéro à afficher dans le cercle) et les liens entre chaque rameau et ses fils. Écrivez une fonction (récursive) qui produit ce fichier, puis copiez/collez son contenu dans l'éditeur de Mermaid. Votre fonction refusera de produire le fichier au-delà de 100 rameaux, avec un message d'explication. Testez-la avec <code>exemple1.txt</code> et <code>arbre_moyen.txt</code>.</p>
+  </article>
+
+  <!-- Fichiers fournis -->
+  <article id="fichiers" class="step">
+    <h3>Fichiers fournis</h3>
+    <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Fichier</th><th>Contenu</th></tr></thead>
+      <tbody>
+        <tr><td><code>arbre.h</code>, <code>arbre.c</code>, <code>dessin.h</code>, <code>dessin.c</code>, <code>alea.h</code>, <code>alea.c</code>, <code>main.c</code></td><td>le code fourni (seul <code>main.c</code> est à modifier)</td></tr>
+        <tr><td><code>exemple1.txt</code></td><td>l'arbre de l'exemple (10 rameaux, hauteur 4)</td></tr>
+        <tr><td><code>arbre_petit.txt</code></td><td>un petit arbre (10 rameaux, hauteur 3) : graine 5, S = 3</td></tr>
+        <tr><td><code>arbre_moyen.txt</code></td><td>un arbre moyen (38 rameaux, hauteur 8) : graine 3, S = 8</td></tr>
+        <tr><td><code>arbre_grand.txt</code></td><td>un grand arbre (5 518 rameaux, hauteur 30) : graine 4, S = 30</td></tr>
+        <tr><td><code>animation_8_saisons.svg</code>, <code>animation_15_saisons.svg</code></td><td>la pousse animée de l'arbre de graine 3, pendant 8 saisons (c'est <code>arbre_moyen.txt</code>) puis 15 saisons</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </article>
+</section>
+
+<footer class="foot">
+  <p class="credit"><svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - IA Claude code</p>
+</footer>
+
+</main>
+</div>
+</body>
+</html>
