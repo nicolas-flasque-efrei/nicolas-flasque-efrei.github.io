@@ -49,6 +49,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // animations de la pousse (SVG) : elles démarrent quand elles arrivent à l'écran, et le bouton « Rejouer » les relance
+  document.querySelectorAll('.fig.anim').forEach(fig => {
+    const img = fig.querySelector('img');
+    const base = img.getAttribute('src');
+    const rejouer = () => { img.src = base + '?t=' + Date.now(); };
+    fig.querySelector('.replay')?.addEventListener('click', rejouer);
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(entries => {
+        if (entries.some(e => e.isIntersecting)) { rejouer(); io.disconnect(); }
+      }, { threshold: 0.4 });
+      io.observe(img);
+    }
+  });
+
   // code : coloration + bouton « Copier »
   document.querySelectorAll('pre.code').forEach(pre => {
     const code = pre.querySelector('code');

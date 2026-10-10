@@ -43,7 +43,8 @@
   <ol>
     <li><a href="#intro">Introduction</a></li>
     <li><a href="#arbre">Qu'est-ce qu'un arbre ?</a></li>
-    <li><a href="#pousse">La pousse en pleine lumière</a></li>
+    <li><a href="#environnement">Étape 1 : L'environnement</a></li>
+    <li><a href="#pousse">Étape 2 : La pousse en pleine lumière</a></li>
     <li><a href="#hasard">Le hasard en C</a></li>
     <li><a href="#code">Le code fourni</a></li>
     <li><a href="#cahier">Cahier des charges</a>
@@ -80,9 +81,16 @@
 <section id="arbre">
   <h2><span class="num">1</span>Qu'est-ce qu'un arbre ?</h2>
 
-  <h3>Les rameaux</h3>
+  <h3>Il faut bien distinguer deux types d'arbre dans ce projet</h3>
+  <ul>
+    <li>les arbres qui « poussent » dans la simulation : ce sont les <strong>arbres à rameaux</strong> ;</li>
+    <li>les arbres 3-aires qui les représentent : ce sont les <strong>arbres informatiques</strong>.</li>
+  </ul>
+
+  <h3>Les rameaux des arbres à rameaux</h3>
   <p>Un arbre est fait de <strong>rameaux</strong>. Chaque rameau est un petit segment, qui part de l'extrémité de son rameau <strong>parent</strong>. Le premier rameau, appelé le <strong>pied</strong>, part du sol.</p>
-  <p>On regarde la forêt <strong>de profil</strong> : l'axe \(x\) suit la rangée d'arbres (de gauche à droite), l'axe \(y\) mesure l'altitude au-dessus du sol. Pour chaque rameau, on retient :</p>
+  <p>On regardera une forêt (plusieurs arbres) <strong>de profil</strong> : l'axe \(x\) suit la rangée d'arbres (de gauche à droite), l'axe \(y\) mesure l'altitude au-dessus du sol.</p>
+  <p>Pour chaque <strong>rameau</strong>, on stocke :</p>
   <ul>
     <li>la <strong>position de son extrémité</strong> : \(x\) et \(y\) ;</li>
     <li>sa <strong>direction</strong> : un angle en degrés, 0 pour un rameau vertical, positif s'il penche vers la droite, négatif s'il penche vers la gauche ;</li>
@@ -93,26 +101,22 @@
         <li><span class="tag tag-wood">bois</span> de nouveaux rameaux sont déjà nés à son extrémité.</li>
       </ul>
     </li>
+    <li>Les calculs de position \((x,y)\) des rameaux sont fournis.</li>
   </ul>
-  <p>Un nouveau rameau de direction \(\theta\) (en degrés) et de longueur \(\ell\), qui part de l'extrémité \((x\,;\,y)\) de son parent, a pour extrémité :</p>
-  <div class="formula">
-    $$x' = x + \ell \times \sin(\theta) \qquad\qquad y' = y + \ell \times \cos(\theta)$$
-  </div>
-  <p>Ce calcul est déjà programmé dans le code fourni (voir plus loin).</p>
 
   <h3>L'arbre informatique</h3>
   <ul>
-    <li>le pied est la <strong>racine</strong> de l'arbre ;</li>
+    <li>le pied est la <strong>racine</strong> (<em>root</em>) de l'arbre ;</li>
     <li>les <strong>fils</strong> d'un rameau sont les rameaux nés à son extrémité ; un rameau a <strong>au plus 3 fils</strong> ;</li>
-    <li>les <strong>feuilles</strong> de l'arbre (les rameaux sans fils) sont exactement les rameaux qui portent un <strong>bourgeon</strong>.</li>
+    <li>les <strong>feuilles</strong> de l'arbre (les nœuds sans fils) sont exactement les rameaux qui portent un <strong>bourgeon</strong>.</li>
   </ul>
   <div class="callout">
-    <p>La <strong>génération</strong> d'un rameau est sa distance au pied dans l'arbre : le pied est de génération 0, ses fils de génération 1, les fils de ses fils de génération 2, et ainsi de suite.</p>
-    <p>La <strong>hauteur</strong> de l'arbre est la plus grande génération de ses rameaux. Attention à ne pas la confondre avec l'<strong>altitude</strong> de la cime, qui est mesurée en unités de longueur.</p>
+    <p>La <strong>génération</strong> d'un nœud (rameau) est sa <strong>distance = profondeur</strong> au pied dans l'arbre : le pied est de génération 0, ses fils de génération 1, les fils de ses fils de génération 2, et ainsi de suite.</p>
+    <p>La <strong>hauteur</strong> de l'arbre informatique est la plus grande génération de ses rameaux. Attention à ne pas la confondre avec l'<strong>altitude</strong> de la cime, qui est mesurée en unités de longueur.</p>
   </div>
 
   <h3 class="caption-title">Exemple</h3>
-  <p>Voici un arbre de 10 rameaux, qui a poussé pendant 4 saisons. Le pied a son extrémité en (4,5 ; 1,0). Les rameaux sont numérotés dans l'ordre où ils sont apparus :</p>
+  <p>Voici un arbre de 10 rameaux, qui a poussé pendant 4 saisons. Le pied a son extrémité en (\(x\) = 4,5 ; \(y\) = 1,0). Les rameaux sont numérotés dans l'ordre où ils sont apparus :</p>
   <div class="table-wrap">
   <table id="tabExemple" class="data">
     <thead><tr><th>Rameau</th><th>Saison</th><th>Parent</th><th>Direction</th><th>Longueur</th><th>Extrémité (x ; y)</th><th>Génération</th><th>État</th></tr></thead>
@@ -131,6 +135,17 @@
   </table>
   </div>
   <p>Par exemple, le rameau 2 part de l'extrémité du rameau 0, avec une direction de −45° et une longueur de 0,8 : \(x = 4{,}5 + 0{,}8 \times \sin(-45^\circ) \approx 3{,}93\) et \(y = 1{,}0 + 0{,}8 \times \cos(-45^\circ) \approx 1{,}57\).</p>
+
+  <figure class="fig anim">
+    <img src="img/exemple1_animation.svg" width="240" height="434" style="width:240px" alt="Animation de la pousse de l'arbre de l'exemple, saison par saison, de la saison 0 à la saison 4">
+    <figcaption>La pousse de l'arbre de l'exemple (une saison = 0,6 seconde) <button type="button" class="replay">Rejouer</button></figcaption>
+  </figure>
+
+  <p><u>Un autre exemple :</u></p>
+  <figure class="fig anim">
+    <img src="img/animation_hauteur23.svg" width="1157" height="900" loading="lazy" alt="Animation de la pousse d'un arbre de 290 rameaux et de hauteur 23, saison par saison, de la saison 0 à la saison 23">
+    <figcaption>La pousse d'un arbre de hauteur 23 (290 rameaux, 23 saisons, une saison = 0,4 seconde) <button type="button" class="replay">Rejouer</button></figcaption>
+  </figure>
 
   <h3>Lien entre l'arbre informatique et l'arbre que l'on fait pousser</h3>
   <p>Chaque <strong>nœud</strong> de l'arbre informatique est un <strong>rameau</strong> ; un <strong>lien</strong> de l'arbre informatique n'est pas un rameau, il indique seulement qu'un rameau est né à l'extrémité d'un autre. Survolez un nœud ou un rameau pour voir ses caractéristiques.</p>
@@ -374,35 +389,39 @@
   </script>
   </div>
   <!-- BLOC trees.html (fin) -->
+</section>
 
-  <h3>Les caractéristiques d'un arbre</h3>
-  <div class="table-wrap">
-  <table class="data">
-    <thead><tr><th>Caractéristique</th><th>Signification</th><th>Exemple</th></tr></thead>
-    <tbody>
-      <tr><td>Taille</td><td>nombre de rameaux (nœuds de l'arbre)</td><td>10</td></tr>
-      <tr><td>Hauteur</td><td>plus grande génération</td><td>4</td></tr>
-      <tr><td>Altitude de la cime</td><td>plus grande altitude y atteinte par l'extrémité d'un rameau</td><td>4,89 (rameau 8)</td></tr>
-      <tr><td>Nombre de bourgeons</td><td>nombre de feuilles de l'arbre</td><td>5 (rameaux 4, 5, 7, 8, 9)</td></tr>
-      <tr><td>Nombre de rameaux de bois</td><td>nombre de nœuds internes de l'arbre</td><td>5</td></tr>
-      <tr><td>Rameaux par génération</td><td>nombre de rameaux de chaque génération</td><td>1, 2, 4, 1, 2</td></tr>
-    </tbody>
-  </table>
-  </div>
+<!-- ================================================================ ENVIRONNEMENT -->
+<section id="environnement">
+  <h2><span class="num">2</span>Étape 1 : Utiliser l'environnement</h2>
+  <p class="note">Section à venir.</p>
 </section>
 
 <!-- ================================================================ POUSSE -->
 <section id="pousse">
-  <h2><span class="num">2</span>La pousse d'un arbre en pleine lumière</h2>
-  <p>Dans cette partie, l'arbre pousse <strong>seul</strong>, sans rien qui lui fasse de l'ombre. À chaque saison, <strong>chaque bourgeon</strong> de l'arbre « tente sa chance » :</p>
+  <h2><span class="num">3</span>Étape 2 : la pousse d'un arbre en pleine lumière</h2>
+  <p>Dans cette partie, l'arbre pousse <strong>seul</strong>, sans rien qui lui fasse de l'ombre.</p>
+  <p>À chaque saison, <strong>chaque bourgeon</strong> de l'arbre à rameaux (= feuille de l'arbre informatique) peut croître, selon les règles suivantes :</p>
   <ul class="rules">
-    <li>il <strong>pousse dans 95 % des cas</strong> ; sinon, il reste bourgeon et retentera sa chance à la saison suivante ;</li>
+    <li>il <strong>pousse dans 95 % des cas</strong> ; sinon, il reste bourgeon et pourra croître à la saison suivante ;</li>
     <li>s'il pousse, il donne <strong>1 nouveau rameau</strong> dans 70 % des cas, <strong>2</strong> dans 25 % des cas et <strong>3</strong> dans 5 % des cas ;</li>
     <li>son rameau devient alors du <strong>bois</strong>, et chaque nouveau rameau porte un <strong>bourgeon</strong> et devient un <strong>fils</strong> du rameau qui l'a produit ;</li>
-    <li>le <strong>premier</strong> nouveau rameau prolonge son parent : sa direction est celle du parent, modifiée d'un angle tiré au hasard entre −10° et +10° ;</li>
-    <li>chacun des <strong>autres</strong> nouveaux rameaux part sur le côté, à gauche ou à droite (une chance sur deux), en tournant d'un angle tiré au hasard entre 30° et 60° ;</li>
-    <li>une direction est toujours ramenée entre −80° et +80° (une direction de 95° devient 80°) ;</li>
-    <li>chaque nouveau rameau a une longueur tirée au hasard entre 0,7 et 1,3.</li>
+    <li>si <strong>un</strong> seul rameau pousse : ce nouveau rameau prolonge son parent : sa direction est celle du parent, modifiée d'un angle tiré au hasard entre −10° et +10° ;</li>
+    <li>si <strong>deux</strong> rameaux poussent :
+      <ul>
+        <li>le <strong>premier</strong> rameau prolonge son parent : sa direction est celle du parent, modifiée d'un angle tiré au hasard entre −10° et +10° ;</li>
+        <li>le <strong>second</strong> pousse à gauche ou à droite (une chance sur deux), en tournant d'un angle tiré au hasard entre 30° et 60° ;</li>
+      </ul>
+    </li>
+    <li>si <strong>trois</strong> rameaux poussent :
+      <ul>
+        <li>le <strong>premier</strong> rameau prolonge son parent : sa direction est celle du parent, modifiée d'un angle tiré au hasard entre −10° et +10° ;</li>
+        <li>le <strong>second</strong> pousse à gauche en tournant d'un angle tiré au hasard entre 30° et 60° ;</li>
+        <li>le <strong>troisième</strong> pousse à droite en tournant d'un angle tiré au hasard entre 30° et 60° ;</li>
+      </ul>
+    </li>
+    <li>une direction <strong>est toujours ramenée entre −80° et +80°</strong> (une direction de 95° devient 80°) ;</li>
+    <li>chaque nouveau rameau a une longueur tirée au hasard entre 0,6 et 1,4.</li>
   </ul>
   <div class="probas" aria-hidden="true">
     <div class="pbar">
@@ -413,13 +432,13 @@
     </div>
     <p class="pleg"><i class="p3"></i>3 rameaux : 4,75 % <i class="p0"></i>ne pousse pas : 5 %</p>
   </div>
-  <p>Les rameaux nés pendant une saison ne peuvent pousser qu'à partir de la saison suivante. L'arbre est planté avec un seul rameau : son pied, vertical, d'extrémité \((0\,;\,1)\), qui est un bourgeon à la saison 0. Il pousse ensuite pendant \(S\) saisons, numérotées de 1 à \(S\).</p>
+  <p>L'arbre à rameaux est planté avec un seul rameau : son pied (<em>root</em>), vertical, d'extrémité \((0\,;\,1)\), qui est un bourgeon à la saison 0. Il pousse ensuite pendant \(S\) saisons, numérotées de 1 à \(S\).</p>
 </section>
 
 <!-- ================================================================ HASARD -->
 <section id="hasard">
-  <h2><span class="num">3</span>Le hasard en C</h2>
-  <p class="warn">La fonction <code>rand()</code> de la bibliothèque standard ne convient pas à ce projet : sous Windows, elle ne fournit que des nombres compris entre 0 et 32 767. <strong>Son utilisation est interdite.</strong></p>
+  <h2><span class="num">4</span>Le hasard en C</h2>
+  <p class="warn">La fonction <code>rand()</code> de la bibliothèque standard ne convient pas à ce projet.</p>
   <p>Vous disposez d'un module <strong>fourni</strong>, <code>alea.h</code> / <code>alea.c</code>, à utiliser tel quel :</p>
   <div class="table-wrap">
   <table class="data">
@@ -447,7 +466,7 @@
 
 <!-- ================================================================ CODE -->
 <section id="code">
-  <h2><span class="num">4</span>Le code fourni</h2>
+  <h2><span class="num">5</span>Le code fourni</h2>
   <p>Pour que vous puissiez vous concentrer sur la pousse et les mesures de l'arbre, une partie du code vous est <strong>fournie</strong>. Lisez-la attentivement : elle vous montre comment l'arbre est représenté en mémoire.</p>
   <div class="table-wrap">
   <table class="data">
@@ -460,8 +479,6 @@
     </tbody>
   </table>
   </div>
-  <p>Le programme se compile avec la commande suivante (l'option <code>-lm</code> est nécessaire pour les fonctions <code>sin</code> et <code>cos</code>) :</p>
-<pre class="code shell"><code>gcc -std=c11 -O2 -Wall -Wextra main.c arbre.c dessin.c alea.c -o foret -lm</code></pre>
 
   <h3>Les structures de données</h3>
   <p>Chaque rameau est un <strong>nœud</strong> de l'arbre. Un rameau ayant au plus 3 fils, ses fils sont rangés dans un <strong>tableau de 3 pointeurs</strong> (les cases inutilisées valent <code>NULL</code>). Cette structure sera réutilisée telle quelle dans les parties 2 et 3.</p>
@@ -584,7 +601,7 @@ typedef struct Rameau {
 
 <!-- ================================================================ CAHIER -->
 <section id="cahier">
-  <h2><span class="num">5</span>Cahier des charges</h2>
+  <h2><span class="num">6</span>Cahier des charges</h2>
 
   <!-- Étape 1 -->
   <article id="etape1" class="step">
@@ -631,13 +648,17 @@ Rameau 9 (saison 4, generation 4, bourgeon) (5.08 ; 4.49)</code></pre>
         <b>Pour</b> j <b>de</b> 0 <b>à</b> k - 1
             <b>Si</b> j == 0
                 direction = direction de b + alea_entre(-10, 10)
-            <b>Sinon</b>
+            <b>Sinon si</b> k == 2
                 cote = alea_entier(2)
                 angle = alea_entre(30, 60)
-                <b>Si</b> cote == 0 : direction = direction de b - angle
-                <b>Sinon</b> : direction = direction de b + angle
+                <b>Si</b> cote == 0 : direction = direction de b - angle   <i>(à gauche)</i>
+                <b>Sinon</b> : direction = direction de b + angle          <i>(à droite)</i>
+            <b>Sinon si</b> j == 1
+                direction = direction de b - alea_entre(30, 60)       <i>(à gauche)</i>
+            <b>Sinon</b>
+                direction = direction de b + alea_entre(30, 60)       <i>(à droite)</i>
             Ramener la direction entre -80 et 80
-            longueur = alea_entre(0.7, 1.3)
+            longueur = alea_entre(0.6, 1.4)
             pousser_rameau(arbre, b, s, direction, longueur)</code></pre>
     <p>La boucle s'arrête au nombre de rameaux du <strong>début</strong> de la saison : les rameaux nés pendant la saison (rangés à la fin du tableau) ne poussent donc pas.</p>
     <div class="todo">
@@ -664,7 +685,21 @@ Rameau 9 (saison 4, generation 4, bourgeon) (5.08 ; 4.49)</code></pre>
   <article id="etape3" class="step">
     <h3><span class="step-n">Étape 3</span>Mesurer l'arbre avec des fonctions récursives</h3>
     <h4>3.1 Les mesures</h4>
-    <p>Il s'agit maintenant de calculer <strong>toutes les caractéristiques</strong> de l'arbre présentées dans le tableau plus haut, <strong>sans utiliser</strong> le tableau des rameaux par numéro : on part du pied et on suit les pointeurs <code>fils</code>.</p>
+    <p>Il s'agit maintenant de calculer <strong>toutes les caractéristiques</strong> de l'arbre présentées dans le tableau ci-dessous, <strong>sans utiliser</strong> le tableau des rameaux par numéro : on part du pied et on suit les pointeurs <code>fils</code>.</p>
+    <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Caractéristique</th><th>Signification</th><th>Exemple</th></tr></thead>
+      <tbody>
+        <tr><td>Taille</td><td>nombre de rameaux (nœuds de l'arbre)</td><td>10</td></tr>
+        <tr><td>Hauteur</td><td>plus grande génération</td><td>4</td></tr>
+        <tr><td>Altitude de la cime</td><td>plus grande altitude y atteinte par l'extrémité d'un rameau</td><td>4,89 (rameau 8)</td></tr>
+        <tr><td>Nombre de bourgeons</td><td>nombre de feuilles de l'arbre</td><td>5 (rameaux 4, 5, 7, 8, 9)</td></tr>
+        <tr><td>Nombre de rameaux de bois</td><td>nombre de nœuds internes de l'arbre</td><td>5</td></tr>
+        <tr><td>Rameaux par génération</td><td>nombre de rameaux de chaque génération</td><td>1, 2, 4, 1, 2</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>La colonne « Exemple » donne les valeurs pour l'arbre de l'exemple (<code>exemple1.txt</code>).</p>
     <p>Un arbre se prête très bien à la <strong>récursivité</strong> : chaque fils d'un rameau est lui-même le pied d'un « petit arbre », appelé <strong>sous-arbre</strong>. Par exemple, la taille du sous-arbre d'un rameau \(r\) vaut 1 (le rameau \(r\) lui-même) plus la somme des tailles des sous-arbres de ses fils. Pour un bourgeon, qui n'a pas de fils, elle vaut 1 : la récursivité s'arrête d'elle-même.</p>
 <pre class="code"><code>int taille(Rameau *r) {
     int t = 1;   // le rameau r lui-même

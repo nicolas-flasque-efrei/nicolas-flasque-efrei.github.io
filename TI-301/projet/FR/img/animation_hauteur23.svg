@@ -1,0 +1,620 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1157" height="900">
+<rect width="100%" height="100%" fill="white"/>
+<line x1="0" y1="880.0" x2="1157" y2="880.0" stroke="rgb(150,150,150)" stroke-width="1"/>
+<style>
+  .r { fill: none; stroke-dasharray: 1 1; stroke-dashoffset: 1;
+       animation: pousse 0.40s linear forwards; }
+  .b, .t { opacity: 0; animation: apparait 0.01s forwards, disparait 0.01s forwards; }
+  .dernier { animation: apparait 0.01s forwards; }
+  .b { fill: rgb(58,154,58); stroke: none; }
+  @keyframes pousse    { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes apparait  { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes disparait { from { opacity: 1; } to { opacity: 0; } }
+</style>
+<text class="t" style="animation-delay:0.00s, 0.40s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 0</text>
+<text class="t" style="animation-delay:0.40s, 0.80s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 1</text>
+<text class="t" style="animation-delay:0.80s, 1.20s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 2</text>
+<text class="t" style="animation-delay:1.20s, 1.60s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 3</text>
+<text class="t" style="animation-delay:1.60s, 2.00s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 4</text>
+<text class="t" style="animation-delay:2.00s, 2.40s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 5</text>
+<text class="t" style="animation-delay:2.40s, 2.80s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 6</text>
+<text class="t" style="animation-delay:2.80s, 3.20s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 7</text>
+<text class="t" style="animation-delay:3.20s, 3.60s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 8</text>
+<text class="t" style="animation-delay:3.60s, 4.00s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 9</text>
+<text class="t" style="animation-delay:4.00s, 4.40s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 10</text>
+<text class="t" style="animation-delay:4.40s, 4.80s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 11</text>
+<text class="t" style="animation-delay:4.80s, 5.20s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 12</text>
+<text class="t" style="animation-delay:5.20s, 5.60s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 13</text>
+<text class="t" style="animation-delay:5.60s, 6.00s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 14</text>
+<text class="t" style="animation-delay:6.00s, 6.40s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 15</text>
+<text class="t" style="animation-delay:6.40s, 6.80s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 16</text>
+<text class="t" style="animation-delay:6.80s, 7.20s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 17</text>
+<text class="t" style="animation-delay:7.20s, 7.60s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 18</text>
+<text class="t" style="animation-delay:7.60s, 8.00s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 19</text>
+<text class="t" style="animation-delay:8.00s, 8.40s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 20</text>
+<text class="t" style="animation-delay:8.40s, 8.80s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 21</text>
+<text class="t" style="animation-delay:8.80s, 9.20s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 22</text>
+<text class="t dernier" style="animation-delay:9.20s" x="10" y="25" font-family="sans-serif" font-size="18">Saison 23</text>
+<g stroke="rgb(122,82,48)" stroke-width="3.0">
+  <path class="r" pathLength="1" style="animation-delay:0.00s" d="M694.7 880.0 L694.7 842.5"/>
+  <path class="r" pathLength="1" style="animation-delay:0.40s" d="M694.7 842.5 L692.4 809.6"/>
+  <path class="r" pathLength="1" style="animation-delay:0.80s" d="M692.4 809.6 L694.3 767.4"/>
+  <path class="r" pathLength="1" style="animation-delay:1.20s" d="M694.3 767.4 L697.9 740.6"/>
+  <path class="r" pathLength="1" style="animation-delay:1.60s" d="M697.9 740.6 L707.1 707.8"/>
+  <path class="r" pathLength="1" style="animation-delay:2.00s" d="M707.1 707.8 L711.4 682.4"/>
+  <path class="r" pathLength="1" style="animation-delay:2.40s" d="M711.4 682.4 L711.5 650.9"/>
+  <path class="r" pathLength="1" style="animation-delay:2.80s" d="M711.5 650.9 L708.0 627.0"/>
+  <path class="r" pathLength="1" style="animation-delay:3.20s" d="M708.0 627.0 L707.3 578.7"/>
+  <path class="r" pathLength="1" style="animation-delay:3.60s" d="M707.3 578.7 L704.0 554.8"/>
+  <path class="r" pathLength="1" style="animation-delay:4.00s" d="M704.0 554.8 L702.3 523.1"/>
+  <path class="r" pathLength="1" style="animation-delay:4.40s" d="M702.3 523.1 L702.2 499.2"/>
+  <path class="r" pathLength="1" style="animation-delay:4.80s" d="M702.2 499.2 L702.7 471.4"/>
+  <path class="r" pathLength="1" style="animation-delay:5.20s" d="M702.7 471.4 L698.0 433.4"/>
+  <path class="r" pathLength="1" style="animation-delay:5.60s" d="M698.0 433.4 L693.3 388.3"/>
+  <path class="r" pathLength="1" style="animation-delay:6.00s" d="M693.3 388.3 L691.5 363.7"/>
+  <path class="r" pathLength="1" style="animation-delay:6.40s" d="M691.5 363.7 L692.3 341.2"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M692.3 341.2 L695.6 289.2"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M695.6 289.2 L691.1 241.3"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M691.1 241.3 L688.7 200.9"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M688.7 200.9 L677.9 154.8"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M677.9 154.8 L673.6 127.4"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M673.6 127.4 L673.5 88.6"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M673.5 88.6 L670.3 38.8"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="670.3" cy="38.8" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M673.5 88.6 L652.0 75.3"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="652.0" cy="75.3" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M673.5 88.6 L706.0 51.5"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="706.0" cy="51.5" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="673.5" cy="88.6" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="673.6" cy="127.4" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="677.9" cy="154.8" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M688.7 200.9 L703.1 182.3"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M703.1 182.3 L722.0 152.9"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M722.0 152.9 L737.2 129.7"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M737.2 129.7 L749.7 109.6"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="749.7" cy="109.6" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="737.2" cy="129.7" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="722.0" cy="152.9" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M703.1 182.3 L693.9 150.5"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M693.9 150.5 L686.3 123.7"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M686.3 123.7 L678.6 101.4"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="678.6" cy="101.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M686.3 123.7 L659.1 103.1"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="659.1" cy="103.1" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="686.3" cy="123.7" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="693.9" cy="150.5" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="703.1" cy="182.3" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="688.7" cy="200.9" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="691.1" cy="241.3" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="695.6" cy="289.2" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M692.3 341.2 L672.5 325.5"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M672.5 325.5 L642.2 298.5"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M642.2 298.5 L608.6 265.5"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M608.6 265.5 L586.2 245.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M586.2 245.0 L565.2 228.4"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M565.2 228.4 L538.1 209.0"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="538.1" cy="209.0" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="565.2" cy="228.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M586.2 245.0 L556.1 239.7"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M556.1 239.7 L506.2 228.4"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="506.2" cy="228.4" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="556.1" cy="239.7" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M586.2 245.0 L580.8 204.4"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M580.8 204.4 L566.9 158.8"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="566.9" cy="158.8" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="580.8" cy="204.4" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 9.20s" cx="586.2" cy="245.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="608.6" cy="265.5" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="642.2" cy="298.5" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="672.5" cy="325.5" r="5.0"/>
+  <circle class="b" style="animation-delay:6.80s, 7.20s" cx="692.3" cy="341.2" r="5.0"/>
+  <circle class="b" style="animation-delay:6.40s, 6.80s" cx="691.5" cy="363.7" r="5.0"/>
+  <circle class="b" style="animation-delay:6.00s, 6.40s" cx="693.3" cy="388.3" r="5.0"/>
+  <circle class="b" style="animation-delay:5.60s, 6.00s" cx="698.0" cy="433.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:5.20s" d="M702.7 471.4 L721.8 451.8"/>
+  <path class="r" pathLength="1" style="animation-delay:5.60s" d="M721.8 451.8 L750.0 425.2"/>
+  <path class="r" pathLength="1" style="animation-delay:6.00s" d="M750.0 425.2 L780.9 392.4"/>
+  <path class="r" pathLength="1" style="animation-delay:6.40s" d="M780.9 392.4 L805.0 358.0"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M805.0 358.0 L835.6 323.7"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M835.6 323.7 L852.5 301.9"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M852.5 301.9 L876.2 267.1"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M876.2 267.1 L899.7 223.4"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M899.7 223.4 L915.4 181.9"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M915.4 181.9 L927.9 157.7"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M927.9 157.7 L944.3 131.6"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="944.3" cy="131.6" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="927.9" cy="157.7" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="915.4" cy="181.9" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M899.7 223.4 L891.5 173.3"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M891.5 173.3 L883.9 128.9"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M883.9 128.9 L874.2 97.2"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="874.2" cy="97.2" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="883.9" cy="128.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="891.5" cy="173.3" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="899.7" cy="223.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M876.2 267.1 L871.7 232.8"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M871.7 232.8 L871.3 188.5"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M871.3 188.5 L867.7 147.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M867.7 147.0 L865.7 119.5"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="865.7" cy="119.5" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M867.7 147.0 L830.6 115.4"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="830.6" cy="115.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M867.7 147.0 L887.3 123.6"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="887.3" cy="123.6" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="867.7" cy="147.0" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M871.3 188.5 L851.3 170.9"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M851.3 170.9 L820.5 147.8"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="820.5" cy="147.8" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="851.3" cy="170.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="871.3" cy="188.5" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M871.7 232.8 L852.4 214.8"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M852.4 214.8 L834.0 193.0"/>
+  <circle class="b dernier" style="animation-delay:9.20s" cx="834.0" cy="193.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="852.4" cy="214.8" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M871.7 232.8 L892.2 196.5"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M892.2 196.5 L914.4 165.4"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M914.4 165.4 L934.5 126.5"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="934.5" cy="126.5" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M914.4 165.4 L911.2 142.7"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="911.2" cy="142.7" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="914.4" cy="165.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M892.2 196.5 L924.9 190.8"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M924.9 190.8 L952.4 185.9"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="952.4" cy="185.9" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M924.9 190.8 L975.1 181.9"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="975.1" cy="181.9" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="924.9" cy="190.8" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="892.2" cy="196.5" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="871.7" cy="232.8" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="876.2" cy="267.1" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M852.5 301.9 L877.9 297.4"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M877.9 297.4 L924.1 288.4"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M924.1 288.4 L947.1 284.3"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M947.1 284.3 L976.9 279.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M976.9 279.0 L1024.8 269.8"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1024.8" cy="269.8" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="976.9" cy="279.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="947.1" cy="284.3" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="924.1" cy="288.4" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="877.9" cy="297.4" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="852.5" cy="301.9" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="835.6" cy="323.7" r="5.0"/>
+  <circle class="b" style="animation-delay:6.80s, 7.20s" cx="805.0" cy="358.0" r="5.0"/>
+  <circle class="b" style="animation-delay:6.40s, 6.80s" cx="780.9" cy="392.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:6.00s" d="M750.0 425.2 L755.6 390.4"/>
+  <path class="r" pathLength="1" style="animation-delay:6.40s" d="M755.6 390.4 L769.2 347.8"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M769.2 347.8 L781.8 317.1"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M781.8 317.1 L799.9 279.3"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M799.9 279.3 L810.3 247.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M810.3 247.0 L822.5 210.4"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M822.5 210.4 L832.1 187.6"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M832.1 187.6 L840.8 162.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M840.8 162.0 L847.0 137.9"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="847.0" cy="137.9" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M840.8 162.0 L829.3 113.8"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="829.3" cy="113.8" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="840.8" cy="162.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="832.1" cy="187.6" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="822.5" cy="210.4" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="810.3" cy="247.0" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="799.9" cy="279.3" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M781.8 317.1 L819.0 303.5"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M819.0 303.5 L869.3 293.3"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M869.3 293.3 L915.2 285.2"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M915.2 285.2 L952.5 275.8"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M952.5 275.8 L989.0 264.8"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M989.0 264.8 L1027.4 256.4"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1027.4" cy="256.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M989.0 264.8 L1011.9 260.7"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1011.9" cy="260.7" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="989.0" cy="264.8" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="952.5" cy="275.8" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="915.2" cy="285.2" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="869.3" cy="293.3" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="819.0" cy="303.5" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="781.8" cy="317.1" r="5.0"/>
+  <circle class="b" style="animation-delay:6.80s, 7.20s" cx="769.2" cy="347.8" r="5.0"/>
+  <circle class="b" style="animation-delay:6.40s, 6.80s" cx="755.6" cy="390.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:6.00s" d="M750.0 425.2 L791.4 417.9"/>
+  <path class="r" pathLength="1" style="animation-delay:6.40s" d="M791.4 417.9 L817.3 409.6"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M817.3 409.6 L839.9 398.1"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M839.9 398.1 L858.2 384.9"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M858.2 384.9 L889.6 355.4"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M889.6 355.4 L916.4 334.6"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M916.4 334.6 L951.0 299.9"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M951.0 299.9 L975.7 275.4"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M975.7 275.4 L1009.7 245.9"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1009.7" cy="245.9" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="975.7" cy="275.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M951.0 299.9 L978.1 295.1"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M978.1 295.1 L1027.7 286.4"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1027.7" cy="286.4" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="978.1" cy="295.1" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="951.0" cy="299.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="916.4" cy="334.6" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="889.6" cy="355.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M858.2 384.9 L873.7 340.8"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M873.7 340.8 L887.3 312.8"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M887.3 312.8 L900.9 270.8"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M900.9 270.8 L923.1 226.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M923.1 226.0 L944.7 194.6"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="944.7" cy="194.6" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="923.1" cy="226.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="900.9" cy="270.8" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="887.3" cy="312.8" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="873.7" cy="340.8" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="858.2" cy="384.9" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="839.9" cy="398.1" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M817.3 409.6 L845.3 404.6"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M845.3 404.6 L882.2 394.7"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M882.2 394.7 L914.3 380.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M914.3 380.0 L958.1 355.2"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M958.1 355.2 L986.6 343.7"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M986.6 343.7 L1020.9 328.1"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M1020.9 328.1 L1044.0 316.7"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1044.0" cy="316.7" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M1020.9 328.1 L1047.1 284.1"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1047.1" cy="284.1" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M1020.9 328.1 L1071.8 319.1"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1071.8" cy="319.1" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="1020.9" cy="328.1" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="986.6" cy="343.7" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="958.1" cy="355.2" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M914.3 380.0 L960.1 371.9"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M960.1 371.9 L1011.7 362.8"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M1011.7 362.8 L1039.8 353.6"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M1039.8 353.6 L1063.8 345.0"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1063.8" cy="345.0" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="1039.8" cy="353.6" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="1011.7" cy="362.8" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M960.1 371.9 L971.3 350.3"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M971.3 350.3 L988.4 325.9"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M988.4 325.9 L1004.6 298.5"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1004.6" cy="298.5" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="988.4" cy="325.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="971.3" cy="350.3" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="960.1" cy="371.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="914.3" cy="380.0" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="882.2" cy="394.7" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="845.3" cy="404.6" r="5.0"/>
+  <circle class="b" style="animation-delay:6.80s, 7.20s" cx="817.3" cy="409.6" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:6.40s" d="M791.4 417.9 L838.3 409.6"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M838.3 409.6 L881.1 399.8"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M881.1 399.8 L923.2 392.4"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M923.2 392.4 L970.4 384.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M970.4 384.0 L993.6 379.9"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M993.6 379.9 L1033.7 372.9"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M1033.7 372.9 L1085.1 363.8"/>
+  <circle class="b dernier" style="animation-delay:9.20s" cx="1085.1" cy="363.8" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="1033.7" cy="372.9" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M993.6 379.9 L1031.8 373.2"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M1031.8 373.2 L1067.6 366.9"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M1067.6 366.9 L1118.6 356.8"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1118.6" cy="356.8" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="1067.6" cy="366.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="1031.8" cy="373.2" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="993.6" cy="379.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="970.4" cy="384.0" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="923.2" cy="392.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M881.1 399.8 L904.2 395.7"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M904.2 395.7 L944.3 383.3"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M944.3 383.3 L976.4 377.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M976.4 377.0 L1010.8 366.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M1010.8 366.0 L1040.9 351.3"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M1040.9 351.3 L1065.4 342.5"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1065.4" cy="342.5" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M1040.9 351.3 L1070.9 345.9"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1070.9" cy="345.9" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="1040.9" cy="351.3" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="1010.8" cy="366.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="976.4" cy="377.0" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M944.3 383.3 L957.6 364.6"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M957.6 364.6 L972.2 345.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M972.2 345.0 L996.8 310.6"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M996.8 310.6 L1016.3 277.3"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="1016.3" cy="277.3" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M996.8 310.6 L988.6 288.6"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="988.6" cy="288.6" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="996.8" cy="310.6" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="972.2" cy="345.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="957.6" cy="364.6" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="944.3" cy="383.3" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="904.2" cy="395.7" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="881.1" cy="399.8" r="5.0"/>
+  <circle class="b" style="animation-delay:6.80s, 7.20s" cx="838.3" cy="409.6" r="5.0"/>
+  <circle class="b" style="animation-delay:6.40s, 6.80s" cx="791.4" cy="417.9" r="5.0"/>
+  <circle class="b" style="animation-delay:6.00s, 6.40s" cx="750.0" cy="425.2" r="5.0"/>
+  <circle class="b" style="animation-delay:5.60s, 6.00s" cx="721.8" cy="451.8" r="5.0"/>
+  <circle class="b" style="animation-delay:5.20s, 5.60s" cx="702.7" cy="471.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:4.80s" d="M702.2 499.2 L686.8 477.8"/>
+  <path class="r" pathLength="1" style="animation-delay:5.20s" d="M686.8 477.8 L670.2 459.7"/>
+  <path class="r" pathLength="1" style="animation-delay:5.60s" d="M670.2 459.7 L641.1 423.6"/>
+  <path class="r" pathLength="1" style="animation-delay:6.00s" d="M641.1 423.6 L610.5 387.9"/>
+  <path class="r" pathLength="1" style="animation-delay:6.40s" d="M610.5 387.9 L588.5 366.3"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M588.5 366.3 L563.6 336.1"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M563.6 336.1 L545.9 312.5"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M545.9 312.5 L520.5 283.5"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M520.5 283.5 L502.7 260.7"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M502.7 260.7 L483.2 241.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M483.2 241.0 L446.6 209.3"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M446.6 209.3 L422.0 188.9"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="422.0" cy="188.9" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="446.6" cy="209.3" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="483.2" cy="241.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="502.7" cy="260.7" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="520.5" cy="283.5" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="545.9" cy="312.5" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="563.6" cy="336.1" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M588.5 366.3 L547.7 359.1"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M547.7 359.1 L507.3 352.0"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M507.3 352.0 L472.7 343.7"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M472.7 343.7 L450.4 336.8"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M450.4 336.8 L400.4 325.4"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M400.4 325.4 L358.1 317.9"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M358.1 317.9 L325.2 306.2"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="325.2" cy="306.2" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="358.1" cy="317.9" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M400.4 325.4 L374.9 294.1"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M374.9 294.1 L358.1 267.4"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="358.1" cy="267.4" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="374.9" cy="294.1" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="400.4" cy="325.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M450.4 336.8 L411.2 329.9"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M411.2 329.9 L364.8 321.8"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="364.8" cy="321.8" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.60s" cx="411.2" cy="329.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="450.4" cy="336.8" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="472.7" cy="343.7" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="507.3" cy="352.0" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="547.7" cy="359.1" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M588.5 366.3 L582.2 329.7"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M582.2 329.7 L579.7 299.5"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M579.7 299.5 L571.3 253.4"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M571.3 253.4 L566.6 203.5"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M566.6 203.5 L566.8 168.4"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M566.8 168.4 L563.9 144.0"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="563.9" cy="144.0" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M566.8 168.4 L544.4 138.2"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="544.4" cy="138.2" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="566.8" cy="168.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M566.6 203.5 L532.9 170.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M532.9 170.0 L504.8 147.5"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="504.8" cy="147.5" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="532.9" cy="170.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 9.20s" cx="566.6" cy="203.5" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M571.3 253.4 L525.5 231.9"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M525.5 231.9 L488.5 214.1"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M488.5 214.1 L463.6 202.5"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M463.6 202.5 L428.0 187.2"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="428.0" cy="187.2" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="463.6" cy="202.5" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M488.5 214.1 L457.4 208.6"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M457.4 208.6 L428.0 198.7"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="428.0" cy="198.7" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="457.4" cy="208.6" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M488.5 214.1 L485.6 183.8"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M485.6 183.8 L486.0 147.0"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="486.0" cy="147.0" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="485.6" cy="183.8" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="488.5" cy="214.1" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="525.5" cy="231.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="571.3" cy="253.4" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="579.7" cy="299.5" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="582.2" cy="329.7" r="5.0"/>
+  <circle class="b" style="animation-delay:6.80s, 7.20s" cx="588.5" cy="366.3" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:6.40s" d="M610.5 387.9 L605.5 355.2"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M605.5 355.2 L595.3 318.9"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M595.3 318.9 L583.5 293.4"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M583.5 293.4 L567.6 262.2"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M567.6 262.2 L545.6 229.8"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M545.6 229.8 L525.3 186.2"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M525.3 186.2 L505.9 150.9"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M505.9 150.9 L487.8 113.0"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="487.8" cy="113.0" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M505.9 150.9 L477.0 144.3"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="477.0" cy="144.3" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="505.9" cy="150.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="525.3" cy="186.2" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M545.6 229.8 L519.0 223.3"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M519.0 223.3 L484.9 211.8"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M484.9 211.8 L438.9 190.9"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="438.9" cy="190.9" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="484.9" cy="211.8" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="519.0" cy="223.3" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="545.6" cy="229.8" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M567.6 262.2 L543.3 252.2"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M543.3 252.2 L505.8 239.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M505.8 239.0 L474.0 223.1"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M474.0 223.1 L437.9 206.2"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="437.9" cy="206.2" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="474.0" cy="223.1" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M505.8 239.0 L498.1 204.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M498.1 204.0 L492.7 177.4"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="492.7" cy="177.4" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="498.1" cy="204.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="505.8" cy="239.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="543.3" cy="252.2" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="567.6" cy="262.2" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="583.5" cy="293.4" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="595.3" cy="318.9" r="5.0"/>
+  <circle class="b" style="animation-delay:6.80s, 7.20s" cx="605.5" cy="355.2" r="5.0"/>
+  <circle class="b" style="animation-delay:6.40s, 6.80s" cx="610.5" cy="387.9" r="5.0"/>
+  <circle class="b" style="animation-delay:6.00s, 6.40s" cx="641.1" cy="423.6" r="5.0"/>
+  <circle class="b" style="animation-delay:5.60s, 6.00s" cx="670.2" cy="459.7" r="5.0"/>
+  <circle class="b" style="animation-delay:5.20s, 5.60s" cx="686.8" cy="477.8" r="5.0"/>
+  <circle class="b" style="animation-delay:4.80s, 5.20s" cx="702.2" cy="499.2" r="5.0"/>
+  <circle class="b" style="animation-delay:4.40s, 4.80s" cx="702.3" cy="523.1" r="5.0"/>
+  <circle class="b" style="animation-delay:4.00s, 4.40s" cx="704.0" cy="554.8" r="5.0"/>
+  <circle class="b" style="animation-delay:3.60s, 4.00s" cx="707.3" cy="578.7" r="5.0"/>
+  <circle class="b" style="animation-delay:3.20s, 3.60s" cx="708.0" cy="627.0" r="5.0"/>
+  <circle class="b" style="animation-delay:2.80s, 3.20s" cx="711.5" cy="650.9" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:2.40s" d="M711.4 682.4 L683.8 646.9"/>
+  <path class="r" pathLength="1" style="animation-delay:2.80s" d="M683.8 646.9 L656.2 612.1"/>
+  <path class="r" pathLength="1" style="animation-delay:3.60s" d="M656.2 612.1 L639.8 589.4"/>
+  <path class="r" pathLength="1" style="animation-delay:4.00s" d="M639.8 589.4 L607.1 551.6"/>
+  <path class="r" pathLength="1" style="animation-delay:4.40s" d="M607.1 551.6 L582.6 528.9"/>
+  <path class="r" pathLength="1" style="animation-delay:4.80s" d="M582.6 528.9 L555.9 501.1"/>
+  <path class="r" pathLength="1" style="animation-delay:5.20s" d="M555.9 501.1 L527.7 459.5"/>
+  <path class="r" pathLength="1" style="animation-delay:5.60s" d="M527.7 459.5 L507.5 431.9"/>
+  <path class="r" pathLength="1" style="animation-delay:6.00s" d="M507.5 431.9 L488.3 411.0"/>
+  <path class="r" pathLength="1" style="animation-delay:6.40s" d="M488.3 411.0 L467.1 385.9"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M467.1 385.9 L434.1 356.6"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M434.1 356.6 L416.6 341.1"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M416.6 341.1 L396.5 320.2"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M396.5 320.2 L367.2 284.5"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M367.2 284.5 L347.0 252.3"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M347.0 252.3 L328.3 208.6"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="328.3" cy="208.6" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="347.0" cy="252.3" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="367.2" cy="284.5" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="396.5" cy="320.2" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.40s" cx="416.6" cy="341.1" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M434.1 356.6 L401.6 350.9"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M401.6 350.9 L367.9 339.7"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M367.9 339.7 L346.9 329.9"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M346.9 329.9 L304.9 309.2"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M304.9 309.2 L275.9 289.2"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="275.9" cy="289.2" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="304.9" cy="309.2" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="346.9" cy="329.9" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M367.9 339.7 L343.7 335.4"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M343.7 335.4 L306.5 328.9"/>
+  <circle class="b dernier" style="animation-delay:9.20s" cx="306.5" cy="328.9" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M343.7 335.4 L324.8 303.6"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M324.8 303.6 L306.9 266.4"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="306.9" cy="266.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M324.8 303.6 L300.4 295.8"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="300.4" cy="295.8" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="324.8" cy="303.6" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="343.7" cy="335.4" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.80s" cx="367.9" cy="339.7" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M401.6 350.9 L387.1 327.8"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M387.1 327.8 L371.4 301.1"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M371.4 301.1 L349.5 258.9"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M349.5 258.9 L330.8 222.4"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M330.8 222.4 L313.6 185.9"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="313.6" cy="185.9" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="330.8" cy="222.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M349.5 258.9 L323.0 246.9"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M323.0 246.9 L283.1 226.8"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="283.1" cy="226.8" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M323.0 246.9 L308.4 214.4"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="308.4" cy="214.4" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="323.0" cy="246.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="349.5" cy="258.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="371.4" cy="301.1" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="387.1" cy="327.8" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="401.6" cy="350.9" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="434.1" cy="356.6" r="5.0"/>
+  <circle class="b" style="animation-delay:6.80s, 7.20s" cx="467.1" cy="385.9" r="5.0"/>
+  <circle class="b" style="animation-delay:6.40s, 6.80s" cx="488.3" cy="411.0" r="5.0"/>
+  <circle class="b" style="animation-delay:6.00s, 6.40s" cx="507.5" cy="431.9" r="5.0"/>
+  <circle class="b" style="animation-delay:5.60s, 6.00s" cx="527.7" cy="459.5" r="5.0"/>
+  <circle class="b" style="animation-delay:5.20s, 5.60s" cx="555.9" cy="501.1" r="5.0"/>
+  <circle class="b" style="animation-delay:4.80s, 5.20s" cx="582.6" cy="528.9" r="5.0"/>
+  <circle class="b" style="animation-delay:4.40s, 4.80s" cx="607.1" cy="551.6" r="5.0"/>
+  <circle class="b" style="animation-delay:4.00s, 4.40s" cx="639.8" cy="589.4" r="5.0"/>
+  <circle class="b" style="animation-delay:3.20s, 4.00s" cx="656.2" cy="612.1" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:2.80s" d="M683.8 646.9 L634.1 630.9"/>
+  <path class="r" pathLength="1" style="animation-delay:3.20s" d="M634.1 630.9 L611.8 626.1"/>
+  <path class="r" pathLength="1" style="animation-delay:3.60s" d="M611.8 626.1 L573.5 619.3"/>
+  <path class="r" pathLength="1" style="animation-delay:4.00s" d="M573.5 619.3 L528.1 607.5"/>
+  <path class="r" pathLength="1" style="animation-delay:4.40s" d="M528.1 607.5 L483.9 588.8"/>
+  <path class="r" pathLength="1" style="animation-delay:4.80s" d="M483.9 588.8 L442.4 575.4"/>
+  <path class="r" pathLength="1" style="animation-delay:5.20s" d="M442.4 575.4 L418.2 567.7"/>
+  <path class="r" pathLength="1" style="animation-delay:5.60s" d="M418.2 567.7 L375.3 558.7"/>
+  <path class="r" pathLength="1" style="animation-delay:6.00s" d="M375.3 558.7 L325.0 549.0"/>
+  <path class="r" pathLength="1" style="animation-delay:6.40s" d="M325.0 549.0 L300.2 543.2"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M300.2 543.2 L258.7 535.8"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M258.7 535.8 L222.7 525.3"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M222.7 525.3 L186.5 513.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M186.5 513.0 L141.7 497.6"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M141.7 497.6 L94.9 488.7"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M94.9 488.7 L69.0 480.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M69.0 480.0 L38.8 474.6"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="38.8" cy="474.6" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M69.0 480.0 L40.2 474.9"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="40.2" cy="474.9" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="69.0" cy="480.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="94.9" cy="488.7" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="141.7" cy="497.6" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M186.5 513.0 L149.4 506.5"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M149.4 506.5 L126.1 502.4"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M126.1 502.4 L79.5 487.5"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M79.5 487.5 L53.7 476.6"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="53.7" cy="476.6" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="79.5" cy="487.5" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="126.1" cy="502.4" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="149.4" cy="506.5" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="186.5" cy="513.0" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="222.7" cy="525.3" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M258.7 535.8 L237.8 492.7"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M237.8 492.7 L219.6 461.1"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M219.6 461.1 L197.2 420.2"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M197.2 420.2 L182.7 380.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M182.7 380.0 L170.1 342.6"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M170.1 342.6 L164.0 313.0"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="164.0" cy="313.0" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="170.1" cy="342.6" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="182.7" cy="380.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="197.2" cy="420.2" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="219.6" cy="461.1" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:7.60s" d="M237.8 492.7 L215.4 481.1"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M215.4 481.1 L178.2 457.9"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M178.2 457.9 L153.2 446.5"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M153.2 446.5 L116.3 430.9"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M116.3 430.9 L96.3 419.1"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="96.3" cy="419.1" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="116.3" cy="430.9" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M153.2 446.5 L144.2 417.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M144.2 417.0 L133.6 395.9"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="133.6" cy="395.9" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M144.2 417.0 L172.5 377.0"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="172.5" cy="377.0" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="144.2" cy="417.0" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="153.2" cy="446.5" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="178.2" cy="457.9" r="5.0"/>
+  <circle class="b" style="animation-delay:8.00s, 8.40s" cx="215.4" cy="481.1" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.00s" cx="237.8" cy="492.7" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="258.7" cy="535.8" r="5.0"/>
+  <circle class="b" style="animation-delay:6.80s, 7.20s" cx="300.2" cy="543.2" r="5.0"/>
+  <circle class="b" style="animation-delay:6.40s, 6.80s" cx="325.0" cy="549.0" r="5.0"/>
+  <circle class="b" style="animation-delay:6.00s, 6.40s" cx="375.3" cy="558.7" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:5.60s" d="M418.2 567.7 L372.1 559.6"/>
+  <path class="r" pathLength="1" style="animation-delay:6.00s" d="M372.1 559.6 L329.1 552.0"/>
+  <path class="r" pathLength="1" style="animation-delay:6.40s" d="M329.1 552.0 L279.6 539.2"/>
+  <path class="r" pathLength="1" style="animation-delay:6.80s" d="M279.6 539.2 L230.9 530.6"/>
+  <path class="r" pathLength="1" style="animation-delay:7.20s" d="M230.9 530.6 L185.6 516.6"/>
+  <path class="r" pathLength="1" style="animation-delay:8.00s" d="M185.6 516.6 L155.0 502.2"/>
+  <path class="r" pathLength="1" style="animation-delay:8.40s" d="M155.0 502.2 L126.0 483.7"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M126.0 483.7 L99.6 463.4"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M99.6 463.4 L75.2 443.9"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="75.2" cy="443.9" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="99.6" cy="463.4" r="5.0"/>
+  <path class="r" pathLength="1" style="animation-delay:8.80s" d="M126.0 483.7 L82.6 476.1"/>
+  <path class="r" pathLength="1" style="animation-delay:9.20s" d="M82.6 476.1 L48.3 470.0"/>
+  <circle class="b dernier" style="animation-delay:9.60s" cx="48.3" cy="470.0" r="5.0"/>
+  <circle class="b" style="animation-delay:9.20s, 9.60s" cx="82.6" cy="476.1" r="5.0"/>
+  <circle class="b" style="animation-delay:8.80s, 9.20s" cx="126.0" cy="483.7" r="5.0"/>
+  <circle class="b" style="animation-delay:8.40s, 8.80s" cx="155.0" cy="502.2" r="5.0"/>
+  <circle class="b" style="animation-delay:7.60s, 8.40s" cx="185.6" cy="516.6" r="5.0"/>
+  <circle class="b" style="animation-delay:7.20s, 7.60s" cx="230.9" cy="530.6" r="5.0"/>
+  <circle class="b" style="animation-delay:6.80s, 7.20s" cx="279.6" cy="539.2" r="5.0"/>
+  <circle class="b" style="animation-delay:6.40s, 6.80s" cx="329.1" cy="552.0" r="5.0"/>
+  <circle class="b" style="animation-delay:6.00s, 6.40s" cx="372.1" cy="559.6" r="5.0"/>
+  <circle class="b" style="animation-delay:5.60s, 6.00s" cx="418.2" cy="567.7" r="5.0"/>
+  <circle class="b" style="animation-delay:5.20s, 5.60s" cx="442.4" cy="575.4" r="5.0"/>
+  <circle class="b" style="animation-delay:4.80s, 5.20s" cx="483.9" cy="588.8" r="5.0"/>
+  <circle class="b" style="animation-delay:4.40s, 4.80s" cx="528.1" cy="607.5" r="5.0"/>
+  <circle class="b" style="animation-delay:4.00s, 4.40s" cx="573.5" cy="619.3" r="5.0"/>
+  <circle class="b" style="animation-delay:3.60s, 4.00s" cx="611.8" cy="626.1" r="5.0"/>
+  <circle class="b" style="animation-delay:3.20s, 3.60s" cx="634.1" cy="630.9" r="5.0"/>
+  <circle class="b" style="animation-delay:2.80s, 3.20s" cx="683.8" cy="646.9" r="5.0"/>
+  <circle class="b" style="animation-delay:2.40s, 2.80s" cx="711.4" cy="682.4" r="5.0"/>
+  <circle class="b" style="animation-delay:2.00s, 2.40s" cx="707.1" cy="707.8" r="5.0"/>
+  <circle class="b" style="animation-delay:1.60s, 2.00s" cx="697.9" cy="740.6" r="5.0"/>
+  <circle class="b" style="animation-delay:1.20s, 1.60s" cx="694.3" cy="767.4" r="5.0"/>
+  <circle class="b" style="animation-delay:0.80s, 1.20s" cx="692.4" cy="809.6" r="5.0"/>
+  <circle class="b" style="animation-delay:0.40s, 0.80s" cx="694.7" cy="842.5" r="5.0"/>
+</g>
+</svg>

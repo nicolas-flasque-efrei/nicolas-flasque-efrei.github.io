@@ -261,3 +261,9 @@ pre.console .copy{border-color:var(--line);background:var(--soft)}
 [data-theme="neon"] .al .al-panel+.al-panel{border-color:#F0F1F5}
 [data-theme="neon"] .al-pop{background:#fff;color:var(--ink);box-shadow:0 8px 28px rgba(16,24,40,.14);border:1px solid #F0F1F5}
 [data-theme="neon"] .al-pop dt{color:var(--muted)}
+
+/* animations de la pousse */
+.fig.anim{text-align:center}
+.fig.anim img{display:block;margin:0 auto;max-width:100%;height:auto;max-height:520px;width:auto}
+.fig.anim .replay{margin-left:8px;font:500 13px/1 var(--f-body);font-style:normal;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:inherit;cursor:pointer}
+.fig.anim .replay:hover{border-color:currentColor}
