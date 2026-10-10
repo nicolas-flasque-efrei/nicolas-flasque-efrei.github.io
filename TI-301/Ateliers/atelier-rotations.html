@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rotations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S } = Atelier;
+const SX = 74, SY = 92;
+
+/* ---------- Structure : des nœuds (cercles) et des sous-arbres (triangles), reliés par des pointeurs ---------- */
+let N, top, pos;
+const isSub = k => /^[A-D]$/.test(k);
+function relayout() {
+  pos = {}; let i = 0;
+  (function walk(k, d) {
+    if (!k) return;
+    walk(N[k].left, d + 1);
+    pos[k] = { x: i++ * SX, y: d * SY };
+    walk(N[k].right, d + 1);
+  })(top, 0);
+}
+const inorder = () => { const out = []; (function w(k) { if (!k) return; w(N[k].left); out.push(k); w(N[k].right); })(top); return out; };
+
+function scene(st = {}) {
+  const items = [], arrows = [], hl = st.hl || {};
+  for (const k of Object.keys(N)) {
+    const p = pos[k]; if (!p) continue;
+    if (isSub(k)) items.push(S.tri(k, p.x, p.y - 22, 72, 62, k, { cls: hl[k] || 'ghost' }));
+    else items.push(S.circle(k, p.x, p.y, 23, k, { cls: hl[k] }));
+  }
+  for (const k of Object.keys(N)) for (const s of ['left', 'right']) {
+    const c = N[k][s]; if (!c) continue;
+    const ek = (st.ekeys && st.ekeys[`${k}.${s}`]) || `${k}.${s}`;
+    arrows.push(S.arrow(ek, k, isSub(c) ? { k: c, side: 't' } : c, { cls: (st.ecls && st.ecls[`${k}.${s}`]) || '', ctrl: pos[c] && pos[c].y < pos[k].y ? { dx: s === 'right' ? 34 : -34, dy: 0 } : null }));
+  }
+  const tp = pos[top];
+  items.push(S.ptr('racine', tp.x - 46, tp.y - 84, 'tree.root', { w: 92, cls: st.rcls }));
+  arrows.push(S.arrow('racineA', { k: 'racine', side: 'b' }, top, { cls: st.rcls || 'acc' }));
+  for (const [name, at, cls] of st.ptrs || []) {
+    const p = pos[at];
+    items.push(S.ptr('v_' + name, p.x - 140, p.y - 13, name, { w: 64, cls }));
+    arrows.push(S.arrow('v_' + name + 'A', { k: 'v_' + name, side: 'r' }, at, { cls }));
+  }
+  return { items, arrows };
+}
+
+/* ---------- Une rotation, instruction par instruction ---------- */
+function rotate(A, R, dir, parent, prefix) {
+  const right = dir === 'droite', s1 = right ? 'left' : 'right', s2 = right ? 'right' : 'left', set = right ? 'right' : 'left';
+  const P = N[R][s1], B = N[P][s2];
+  const rd = () => ['Ordre infixe (ABR) : ', inorder().join(' < ')];
+  const E = (o, msg, kind, line) => A.emit(scene(o), prefix + msg, { kind, code: [set, line], readout: rd() });
+  E({ ptrs: [['root', R, 'vio']], hl: { [R]: 'vio' } }, `Rotation ${dir} sur ${R} : le paramètre root pointe sur ${R}.`, 'start', 0);
+  E({ ptrs: [['root', R, 'vio'], ['pivot', P, 'cmp']], hl: { [R]: 'vio', [P]: 'cmp' } }, `pivot = root->${s1} : le pivot est ${P}, le fils ${right ? 'gauche' : 'droit'} de ${R}. C'est lui qui va remonter.`, 'step', 2);
+  N[R][s1] = B;
+  E({ ptrs: [['root', R, 'vio'], ['pivot', P, 'cmp']], hl: { [R]: 'vio', [P]: 'cmp', [B]: 'new' }, ecls: { [`${R}.${s1}`]: 'new' } },
+    `root->${s1} = pivot->${s2} : le sous-arbre ${B} est raccroché comme fils ${right ? 'gauche' : 'droit'} de ${R}. Ses valeurs sont entre ${right ? P : R} et ${right ? R : P} : l'ordre est respecté. (Pour l'instant, ${P} pointe encore aussi sur ${B}.)`, 'step', 3);
+  N[P][s2] = R;
+  E({ ptrs: [['root', R, 'vio'], ['pivot', P, 'cmp']], hl: { [R]: 'vio', [P]: 'cmp' }, ecls: { [`${P}.${s2}`]: 'new' } },
+    `pivot->${s2} = root : ${R} devient le fils ${right ? 'droit' : 'gauche'} de ${P}.`, 'step', 4);
+  if (parent) N[parent.k][parent.s] = P; else top = P;
+  E({ ptrs: [['pivot', P, 'cmp']], hl: { [P]: 'cmp' }, ecls: parent ? { [`${parent.k}.${parent.s}`]: 'new' } : {}, rcls: parent ? null : 'new' },
+    `return pivot : ${parent ? `${parent.k}->${parent.s} = ${right ? 'rightRotation' : 'leftRotation'}(${parent.k}->${parent.s})` : `tree.root = ${right ? 'rightRotation' : 'leftRotation'}(tree.root)`} : ${P} prend la place de ${R}.`, 'step', [5, 7]);
+  relayout();
+  E({ hl: { [P]: 'new', [R]: 'acc' } }, `On redessine : ${P} est monté, ${R} est descendu ${right ? 'à droite' : 'à gauche'}. Les sous-arbres ${Object.keys(N).filter(isSub).join(', ')} n'ont pas changé, l'ordre infixe non plus.`, 'done', 7);
+}
+
+const SCEN = {
+  droite: { top: 'Q', N: { Q: ['P', 'C'], P: ['A', 'B'] }, run: A => rotate(A, 'Q', 'droite', null, '') },
+  gauche: { top: 'Q', N: { Q: ['A', 'P'], P: ['B', 'C'] }, run: A => rotate(A, 'Q', 'gauche', null, '') },
+  double_gauche: { top: 'P', N: { P: ['A', 'Q'], Q: ['R', 'D'], R: ['B', 'C'] }, run: A => {
+    A.emit(scene({ hl: { P: 'bad', Q: 'cmp' } }), 'P penche à droite, mais son fils droit Q penche à gauche (cas droite-gauche) : une seule rotation ne suffit pas. Double rotation : d\'abord à droite sur Q, puis à gauche sur P.', { kind: 'start', readout: ['Ordre infixe (ABR) : ', inorder().join(' < ')] });
+    rotate(A, 'Q', 'droite', { k: 'P', s: 'right' }, 'Étape 1 · ');
+    A.emit(scene({ hl: { P: 'bad', R: 'cmp' } }), 'Après la première rotation, la configuration ressemble au cas simple : R est le fils droit de P, et il penche du même côté.', { kind: 'start', readout: ['Ordre infixe (ABR) : ', inorder().join(' < ')] });
+    rotate(A, 'P', 'gauche', null, 'Étape 2 · ');
+  } },
+  double_droite: { top: 'P', N: { P: ['Q', 'D'], Q: ['A', 'R'], R: ['B', 'C'] }, run: A => {
+    A.emit(scene({ hl: { P: 'bad', Q: 'cmp' } }), 'P penche à gauche, mais son fils gauche Q penche à droite (cas gauche-droite) : double rotation, d\'abord à gauche sur Q, puis à droite sur P.', { kind: 'start', readout: ['Ordre infixe (ABR) : ', inorder().join(' < ')] });
+    rotate(A, 'Q', 'gauche', { k: 'P', s: 'left' }, 'Étape 1 · ');
+    A.emit(scene({ hl: { P: 'bad', R: 'cmp' } }), 'Après la première rotation, on est ramené au cas simple : R est le fils gauche de P.', { kind: 'start', readout: ['Ordre infixe (ABR) : ', inorder().join(' < ')] });
+    rotate(A, 'P', 'droite', null, 'Étape 2 · ');
+  } },
+};
+function setup(name) {
+  const sc = SCEN[name];
+  N = {}; top = sc.top;
+  for (const [k, [l, r]] of Object.entries(sc.N)) { N[k] = { left: l, right: r }; for (const c of [l, r]) if (!N[c]) N[c] = { left: null, right: null }; }
+  for (const [k, [l, r]] of Object.entries(sc.N)) N[k] = { left: l, right: r };
+  relayout();
+}
+
+const CODES = {
+  right: { title: 'Rotation à droite', lines: ['t_node *rightRotation(t_node *root)', '{', '    t_node *pivot = root->left;', '    root->left = pivot->right;',
+    '    pivot->right = root;', '    return pivot;   // nouvelle racine du sous-arbre', '}', '// appel : ptr = rightRotation(ptr);'] },
+  left: { title: 'Rotation à gauche (symétrique)', lines: ['t_node *leftRotation(t_node *root)', '{', '    t_node *pivot = root->right;', '    root->right = pivot->left;',
+    '    pivot->left = root;', '    return pivot;   // nouvelle racine du sous-arbre', '}', '// appel : ptr = leftRotation(ptr);'] },
+};
+
+Atelier.init({
+  id: 'atelier-rotations',
+  title: 'Rotations',
+  subtitle: 'CM5 · rotations simples et doubles, pointeur par pointeur, sur des nœuds P, Q, R et des sous-arbres A, B, C, D.',
+  conv: 'A, B, C, D : sous-arbres inchangés',
+  commands: {
+    droite: { args: 'none', aliases: ['right', 'rotation_droite', 'rd'] },
+    gauche: { args: 'none', aliases: ['left', 'rotation_gauche', 'rg'] },
+    double_gauche: { args: 'none', aliases: ['dg', 'double_left', 'droite_gauche'] },
+    double_droite: { args: 'none', aliases: ['dd', 'double_right', 'gauche_droite'] },
+  },
+  help: `droite          rotation à droite sur Q
+gauche          rotation à gauche sur Q
+double_gauche   à droite sur Q, puis à gauche sur P
+double_droite   à gauche sur Q, puis à droite sur P
+# commentaire`,
+  quick: { buttons: [
+    { label: 'Rotation droite', cmd: 'droite', primary: true }, { label: 'Rotation gauche', cmd: 'gauche' },
+    { label: 'Double gauche', cmd: 'double_gauche' }, { label: 'Double droite', cmd: 'double_droite' },
+  ] },
+  codes: CODES,
+  note: 'Dans le cours, la fonction écrit <code>root = pivot;</code> : cette affectation ne modifie que la copie locale du paramètre. Ici, la fonction <b>renvoie</b> pivot et l\'appelant fait <code>ptr = rightRotation(ptr);</code>.',
+  noteTitle: 'Remarque',
+  kinds: { start: { label: 'Situation', tone: 'acc' }, step: { label: 'Instruction', tone: 'cmp' }, done: { label: 'Résultat', tone: 'new' } },
+  hold: { start: 2.4, step: 2.2, done: 2.4 },
+  legend: [['vio', 'root : nœud qui descend'], ['cmp', 'pivot : nœud qui monte'], ['new', 'pointeur modifié'], ['ghost', 'sous-arbre (inchangé)']],
+  example: `droite
+gauche
+double_gauche
+`,
+  build(list, A) {
+    setup('droite');
+    A.op('début', null, () => { A.emit(scene(), 'Choisissez une rotation : chaque scénario repart de sa configuration de départ.', { kind: 'start', readout: ['Ordre infixe (ABR) : ', inorder().join(' < ')] }); return ''; });
+    for (const o of list) A.op(o.cmd.replace('_', ' '), o.line, () => {
+      setup(o.cmd);
+      A.emit(scene(), `Configuration de départ. Ordre infixe : ${inorder().join(' < ')}.`, { kind: 'start', readout: ['Ordre infixe (ABR) : ', inorder().join(' < ')] });
+      SCEN[o.cmd].run(A);
+      return 'ordre conservé';
+    });
+  },
+});
+})();
+</script>
+</body>
+</html>

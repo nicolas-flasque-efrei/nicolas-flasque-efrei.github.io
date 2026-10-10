@@ -1,1 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ateliers TI301</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+<style>
+/* Page d'accueil : un sommaire des ateliers, rangés par cours magistral */
+html,body{height:auto}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 16px 48px;display:flex;flex-direction:column;gap:28px}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.head h1{font-family:var(--f-display);font-size:34px;letter-spacing:-.02em;margin:0}
+.head p{margin:6px 0 0;color:var(--muted);max-width:62ch;line-height:1.5}
+.cm{display:flex;flex-direction:column;gap:12px}
+.cm h2{margin:0;display:flex;align-items:baseline;gap:12px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.cm h2 b{font-family:var(--f-mono);font-size:12px;letter-spacing:0;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--ink);text-decoration:none;transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.card strong{font-size:16px}
+.card span{color:var(--muted);line-height:1.45;font-size:13.5px}
+.card em{font-style:normal;font-family:var(--f-mono);font-size:11.5px;color:var(--accent)}
+:root[data-theme="neo"] .card{border-color:transparent;box-shadow:0 1px 3px rgba(16,24,40,.08),0 1px 2px rgba(16,24,40,.04)}
+.foot{color:var(--muted);font-size:13px;line-height:1.6}
+.theme{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div>
+      <h1>Ateliers TI301</h1>
+      <p>Des animations pas à pas pour les structures de données du module : on écrit un petit script, puis on déroule chaque étape avec le lecteur.</p>
+      <p class="credit"><svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - IA Claude code</p>
+    </div>
+    <label class="theme" for="optTheme">Thème
+      <select id="optTheme"><option value="auto">Auto</option><option value="light">Clair</option><option value="dark">Sombre</option><option value="neo">Neo</option></select></label>
+  </header>
 
+  <section class="cm">
+    <h2><b>CM1</b> Listes chaînées simples</h2>
+    <div class="cards">
+      <a class="card" href="atelier-liste.html"><strong>Liste chaînée simple</strong><span>Ajout en tête, affichage, recherche et comptage avec un pointeur curr. Et le piège de l'affichage qui avance L.head.</span><em>add · display · search · count · naive</em></a>
+      <a class="card" href="atelier-liste-recursive.html"><strong>Récursivité sur les listes</strong><span>Affichage récursif (à l'endroit et à l'envers) et libération, avec la pile des appels.</span><em>display · reverse · free · freebad</em></a>
+    </div>
+  </section>
+
+  <section class="cm">
+    <h2><b>CM2</b> Listes avancées</h2>
+    <div class="cards">
+      <a class="card" href="atelier-liste-ht-triee.html"><strong>Insertion triée</strong><span>Insérer à sa place dans une liste head + tail avec temp et prev : liste vide, en tête, au milieu, en fin.</span><em>insert</em></a>
+      <a class="card" href="atelier-liste-circulaire.html"><strong>Liste circulaire</strong><span>La dernière pointe sur la première : chaînages en tête et en queue, suppressions, affichage.</span><em>addhead · addtail · delete · display</em></a>
+    </div>
+  </section>
+
+  <section class="cm">
+    <h2><b>CM3</b> Piles et files</h2>
+    <div class="cards">
+      <a class="card" href="atelier-pile-tableau-liste.html"><strong>Pile : tableau ou liste</strong><span>push, pop et top sur les deux implémentations côte à côte, pile vide et pile pleine.</span><em>push · pop · top · isempty</em></a>
+      <a class="card" href="atelier-file-circulaire.html"><strong>File et buffer circulaire</strong><span>first, last et le modulo ; vue en anneau, et le paradoxe de la file vide inutilisable sans modulo.</span><em>enqueue · dequeue</em></a>
+      <a class="card" href="atelier-pile.html"><strong>Parenthésage avec une pile</strong><span>Vérifier qu'une expression avec ( ) et [ ] est bien parenthésée.</span><em>une expression par ligne</em></a>
+      <a class="card" href="atelier-postfixe.html"><strong>Évaluation postfixée</strong><span>Bonus : calculer une expression postfixée avec une pile, lien avec le parcours postfixe.</span><em>eval 3 4 + 2 *</em></a>
+    </div>
+  </section>
+
+  <section class="cm">
+    <h2><b>CM4</b> Arbres binaires</h2>
+    <div class="cards">
+      <a class="card" href="atelier-parcours-profondeur.html"><strong>Parcours en profondeur</strong><span>Préfixe, infixe et postfixe sur l'arbre d'expression du cours, avec la pile des appels.</span><em>prefix · infix · postfix</em></a>
+      <a class="card" href="atelier-parcours-largeur.html"><strong>Parcours en largeur</strong><span>Niveau par niveau grâce à une file de t_node * ; et ce qui change avec une pile.</span><em>bfs</em></a>
+      <a class="card" href="atelier-hauteur-recursive.html"><strong>Hauteur et nombre de nœuds</strong><span>Deux calculs récursifs postfixes : les valeurs remontent des feuilles vers la racine.</span><em>height · count</em></a>
+      <a class="card" href="atelier-recherche-abr.html"><strong>Recherche dans un ABR</strong><span>Plus petit : à gauche, plus grand : à droite ; les sous-arbres écartés.</span><em>insert · search</em></a>
+      <a class="card" href="atelier-ordre-insertion-abr.html"><strong>ABR et ordre d'insertion</strong><span>Les mêmes valeurs dans deux ordres : arbre équilibré ou dégénéré, et nombre de comparaisons.</span><em>a · b · search</em></a>
+      <a class="card" href="atelier-categories-arbres.html"><strong>Catégories d'arbres</strong><span>Strict, complet, parfait, dégénéré : chaque définition vérifiée sur l'arbre de votre choix.</span><em>tree (A (B) (C))</em></a>
+    </div>
+  </section>
+
+  <section class="cm">
+    <h2><b>CM5</b> AVL</h2>
+    <div class="cards">
+      <a class="card" href="atelier-rotations.html"><strong>Rotations</strong><span>Rotations simples et doubles, pointeur par pointeur, avec les sous-arbres A, B, C, D.</span><em>droite · gauche · double_gauche · double_droite</em></a>
+      <a class="card" href="atelier-equilibrage-abr.html"><strong>Équilibrer un ABR</strong><span>L'exemple du cours : facteurs d'équilibre en postfixe et rotations jusqu'à la racine.</span><em>bst · balance</em></a>
+      <a class="card" href="atelier-avl.html"><strong>Atelier AVL</strong><span>Insertion, suppression et recherche dans un AVL, avec hauteurs et facteurs d'équilibre.</span><em>insert · delete · search</em></a>
+    </div>
+  </section>
+
+  <p class="foot">Chaque atelier mémorise son script dans le navigateur. Les fonctions laissées en exercice de TD / TP sont présentées en pseudo-code (principe), les autres en langage C, comme dans les supports de cours.</p>
+</div>
+<script>
+(() => {
+  const sel = document.getElementById('optTheme');
+  sel.value = document.documentElement.dataset.theme || 'auto';
+  sel.addEventListener('change', () => {
+    const t = sel.value;
+    if (t === 'auto') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
+    try { localStorage.setItem('ateliers-ti301-theme', t); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>

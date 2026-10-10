@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parcours en largeur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+<script src="commun/arbres.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const T = Arbres;
+
+/* ---------- Scène : l'arbre avec ses niveaux, la file de t_node * en dessous, cur à gauche de la file ---------- */
+let root;
+function scene(st, A) {
+  const hl = { ...(st.hl || {}) }, sub = {}, subCls = {};
+  for (const [id, k] of Object.entries(st.order || {})) { sub[id] = '#' + k; subCls[id] = 'strong'; }
+  const D = T.draw(root, { hl, sub, subCls });
+  const items = D.items, arrows = D.arrows, stack = A.opt('stack');
+  if (root) for (let d = 0; d <= T.height(root); d++) items.push(S.text('lv' + d, D.box.x0 - 30, d * 80, 'niveau ' + d, { align: 'end', cls: 'muted' }));
+  if (!st.q) return { items, arrows };
+  const qy = D.box.y1 + 74, qx = D.box.x0 + 110;
+  items.push(S.text('qT', qx, qy - 22, stack ? 'Pile de t_node * (on dépile à droite, au sommet)' : 'File de t_node * (on défile à gauche, on enfile à droite)', { align: 'start', cls: 'muted' }));
+  items.push(S.box('qZ', qx - 8, qy - 6, Math.max(240, st.q.length * 54 + 12), 56, '', { cls: 'zone', layer: 'back', rx: 10 }));
+  st.q.forEach((n, i) => items.push(S.box('q' + n.id, qx + i * 54, qy, 46, 44, n.v, { cls: 'acc', enter: 'n' + n.id })));
+  if (st.cur) {
+    items.push(S.box('cur' + st.cur.id, qx - 140, qy, 96, 44, 'cur → ' + st.cur.v, { cls: 'cmp', enter: 'q' + st.cur.id, fs: 13 }));
+    arrows.push(S.arrow('curA', 'cur' + st.cur.id, 'n' + st.cur.id, { cls: 'cmp dash', ctrl: { dx: -60, dy: 0 } }));
+  } else items.push(S.box('curNone', qx - 140, qy, 96, 44, 'cur', { cls: 'ghost', fs: 13 }));
+  return { items, arrows };
+}
+
+/* ---------- Modèle ---------- */
+function bfs(A) {
+  const stack = A.opt('stack'), q = [], hl = {}, order = {}, out = [];
+  const W = stack ? { s: 'pile', put: 'empiler', take: 'dépiler', S: 'La pile' } : { s: 'file', put: 'enfiler', take: 'défiler', S: 'La file' };
+  const E = (msg, kind, line, o = {}, cls) => A.emit(scene({ q: q.slice(), hl: { ...hl }, order: { ...order }, ...o }, A), msg,
+    { kind, code: [stack ? 'dfs' : 'bfs', line], codeCls: cls, readout: ['Sortie : ', out.join(' ') || '(rien)'] });
+  E(`On crée une ${W.s} vide.`, 'init', 2);
+  if (!root) { E('L\'arbre est vide : rien à parcourir.', 'end', 3, {}, 'bad'); return 'arbre vide'; }
+  q.push(root); hl[root.id] = 'acc';
+  E(`On ${W.put} la racine ${root.v}.`, 'put', 3);
+  while (q.length) {
+    const cur = stack ? q.pop() : q.shift();
+    hl[cur.id] = 'cmp';
+    E(`${W.S} n'est pas vide : cur ← ${W.take}() = ${cur.v}${stack ? ' (le dernier entré)' : ' (le premier entré)'}.`, 'take', [4, 5], { cur });
+    out.push(cur.v); order[cur.id] = out.length;
+    E(`On traite cur : afficher ${cur.v} (n° ${out.length}).`, 'visit', 6, { cur });
+    const kids = stack ? [cur.left, cur.right] : [cur.left, cur.right];
+    const names = ['gauche', 'droit'];
+    kids.forEach((k, i) => {
+      if (!k) return;
+      q.push(k); hl[k.id] = 'acc';
+      E(`Le fils ${names[i]} de ${cur.v} existe : on l'${W.put === 'empiler' ? 'empile' : 'enfile'} (${k.v}).`, 'put', 7 + i, { cur });
+    });
+    if (!cur.left && !cur.right) E(`${cur.v} est une feuille : rien à ${W.put}.`, 'leaf', [7, 8], { cur });
+    hl[cur.id] = 'new';
+  }
+  E(stack ? `${W.S} est vide : fin. Avec une pile, on obtient un parcours en profondeur (racine, puis le dernier fils empilé d'abord) : ${out.join(' ')}.`
+          : `${W.S} est vide : fin du parcours en largeur, niveau par niveau et de gauche à droite : ${out.join(' ')}.`, 'end', 4, {}, 'good');
+  return out.join(' ');
+}
+
+const pseudo = (s, put, take) => ['Algorithme parcours(t : t_tree)', `var ${s} : ${s === 'q' ? 'file' : 'pile'} de t_node*, cur : t_node*`,
+  `${s} ← ${s === 'q' ? 'fileVide' : 'pileVide'}()`, `si t.root ≠ NULL : ${put}(${s}, t.root)`, `Tant que (${s} n'est pas vide)`,
+  `    cur ← ${take}(${s})`, '    traiter(cur)                 // ici : afficher', `    si cur->left ≠ NULL : ${put}(${s}, cur->left)`,
+  `    si cur->right ≠ NULL : ${put}(${s}, cur->right)`];
+const CODES = {
+  bfs: { title: 'Parcours en largeur (principe)', lines: pseudo('q', 'enfiler', 'défiler') },
+  dfs: { title: 'Même algorithme avec une PILE', lines: pseudo('p', 'empiler', 'dépiler') },
+};
+
+Atelier.init({
+  id: 'atelier-parcours-largeur',
+  title: 'Parcours en largeur',
+  subtitle: 'CM4 · visiter l\'arbre niveau par niveau, de gauche à droite, grâce à une file.',
+  conv: 'file de t_node * : premier entré, premier sorti',
+  options: [{ id: 'stack', label: 'utiliser une pile au lieu d\'une file', checked: false }],
+  commands: { ...T.commands, bfs: { args: 'none', aliases: ['largeur', 'parcours', 'run'] } },
+  help: T.help + `
+bfs                               lance le parcours
+# commentaire`,
+  quick: { buttons: [
+    { label: 'Parcourir', cmd: 'bfs', primary: true },
+    { label: 'Arbre du cours', line: () => 'tree (- (+ 3 1) (/ 7 (x 3 2)))', ghost: true },
+    { label: 'ABR du cours', line: () => 'bst 8 3 10 1 6 14 4 7 13', ghost: true },
+  ] },
+  codes: CODES,
+  kinds: {
+    tree: { label: 'Arbre', tone: 'acc' }, init: { label: 'Initialisation', tone: 'acc' }, put: { label: 'Ajout', tone: 'acc' },
+    take: { label: 'Retrait', tone: 'cmp' }, visit: { label: 'Traitement', tone: 'new' }, leaf: { label: 'Feuille', tone: '' }, end: { label: 'Résultat', tone: 'new' },
+  },
+  hold: { tree: 1.6, init: 1.2, put: 1.3, take: 1.5, visit: 1.4, leaf: 1, end: 2.8 },
+  legend: [['acc', 'nœud en attente dans la file'], ['cmp', 'cur : nœud courant'], ['new', 'nœud traité (#k : rang)']],
+  example: `# L'arbre du cours : sortie attendue - + / 3 1 7 x 3 2
+tree (- (+ 3 1) (/ 7 (x 3 2)))
+bfs
+`,
+  emptyMsg: 'Créez un arbre avec « tree » ou « bst ».',
+  build(list, A) {
+    T.reset(); root = null;
+    A.op('début', null, () => { A.emit(scene({}, A), 'Créez un arbre avec « tree » ou « bst », puis lancez le parcours.', { kind: 'tree' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'bfs') { A.op('bfs', o.line, () => bfs(A)); continue; }
+      const r = T.fromCommand(o);
+      A.op(r.label, o.line, () => {
+        root = r.root;
+        A.emit(scene({}, A), `Nouvel arbre de ${plural(T.count(root), 'nœud')} sur ${plural(T.height(root) + 1, 'niveau')}.`, { kind: 'tree' });
+        return plural(T.count(root), 'nœud');
+      });
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

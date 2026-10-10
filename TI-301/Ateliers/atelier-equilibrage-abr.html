@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Équilibrer un ABR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+<script src="commun/arbres.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const T = Arbres;
+const H = n => n ? 1 + Math.max(H(n.left), H(n.right)) : -1;
+const BF = n => H(n.left) - H(n.right);
+const fmt = b => b > 0 ? '+' + b : b < 0 ? '−' + (-b) : '0';
+const rotR = n => { const p = n.left; n.left = p.right; p.right = n; return p; };
+const rotL = n => { const p = n.right; n.right = p.left; p.left = n; return p; };
+const anyBad = n => !!n && (Math.abs(BF(n)) > 1 || anyBad(n.left) || anyBad(n.right));
+
+/* ---------- Scène : l'arbre, avec le facteur d'équilibre (BF) sous chaque nœud déjà examiné ---------- */
+let root, AA;
+function scene(st = {}) {
+  const sub = {}, subCls = {}, sub2 = {};
+  for (const n of T.nodes(root)) {
+    if (st.done && st.done.has(n.id)) { const b = BF(n); sub[n.id] = 'BF ' + fmt(b); subCls[n.id] = Math.abs(b) > 1 ? 'strong' : ''; }
+    if (AA.opt('h')) sub2[n.id] = 'h=' + H(n);
+  }
+  const hl = { ...(st.hl || {}) };
+  if (st.done) for (const n of T.nodes(root)) if (st.done.has(n.id) && !hl[n.id] && Math.abs(BF(n)) > 1) hl[n.id] = 'bad';
+  const D = T.draw(root, { hl, sub, subCls, sub2 });
+  return { items: D.items, arrows: D.arrows };
+}
+
+/* ---------- Modèle : calcul postfixe des BF, rotations dès qu'un nœud atteint ±2, jusqu'à la racine ---------- */
+function balance(A) {
+  const done = new Set();
+  let rot = 0;
+  const E = (msg, kind, hl) => A.emit(scene({ done, hl }), msg, { kind, readout: ['Hauteur de l\'arbre : ', String(H(root)), '   ·   rotations : ', String(rot)] });
+  if (!root) { E('L\'arbre est vide.', 'end'); return 'arbre vide'; }
+  E(`On calcule les facteurs d'équilibre BF = h(gauche) − h(droit) en postfixe (d'abord les fils, puis le nœud), en partant des feuilles. Hauteur actuelle : ${H(root)}.`, 'start');
+  function bal(n, set, guard = 0) {
+    if (!n) return;
+    bal(n.left, x => { n.left = x; });
+    bal(n.right, x => { n.right = x; });
+    for (let k = 0; k < 12; k++) {
+      done.add(n.id);
+      const b = BF(n);
+      if (Math.abs(b) <= 1) {
+        E(`Nœud ${n.v} : h(gauche) = ${fmt(H(n.left)).replace('+', '')}, h(droit) = ${fmt(H(n.right)).replace('+', '')}, donc BF = ${fmt(b)}. ${b === 0 ? 'Parfaitement équilibré.' : 'Équilibré (−1, 0 ou +1).'}`, 'bf', { [n.id]: 'cmp' });
+        return;
+      }
+      const left = b > 0, c = left ? n.left : n.right, cb = BF(c);
+      const dbl = left ? cb < 0 : cb > 0;
+      const what = left ? (dbl ? `rotation à gauche sur ${n.v}->left (${c.v}), puis rotation à droite sur ${n.v}` : `rotation à droite sur ${n.v}`)
+                        : (dbl ? `rotation à droite sur ${n.v}->right (${c.v}), puis rotation à gauche sur ${n.v}` : `rotation à gauche sur ${n.v}`);
+      E(`Stop ! Nœud ${n.v} : BF = ${fmt(b)}, et son fils ${left ? 'gauche' : 'droit'} ${c.v} a BF = ${fmt(cb)}. ${dbl ? 'Double rotation' : 'Rotation simple'} : ${what}.`, 'stop',
+        { [n.id]: 'bad', [c.id]: 'cmp', ...(dbl ? { [(left ? c.right : c.left).id]: 'vio' } : {}) });
+      if (dbl) {
+        if (left) n.left = rotL(c); else n.right = rotR(c);
+        rot++;
+        const p = left ? n.left : n.right;
+        E(`${left ? 'Rotation à gauche' : 'Rotation à droite'} sur ${c.v} : ${p.v} remonte. On se ramène au cas simple.`, 'rot', { [n.id]: 'bad', [p.id]: 'vio' });
+      }
+      const r = left ? rotR(n) : rotL(n);
+      set(r); rot++;
+      E(`${left ? 'Rotation à droite' : 'Rotation à gauche'} sur ${n.v} : ${r.v} prend sa place. Les BF de ce sous-arbre sont recalculés.`, 'rot', { [r.id]: 'new' });
+      n = r;
+      if (anyBad(n.left)) bal(n.left, x => { n.left = x; });
+      if (anyBad(n.right)) bal(n.right, x => { n.right = x; });
+    }
+  }
+  bal(root, x => { root = x; });
+  E(`Terminé : tous les nœuds ont un BF de −1, 0 ou +1, l'arbre est un AVL. Hauteur finale : ${H(root)} (${plural(rot, 'rotation')}).`, 'end');
+  return `hauteur ${H(root)} · ${plural(rot, 'rotation')}`;
+}
+
+Atelier.init({
+  id: 'atelier-equilibrage-abr',
+  title: 'Équilibrer un ABR',
+  subtitle: 'CM5 · transformer un ABR quelconque en AVL : facteurs d\'équilibre calculés en postfixe, rotations jusqu\'à la racine.',
+  conv: 'BF = h(gauche) − h(droit) · feuille : h = 0',
+  options: [{ id: 'h', label: 'afficher les hauteurs', checked: false }],
+  commands: { bst: T.commands.bst, balance: { args: 'none', aliases: ['equilibrer', 'équilibrer', 'avl'] } },
+  help: `bst 75 59 83 42 62 90 24 87 37   construit l'ABR
+balance                           l'équilibre
+# commentaire`,
+  quick: { buttons: [
+    { label: 'Équilibrer', cmd: 'balance', primary: true },
+    { label: 'Exemple du cours', line: () => 'bst 75 59 83 42 62 90 24 87 37' },
+    { label: 'Arbre dégénéré', line: () => 'bst 1 2 3 4 5 6 7' },
+  ] },
+  note: '<b>BF −2</b>, fils droit à −1 : rotation à gauche.<br><b>BF −2</b>, fils droit à +1 : rotation à droite sur le fils, puis à gauche.<br><b>BF +2</b>, fils gauche à +1 : rotation à droite.<br><b>BF +2</b>, fils gauche à −1 : rotation à gauche sur le fils, puis à droite.',
+  noteTitle: 'Quelle rotation ?',
+  kinds: { tree: { label: 'Arbre', tone: 'acc' }, start: { label: 'Départ', tone: 'acc' }, bf: { label: 'Facteur', tone: 'cmp' }, stop: { label: 'Déséquilibre', tone: 'bad' },
+    rot: { label: 'Rotation', tone: 'strong' }, end: { label: 'Résultat', tone: 'new' } },
+  hold: { tree: 1.6, start: 2, bf: 1.3, stop: 3, rot: 2.2, end: 2.8 },
+  legend: [['cmp', 'nœud examiné'], ['bad', 'BF = ±2'], ['vio', 'nœud qui remonte (double rotation)'], ['new', 'nouvelle racine du sous-arbre']],
+  example: `# L'exemple du cours (diapositives 34 à 40)
+bst 75 59 83 42 62 90 24 87 37
+balance
+`,
+  emptyMsg: 'Créez un ABR avec « bst ».',
+  build(list, A) {
+    AA = A; T.reset(); root = null;
+    A.op('début', null, () => { A.emit(scene(), 'Créez un ABR avec « bst », puis équilibrez-le.', { kind: 'tree' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'balance') { A.op('balance', o.line, () => balance(A)); continue; }
+      const r = T.fromCommand(o);
+      A.op(r.label, o.line, () => { root = r.root; A.emit(scene(), `ABR de ${plural(T.count(root), 'nœud')}, hauteur ${H(root)}.`, { kind: 'tree' }); return `hauteur ${H(root)}`; });
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

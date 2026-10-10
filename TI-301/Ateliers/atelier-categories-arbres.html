@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catégories d'arbres binaires</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+<script src="commun/arbres.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const T = Arbres;
+
+/* ---------- Scène : l'arbre, avec à gauche le remplissage de chaque niveau ---------- */
+let root;
+function levels(r) {
+  const out = []; let cur = r ? [r] : [];
+  while (cur.length) { out.push(cur); cur = cur.flatMap(n => [n.left, n.right].filter(Boolean)); }
+  return out;
+}
+function scene(st = {}) {
+  const D = T.draw(root, { hl: st.hl, sub: st.sub, subCls: st.subCls, nulls: st.nulls, nullSub: st.nullSub });
+  const items = D.items, arrows = D.arrows;
+  if (root) levels(root).forEach((lv, d) => {
+    const full = lv.length === 2 ** d;
+    items.push(S.text('lv' + d, D.box.x0 - 30, d * 80, `niveau ${d} : ${lv.length} / ${2 ** d}`, { align: 'end', cls: (st.lvl && st.lvl[d]) || (full ? 'muted' : 'muted') }));
+  });
+  return { items, arrows };
+}
+
+/* ---------- Analyse ---------- */
+function analyse(A) {
+  const all = T.nodes(root), lv = levels(root), h = lv.length - 1, res = {};
+  const kids = n => (n.left ? 1 : 0) + (n.right ? 1 : 0);
+  const RD = () => ['Bilan : ', ['strict', 'complet', 'parfait', 'dégénéré'].map(k => res[k] == null ? `${k} ?` : `${k} : ${res[k] ? 'oui' : 'non'}`).join(' · ')];
+  A.emit(scene(), `Arbre de ${plural(all.length, 'nœud')} et de hauteur ${h}. Vérifions les quatre définitions du cours.`, { kind: 'tree', readout: RD() });
+
+  /* strict (localement complet) : chaque nœud a 0 ou 2 fils */
+  const one = all.filter(n => kids(n) === 1);
+  res.strict = !one.length;
+  A.emit(scene({ hl: Object.fromEntries(all.map(n => [n.id, kids(n) === 1 ? 'bad' : 'new'])), sub: Object.fromEntries(all.map(n => [n.id, kids(n) + ' fils'])) }),
+    res.strict ? 'Strict : chaque nœud a 0 ou 2 fils. OUI.'
+               : `Strict : chaque nœud doit avoir 0 ou 2 fils, mais ${one.map(n => n.v).join(', ')} n'${one.length > 1 ? 'en ont' : 'en a'} qu'un seul. NON.`,
+    { kind: res.strict ? 'yes' : 'no', readout: RD() });
+
+  /* complet : tous les niveaux remplis sauf peut-être le dernier, dont les nœuds sont tassés à gauche */
+  const slots = []; let q = [root];
+  for (let d = 0; d <= h; d++) { const nx = []; for (const n of q) { slots.push({ n, d }); nx.push(n ? n.left : null, n ? n.right : null); } q = nx; }
+  const firstHole = slots.findIndex(s => !s.n);
+  const after = firstHole < 0 ? [] : slots.slice(firstHole).filter(s => s.n).map(s => s.n);
+  res.complet = !after.length;
+  const nullHl = {};
+  const hl2 = Object.fromEntries(all.map(n => [n.id, after.includes(n) ? 'bad' : 'new']));
+  let holeTxt = '';
+  if (firstHole >= 0) {
+    const hole = slots[firstHole], k = firstHole - (2 ** hole.d - 1);
+    holeTxt = `la première place vide est au niveau ${hole.d} (position ${k + 1} en partant de la gauche)`;
+    const parentSlot = slots[Math.floor((firstHole - 1) / 2)];
+    if (parentSlot && parentSlot.n) nullHl[`${parentSlot.n.id}${firstHole % 2 ? 'L' : 'R'}`] = 'bad';
+  }
+  A.emit(scene({ hl: { ...hl2, ...nullHl }, nulls: !res.complet, nullSub: Object.fromEntries(Object.keys(nullHl).map(k => [k, 'trou'])) }),
+    res.complet ? `Complet : en lisant niveau par niveau, de gauche à droite, il n'y a aucun trou avant le dernier nœud${firstHole >= 0 ? ' (les places vides sont toutes à la fin du dernier niveau)' : ''}. OUI.`
+                : `Complet : ${holeTxt}, mais des nœuds viennent après (${after.map(n => n.v).join(', ')}). Les niveaux ne sont pas remplis de gauche à droite. NON.`,
+    { kind: res.complet ? 'yes' : 'no', readout: RD() });
+
+  /* parfait : tous les niveaux sont complets */
+  const notFull = lv.map((l, d) => l.length === 2 ** d ? null : d).filter(d => d != null);
+  res.parfait = !notFull.length;
+  A.emit(scene({ hl: Object.fromEntries(all.map(n => [n.id, res.parfait ? 'new' : ''])), lvl: Object.fromEntries(notFull.map(d => [d, 'big'])) }),
+    res.parfait ? `Parfait : chaque niveau d contient exactement 2^d nœuds, soit 2^${h + 1} − 1 = ${all.length} nœuds au total. OUI.`
+                : `Parfait : il faudrait 2^d nœuds au niveau d, or ${notFull.map(d => `le niveau ${d} n'en a que ${lv[d].length} sur ${2 ** d}`).join(', ')}. NON.`,
+    { kind: res.parfait ? 'yes' : 'no', readout: RD() });
+
+  /* dégénéré : chaque nœud a au plus un fils (c'est une liste) */
+  const two = all.filter(n => kids(n) === 2);
+  res['dégénéré'] = !two.length;
+  A.emit(scene({ hl: Object.fromEntries(all.map(n => [n.id, kids(n) === 2 ? 'bad' : 'new'])), sub: Object.fromEntries(all.map(n => [n.id, kids(n) + ' fils'])) }),
+    res['dégénéré'] ? `Dégénéré : chaque nœud a au plus un fils : c'est en fait une liste (hauteur ${h} pour ${all.length} nœuds). OUI.`
+                    : `Dégénéré : chaque nœud doit avoir au plus un fils, mais ${two.map(n => n.v).join(', ')} en ${two.length > 1 ? 'ont' : 'a'} deux. NON.`,
+    { kind: res['dégénéré'] ? 'yes' : 'no', readout: RD() });
+
+  A.emit(scene(), `Bilan : strict ${res.strict ? 'oui' : 'non'}, complet ${res.complet ? 'oui' : 'non'}, parfait ${res.parfait ? 'oui' : 'non'}, dégénéré ${res['dégénéré'] ? 'oui' : 'non'}.${res.parfait ? ' Un arbre parfait est forcément strict et complet.' : ''}`,
+    { kind: 'end', readout: RD() });
+  return ['strict', 'complet', 'parfait', 'dégénéré'].filter(k => res[k]).join(', ') || 'aucune catégorie';
+}
+
+const EX = {
+  strict: '(A (B (D) (E (H) (I))) (C))',
+  complet: '(A (B (D) (E)) (C (F) .))',
+  parfait: '(A (B (D) (E)) (C (F) (G)))',
+  degenere: '(A . (B (C . (D)) .))',
+  aucun: '(A (B (D) .) (C (E) (F)))',
+};
+
+Atelier.init({
+  id: 'atelier-categories-arbres',
+  title: 'Catégories d\'arbres binaires',
+  subtitle: 'CM4 · strict, complet, parfait, dégénéré : vérification des définitions sur l\'arbre de votre choix.',
+  conv: 'niveau d : au plus 2^d nœuds',
+  commands: { ...T.commands },
+  help: T.help + `
+chaque arbre créé est analysé
+# commentaire`,
+  quick: { input: 'text', placeholder: '(A (B (D) (E)) (C))', check: T.check, buttons: [
+    { label: 'Analyser cet arbre', cmd: 'tree', arg: true, primary: true },
+    { label: 'Strict', line: () => 'tree ' + EX.strict }, { label: 'Complet', line: () => 'tree ' + EX.complet },
+    { label: 'Parfait', line: () => 'tree ' + EX.parfait }, { label: 'Dégénéré', line: () => 'tree ' + EX.degenere },
+  ] },
+  note: '<b>Strict</b> : chaque nœud a 0 ou 2 fils.<br><b>Complet</b> : tous les niveaux sont remplis, sauf peut-être le dernier, où les feuilles sont tassées à gauche.<br><b>Parfait</b> : tous les niveaux sont remplis.<br><b>Dégénéré</b> : chaque nœud a au plus un fils (c\'est une liste).',
+  noteTitle: 'Définitions du cours',
+  kinds: { start: { label: 'Départ', tone: 'acc' }, tree: { label: 'Arbre', tone: 'acc' }, yes: { label: 'Oui', tone: 'new' }, no: { label: 'Non', tone: 'bad' }, end: { label: 'Bilan', tone: 'vio' } },
+  hold: { tree: 1.6, yes: 2.4, no: 2.8, end: 2.6 },
+  legend: [['new', 'nœud qui respecte la règle'], ['bad', 'nœud qui l\'enfreint'], ['ghost', 'place vide (trou)']],
+  example: `tree ${EX.strict}
+tree ${EX.complet}
+tree ${EX.parfait}
+tree ${EX.degenere}
+tree ${EX.aucun}
+`,
+  emptyMsg: 'Créez un arbre avec « tree » ou « bst ».',
+  build(list, A) {
+    T.reset(); root = null;
+    A.op('début', null, () => { A.emit(scene(), 'Créez un arbre : il sera analysé selon les quatre catégories du cours.', { kind: 'start' }); return ''; });
+    for (const o of list) {
+      const r = T.fromCommand(o);
+      A.op(r.label, o.line, () => { root = r.root; return analyse(A); });
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

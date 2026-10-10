@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>File et buffer circulaire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const N = 8, CWD = 62, RR = 150;
+
+/* ---------- Scène : le tableau (en ligne ou en anneau), first au-dessus / à l'extérieur, last en dessous / à l'intérieur ---------- */
+function scene(st, A) {
+  const items = [], arrows = [], ring = A.opt('ring'), mod = !A.opt('nomod'), hl = st.hl || {};
+  const idx = k => mod ? k % N : k;
+  const fi = idx(st.first), li = idx(st.last);
+  const cellPos = i => {
+    if (!ring) return { x: i * CWD, y: 0 };
+    const a = (-90 + i * 360 / N) * Math.PI / 180;
+    return { x: RR * Math.cos(a) - (CWD - 6) / 2, y: RR * Math.sin(a) - 23, a };
+  };
+  const used = new Set();
+  for (let k = st.first; k < st.last; k++) used.add(idx(k));
+  for (let i = 0; i < N; i++) {
+    const p = cellPos(i), v = st.tab[i];
+    items.push(S.box('t' + i, p.x, p.y, CWD - 6, 46, v == null ? '' : v,
+      { cls: hl[i] || (used.has(i) ? 'acc' : v != null ? 'ghost' : ''), sub: String(i), rx: 4 }));
+  }
+  const ptr = (name, val, at, outside, cls) => {
+    const label = `${name} = ${val}` + (mod && val !== at ? `  → case ${at}` : '');
+    const w = 30 + label.length * 7.6;
+    if (at >= N) {
+      const x = ring ? 0 : N * CWD + 10, y = ring ? (outside ? -RR - 120 : 0) : (outside ? -70 : 96);
+      items.push(S.ptr('p_' + name, x - (ring ? w / 2 : 0), y, label, { w, cls: 'bad' }));
+      items.push(S.text('out_' + name, ring ? 0 : N * CWD + 10, ring ? (outside ? -RR - 80 : 40) : (outside ? -26 : 70), 'hors du tableau !', { align: ring ? 'middle' : 'start', cls: 'muted' }));
+      return;
+    }
+    if (!ring) {
+      const cx = at * CWD + (CWD - 6) / 2;
+      items.push(S.ptr('p_' + name, cx - w / 2, outside ? -74 : 96, label, { w, cls }));
+      arrows.push(S.arrow('pa_' + name, { k: 'p_' + name, side: outside ? 'b' : 't' }, outside ? { k: 't' + at, side: 't' } : { x: cx, y: 70 }, { cls }));
+    } else {
+      const a = (-90 + at * 360 / N) * Math.PI / 180, r = outside ? RR + 92 : RR - 92;
+      items.push(S.ptr('p_' + name, r * Math.cos(a) - w / 2, r * Math.sin(a) - 13, label, { w, cls }));
+      arrows.push(S.arrow('pa_' + name, 'p_' + name, 't' + at, { cls }));
+    }
+  };
+  ptr('first', st.first, fi, true, 'vio');
+  ptr('last', st.last, li, false, 'cmp');
+  if (st.val != null) items.push(S.box('val', ring ? RR + 130 : N * CWD + 30, ring ? -22 : -6, 120, 44, `val = ${st.val}`, { cls: 'new', enter: st.valFrom }));
+  if (ring) items.push(S.text('ttl', 0, RR + 95, 'les indices 0 … 7 se suivent en boucle', { cls: 'muted' }));
+  return { items, arrows };
+}
+
+/* ---------- Modèle ---------- */
+let tab, first, last;
+let AA;
+const V = o => scene({ tab, first, last, ...o }, AA);
+const content = () => { const mod = !AA.opt('nomod'), out = []; for (let k = first; k < last; k++) out.push(tab[mod ? k % N : k]); return out.join(' ') || 'vide'; };
+const RD = () => ['File (premier → dernier) : ', content(), `   ·   éléments : last − first = ${last} − ${first} = `, String(last - first)];
+
+function doEnq(A, v) {
+  const mod = !A.opt('nomod'), set = mod ? 'q' : 'qn';
+  const E = (o, msg, kind, line, cls) => A.emit(V(o), msg, { kind, code: [set, line], codeCls: cls, readout: RD() });
+  if (last - first >= N) {
+    E({}, `last − first = ${last - first} = NBMAX : la file est pleine, on ne peut pas enfiler ${v}.`, 'full', 4, 'bad');
+    return { text: 'file pleine', cls: 'bad' };
+  }
+  if (!mod && last >= N) {
+    E({}, `last = ${last} : la case d'indice ${last} n'existe pas, on sortirait du tableau ! Impossible d'enfiler ${v}… alors que la file ne contient que ${plural(last - first, 'élément')} et que ${plural(first, 'case')} au début ${first > 1 ? 'sont libres' : 'est libre'}. C'est le paradoxe que le modulo résout.`, 'paradox', 4, 'bad');
+    return { text: 'paradoxe : bloquée', cls: 'bad' };
+  }
+  const k = mod ? last % N : last;
+  E({ hl: { [k]: 'cmp' } }, mod ? `La file n'est pas pleine (last − first = ${last - first} < ${N}). Case où enfiler : last % NBMAX = ${last} % ${N} = ${k}.`
+                               : `La file n'est pas pleine. Case où enfiler : last = ${k}.`, 'test', 4);
+  tab[k] = v;
+  E({ hl: { [k]: 'new' } }, `values[${k}] ← ${v}.`, 'enq', 5);
+  last++;
+  E({ hl: { [k]: 'new' } }, `last ← ${last} : le prochain élément ira dans la case ${mod ? `${last} % ${N} = ${last % N}` : last}.${mod && last % N === 0 && last > 0 ? ' On repart au début du tableau : c\'est le buffer circulaire.' : ''}`, 'enq', 6);
+  return `case ${k}`;
+}
+
+function doDeq(A) {
+  const mod = !A.opt('nomod'), set = mod ? 'q' : 'qn';
+  const E = (o, msg, kind, line, cls) => A.emit(V(o), msg, { kind, code: [set, line], codeCls: cls, readout: RD() });
+  if (first === last) {
+    E({}, `first = last = ${first} : la file est vide (et pas forcément à 0 !). Rien à défiler.`, 'empty', 11, 'bad');
+    return { text: 'file vide', cls: 'bad' };
+  }
+  const k = mod ? first % N : first, v = tab[k];
+  E({ hl: { [k]: 'cmp' } }, mod ? `La file n'est pas vide. Le premier arrivé est dans la case first % NBMAX = ${first} % ${N} = ${k}.` : `La file n'est pas vide. Le premier arrivé est dans la case first = ${k}.`, 'test', 11);
+  E({ hl: { [k]: 'cmp' }, val: v, valFrom: 't' + k }, `val ← values[${k}] = ${v}.`, 'deq', 12);
+  first++;
+  E({ val: v }, `first ← ${first}. La valeur ${v} reste dans la case ${k}, mais elle ne fait plus partie de la file : la case pourra être réutilisée.`, 'deq', 13);
+  return `→ ${v}`;
+}
+
+const mk = m => [
+  'constante NBMAX = 8', '',
+  'Algorithme enqueue(p_q : t_queuetab*, val : entier)', 'début',
+  m ? '    // précondition : p_q->last − p_q->first < NBMAX (pas pleine)' : '    // précondition : p_q->last < NBMAX (sinon : hors du tableau)',
+  m ? '    p_q->values[p_q->last mod NBMAX] ← val' : '    p_q->values[p_q->last] ← val',
+  '    p_q->last ← p_q->last + 1', 'fin', '',
+  'Algorithme dequeue(p_q : t_queuetab*) : entier', 'début',
+  '    // précondition : p_q->first ≠ p_q->last (pas vide)',
+  m ? '    val ← p_q->values[p_q->first mod NBMAX]' : '    val ← p_q->values[p_q->first]',
+  '    p_q->first ← p_q->first + 1', '    retourner val', 'fin'];
+const CODES = { q: { title: 'File avec buffer circulaire (principe)', lines: mk(true) }, qn: { title: 'File SANS modulo (principe, version naïve)', lines: mk(false) } };
+
+AA = Atelier.init({
+  id: 'atelier-file-circulaire',
+  title: 'File et buffer circulaire',
+  subtitle: 'CM3 · enfiler à la fin (last), défiler au début (first), et réutiliser les cases grâce au modulo.',
+  conv: 'FIFO · NBMAX = 8',
+  options: [{ id: 'ring', label: 'vue en anneau', checked: false }, { id: 'nomod', label: 'sans modulo (paradoxe)', checked: false }],
+  commands: {
+    enqueue: { args: 'nums', aliases: ['enfiler', 'enq', 'e', 'in'] },
+    dequeue: { args: 'num?', min: 1, max: 20, aliases: ['defiler', 'défiler', 'deq', 'out'] },
+  },
+  help: `enqueue 4 8 15   enfile trois valeurs
+dequeue          défile une valeur
+dequeue 3        défile trois fois
+# commentaire`,
+  quick: { input: 'num', buttons: [
+    { label: 'Enfiler', cmd: 'enqueue', arg: true, primary: true },
+    { label: 'Défiler', cmd: 'dequeue' },
+  ] },
+  codes: CODES,
+  codeDefault: 'q',
+  kinds: {
+    start: { label: 'Départ', tone: 'acc' }, test: { label: 'Indice', tone: 'cmp' }, enq: { label: 'Enfiler', tone: 'acc' },
+    deq: { label: 'Défiler', tone: 'vio' }, empty: { label: 'File vide', tone: 'bad' }, full: { label: 'File pleine', tone: 'bad' },
+    paradox: { label: 'Paradoxe', tone: 'bad' },
+  },
+  hold: { test: 1.6, enq: 1.4, deq: 1.6, empty: 2.6, full: 2.6, paradox: 3.4 },
+  legend: [['acc', 'case occupée par la file'], ['ghost', 'case libérée (valeur restée)'], ['vio', 'first : où défiler'], ['cmp', 'last : où enfiler'], ['new', 'écrit / valeur obtenue']],
+  example: `enqueue 4 8 15 16 23
+dequeue 3
+enqueue 42 7 9 1     # last dépasse 8 : on repart en case 0
+dequeue 2
+enqueue 5 6 3 2
+enqueue 11           # last − first = 8 : file pleine
+`,
+  build(list, A) {
+    AA = A; tab = Array(N).fill(null); first = 0; last = 0;
+    A.op('début', null, () => { A.emit(V({}), 'File vide : first = last = 0.', { kind: 'start', readout: RD() }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'enqueue') o.vals.forEach(v => A.op(`enqueue ${v}`, o.line, () => doEnq(A, v)));
+      else for (let k = 0; k < (o.vals[0] || 1); k++) A.op('dequeue', o.line, () => doDeq(A));
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

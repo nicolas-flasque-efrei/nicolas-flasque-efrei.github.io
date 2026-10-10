@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Évaluation postfixée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const TW = 58, SLOT = 48, TY = 120, CX = 230;
+const OPS = { '+': (a, b) => a + b, '-': (a, b) => a - b, '*': (a, b) => a * b, '/': (a, b) => Math.trunc(a / b) };
+const norm = t => t === 'x' || t === 'X' || t === '×' ? '*' : t === '÷' ? '/' : t;
+const tokens = text => text.trim().split(/\s+/).filter(Boolean).map(norm);
+
+/* ---------- Scène : l'expression en haut, la pile (tube) à gauche, la zone de calcul à droite ---------- */
+function scene(st) {
+  const items = [], arrows = [], tk = st.toks, hl = st.thl || {};
+  tk.forEach((t, i) => items.push(S.box('tk' + i, i * TW, 0, TW - 6, 44, t === '*' ? '×' : t,
+    { cls: hl[i] || (i < st.i ? 'ghost' : ''), fs: String(t).length > 3 ? 13 : 16 })));
+  const ci = Math.max(-1, Math.min(tk.length, st.i));
+  items.push(S.ptr('cur', ci * TW + (TW - 6) / 2 - 28, -60, st.i < 0 ? 'début' : st.i >= tk.length ? 'fin' : 'lu', { w: 56, cls: 'cmp' }));
+  arrows.push(S.arrow('curA', { k: 'cur', side: 'b' }, { x: ci * TW + (TW - 6) / 2, y: -2 }, { cls: 'cmp' }));
+  const depth = Math.max(4, st.depth), bottom = TY + depth * SLOT + 12;
+  items.push(S.box('tube', 0, TY, 96, bottom - TY, '', { cls: 'zone', layer: 'back', rx: 10, sub: 'pile', subCls: 'strong' }));
+  st.stack.forEach((it, k) => items.push(S.box('s' + it.id, 10, bottom - 6 - (k + 1) * SLOT, 76, SLOT - 6, it.v,
+    { cls: (st.shl && st.shl[it.id]) || 'acc', enter: it.from, fs: String(it.v).length > 4 ? 12 : 16 })));
+  if (st.calc) {
+    const c = st.calc, y = TY + 30;
+    items.push(S.text('calcT', CX, y - 26, 'calcul : a opérateur b', { align: 'start', cls: 'muted' }));
+    if (c.a) items.push(S.box('s' + c.a.id, CX, y, 76, 42, c.a.v, { cls: 'cmp', sub: 'a' }));
+    items.push(S.box('op', CX + 86, y, 42, 42, c.op === '*' ? '×' : c.op, { cls: 'vio', enter: 'tk' + st.i }));
+    if (c.b) items.push(S.box('s' + c.b.id, CX + 138, y, 76, 42, c.b.v, { cls: 'cmp', sub: 'b (sommet)' }));
+    if (c.r) {
+      items.push(S.text('eq', CX + 232, y + 21, '=', { cls: 'big mono' }));
+      items.push(S.box('s' + c.r.id, CX + 252, y, 86, 42, c.r.v, { cls: c.err ? 'bad' : 'new', fs: String(c.r.v).length > 5 ? 12 : 16 }));
+    }
+  }
+  if (st.result != null) items.push(S.box('res', CX, TY + 140, 200, 46, st.result, { cls: st.ok ? 'new' : 'bad', fs: 15 }));
+  return { items, arrows };
+}
+
+/* ---------- Modèle ---------- */
+let nextId;
+function evaluate(A, text) {
+  const toks = tokens(text), stack = [];
+  let depth = 0, d = 0;
+  for (const t of toks) { if (OPS[t]) d = Math.max(0, d - 1); else d++; depth = Math.max(depth, d); }
+  const V = (i, o = {}) => scene({ toks, i, depth, stack: stack.map(x => ({ ...x })), ...o });
+  const E = (i, o, msg, kind, line, cls) => A.emit(V(i, o), msg, { kind, code: ['algo', line], codeCls: cls, readout: ['Pile (fond → sommet) : ', stack.map(s => s.v).join(' ') || 'vide'] });
+  E(-1, {}, `Évaluation de « ${toks.join(' ').replace(/\*/g, '×')} » : on lit de gauche à droite avec une pile vide.`, 'start', 0);
+  for (let i = 0; i < toks.length; i++) {
+    const t = toks[i];
+    if (!OPS[t]) {
+      const it = { id: nextId++, v: +t, from: 'tk' + i };
+      stack.push(it);
+      E(i, { thl: { [i]: 'cmp' } }, `« ${t} » est un nombre : on l'empile.`, 'push', 3);
+      delete it.from;
+      continue;
+    }
+    E(i, { thl: { [i]: 'vio' } }, `« ${t === '*' ? '×' : t} » est un opérateur : il s'applique aux deux dernières valeurs, qui sont au sommet de la pile.`, 'op', 4);
+    if (stack.length < 2) {
+      E(i, { thl: { [i]: 'bad' }, result: 'expression mal formée', ok: false },
+        `Il faudrait dépiler deux valeurs, mais la pile n'en contient que ${stack.length} : il manque un opérande. L'expression postfixée est mal formée.`, 'bad', 5, 'bad');
+      return { text: 'il manque un opérande', cls: 'bad' };
+    }
+    const b = stack.pop();
+    E(i, { thl: { [i]: 'vio' }, calc: { op: t, b } }, `b ← dépiler : b = ${b.v}. Attention, le premier dépilé est l'opérande de DROITE.`, 'pop', 5);
+    const a = stack.pop();
+    E(i, { thl: { [i]: 'vio' }, calc: { op: t, a, b } }, `a ← dépiler : a = ${a.v}.`, 'pop', 6);
+    if (t === '/' && b.v === 0) {
+      E(i, { thl: { [i]: 'bad' }, calc: { op: t, a, b, r: { id: nextId++, v: 'erreur' }, err: true }, result: 'division par zéro', ok: false },
+        `${a.v} / 0 : division par zéro, le calcul est impossible.`, 'bad', 7, 'bad');
+      return { text: 'division par zéro', cls: 'bad' };
+    }
+    const r = { id: nextId++, v: OPS[t](a.v, b.v) };
+    E(i, { thl: { [i]: 'vio' }, calc: { op: t, a, b, r } },
+      `On calcule a ${t === '*' ? '×' : t} b = ${a.v} ${t === '*' ? '×' : t} ${b.v} = ${r.v}${t === '/' ? ' (division entière)' : ''}.`, 'calc', 7);
+    stack.push(r);
+    E(i, { thl: { [i]: 'new' } }, `On empile le résultat ${r.v} : il servira d'opérande aux opérateurs suivants.`, 'push', 7);
+  }
+  if (stack.length !== 1) {
+    E(toks.length, { result: stack.length ? `${stack.length} valeurs restent` : 'pile vide', ok: false },
+      stack.length ? `Fin de l'expression, mais la pile contient ${stack.length} valeurs : il manque ${plural(stack.length - 1, 'opérateur')}. L'expression est mal formée.`
+                   : 'Fin de l\'expression, mais la pile est vide : il n\'y a aucun résultat.', 'bad', 8, 'bad');
+    return { text: 'mal formée', cls: 'bad' };
+  }
+  E(toks.length, { result: `résultat = ${stack[0].v}`, ok: true, shl: { [stack[0].id]: 'new' } },
+    `Fin de l'expression : il reste exactement une valeur dans la pile, c'est le résultat : ${stack[0].v}.`, 'done', 8, 'good');
+  return { text: `= ${stack[0].v}`, cls: 'ok' };
+}
+
+Atelier.init({
+  id: 'atelier-postfixe',
+  title: 'Évaluation postfixée',
+  subtitle: 'CM3 (bonus) · calculer une expression en notation postfixée avec une pile, sans parenthèses ni priorités.',
+  conv: 'opérandes d\'abord, opérateur ensuite',
+  commands: {
+    eval: { args: 'text', argName: 'une expression', aliases: ['evaluer', 'évaluer', 'calcul', 'calculer'],
+      check: t => {
+        const bad = tokens(t).find(x => !/^-?\d+$/.test(x) && !OPS[x]);
+        if (bad) return `« ${bad} » n'est ni un entier ni un opérateur (+ - × /).`;
+        if (tokens(t).length > 25) return 'expression trop longue (25 éléments au plus).';
+        return '';
+      } },
+  },
+  defaultCmd: 'eval',
+  help: `eval 3 4 + 2 *    (3 + 4) × 2
+3 1 + 7 3 2 * / -  une ligne qui commence par un nombre
+opérateurs : + - * (ou x) /
+séparer chaque élément par une espace
+# commentaire`,
+  quick: { input: 'text', placeholder: 'Par exemple 3 4 + 2 *', check: t => {
+      const bad = tokens(t).find(x => !/^-?\d+$/.test(x) && !OPS[x]);
+      return bad ? `« ${bad} » n'est ni un entier ni un opérateur.` : '';
+    }, buttons: [{ label: 'Évaluer', cmd: 'eval', arg: true, primary: true }] },
+  codes: { algo: { title: 'Principe (pseudo-code)', lines: [
+    'pile ← vide', 'pour chaque élément e de l\'expression :', '  si e est un nombre :', '    empiler(pile, e)', '  sinon (e est un opérateur) :',
+    '    b ← dépiler(pile)    // le sommet : opérande droit', '    a ← dépiler(pile)', '    empiler(pile, a e b)', 'résultat ← dépiler(pile)  // il doit rester 1 valeur'] } },
+  kinds: {
+    start: { label: 'Départ', tone: 'acc' }, push: { label: 'Empiler', tone: 'acc' }, op: { label: 'Opérateur', tone: 'vio' },
+    pop: { label: 'Dépiler', tone: 'cmp' }, calc: { label: 'Calcul', tone: 'new' }, done: { label: 'Résultat', tone: 'new' }, bad: { label: 'Erreur', tone: 'bad' },
+  },
+  hold: { start: 1.4, push: 1.1, op: 1.4, pop: 1.3, calc: 1.8, done: 2.6, bad: 3 },
+  legend: [['cmp', 'élément lu / opérandes'], ['vio', 'opérateur'], ['acc', 'valeur dans la pile'], ['new', 'résultat'], ['bad', 'erreur']],
+  example: `# Une expression postfixée par ligne.
+eval 3 4 + 2 *            # (3 + 4) × 2
+eval 3 1 + 7 3 2 * / -    # l'arbre d'expression du CM4
+eval 5 1 2 + 4 * + 3 -
+eval 2 3 + *              # il manque un opérande
+`,
+  build(list, A) {
+    nextId = 1;
+    A.op('début', null, () => { A.emit({ items: [], arrows: [] }, 'Saisissez une expression postfixée, par exemple 3 4 + 2 *.', { kind: 'start' }); return ''; });
+    for (const o of list) A.op(tokens(o.text).join(' ').replace(/\*/g, '×'), o.line, () => evaluate(A, o.text));
+  },
+  emptyMsg: 'Saisissez une expression postfixée, par exemple 3 4 + 2 *.',
+});
+})();
+</script>
+</body>
+</html>

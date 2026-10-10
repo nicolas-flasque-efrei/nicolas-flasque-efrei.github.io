@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liste chaînée simple</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const X0 = 160, SP = 166, CW = S.LCW, NY = 124;
+
+/* ---------- Scène : la variable L (champ head), les cellules value | next, les pointeurs de parcours.
+   Convention du cours : un champ pointeur contient @ et un point d'où part la flèche ; NULL est une « masse ». ---------- */
+function scene(st) {
+  const items = [], arrows = [], hl = st.hl || {}, subs = st.subs || {};
+  const row = st.cells, n = row.length, pos = {};
+  const toNull = (k, x, y, dir = 'right') => { items.push(S.ground('g_' + k, x, dir === 'right' ? y - 13 : y, dir)); return { k: 'g_' + k, side: dir === 'right' ? 'l' : 't' }; };
+  row.forEach((c, i) => { pos[c.id] = X0 + i * SP; });
+  if (st.nc) pos[st.nc.id] = X0;
+  const posY = id => st.nc && id === st.nc.id ? NY : 0;
+  items.push(...S.lstruct('L', 0, -22, ['head'], { name: 'L', cls: st.Lcls }));
+  const hi = row.findIndex(c => c.id === st.head);
+  arrows.push(S.arrow('aL', { k: 'L_head', dot: true }, st.head != null ? 'c' + st.head : toNull('L', 120, 20),
+    { cls: st.Lacls, ctrl: hi > 0 ? { dy: -60 - 8 * hi } : null }));
+  row.forEach((c, i) => {
+    const nx = row[i + 1];
+    items.push(S.lcell('c' + c.id, pos[c.id], 0, c.v, { cls: hl[c.id], sub: subs[c.id] }));
+    arrows.push(S.arrow('n' + c.id, { k: 'c' + c.id, part: 1, dot: true }, nx ? 'c' + nx.id : toNull('c' + c.id, pos[c.id] + CW + 30, 20),
+      { cls: st.nhl && st.nhl[c.id] }));
+  });
+  if (st.nc) {
+    const c = st.nc;
+    items.push(S.lcell('c' + c.id, X0, NY, c.v, { cls: 'new' }));
+    arrows.push(S.arrow('n' + c.id, { k: 'c' + c.id, part: 1, dot: true }, c.next != null ? 'c' + c.next : toNull('c' + c.id, X0 + CW + 30, NY + 20), { cls: 'new' }));
+  }
+  if (st.copy) {
+    items.push(...S.lstruct('lc', 0, 110, ['head'], { name: 'l (copie)', cls: 'vio' }));
+    arrows.push(S.arrow('alc', { k: 'lc_head', dot: true }, st.head != null ? 'c' + st.head : toNull('lc', 120, 152), { cls: 'vio dash' }));
+  }
+  for (const p of st.ptrs || []) {
+    const name = p.name, w = Math.max(46, 14 + name.length * 8.6);
+    if (p.at === 'left') {
+      items.push(S.ptr('p_' + name, 20, NY + 7, name, { cls: p.cls }));
+      arrows.push(S.arrow('pa_' + name, { k: 'p_' + name, side: 'r' }, 'c' + p.target, { cls: 'acc' }));
+      continue;
+    }
+    const cx = p.at != null ? pos[p.at] + CW / 2 : X0 + n * SP + 20;
+    items.push(S.ptr('p_' + name, cx - w / 2, -96, name, { cls: p.cls }));
+    arrows.push(S.arrow('pa_' + name, { k: 'p_' + name, side: 'b' }, p.at != null ? { k: 'c' + p.at, side: 't' } : toNull('p_' + name, cx - 13, -34, 'down'),
+      { cls: p.cls === 'cmp' ? 'cmp' : 'acc' }));
+  }
+  return { items, arrows };
+}
+
+/* ---------- Modèle ---------- */
+let cells, head, nextId;
+const vals = () => cells.map(c => c.v);
+const base = o => scene({ cells, head, ...o });
+
+function doAdd(A, v) {
+  const id = nextId++, first = head;
+  const nc = { id, v, next: null };
+  A.emit(base({ nc, ptrs: [{ name: 'nouv', at: 'left', target: id }] }),
+    `createCell(${v}) réserve une nouvelle cellule (malloc) : value = ${v}, next = NULL. Le pointeur local nouv la repère.`, { kind: 'create', code: ['addCell', 2] });
+  nc.next = first;
+  A.emit(base({ nc, ptrs: [{ name: 'nouv', at: 'left', target: id }] }),
+    first != null ? `nouv->next = ptr_list->head : la nouvelle cellule pointe sur la cellule qui est actuellement en tête (${cells[0].v}).`
+                  : `nouv->next = ptr_list->head : la liste est vide, head vaut NULL, donc next reste à NULL.`,
+    { kind: 'link', code: ['addCell', 3] });
+  cells.unshift({ id, v }); head = id;
+  A.emit(scene({ cells: cells.slice(1), head: id, nc, Lcls: 'cmp', Lacls: 'cmp', ptrs: [{ name: 'nouv', at: 'left', target: id }] }),
+    `ptr_list->head = nouv : la tête de liste change, L.head repère maintenant la nouvelle cellule. C'est pour cela que addCell reçoit un pointeur sur la liste : L est modifiée.`,
+    { kind: 'link', code: ['addCell', 4] });
+  A.emit(base({ hl: { [id]: 'new' } }),
+    `Fin de addCell : la variable locale nouv disparaît. ${v} est en tête ; la liste contient ${plural(cells.length, 'cellule')}.`,
+    { kind: 'done', code: ['addCell', 5], readout: ['Liste : ', vals().join(' → ') || 'vide'] });
+  return `en tête · ${plural(cells.length, 'cellule')}`;
+}
+
+function walk(A, set, L, onCell, endMsg) {
+  /* parcours générique avec curr : L = numéros de ligne { init, test, body, next } */
+  let i = 0;
+  A.emit(base({ copy: true, ptrs: [{ name: 'curr', at: head }] }),
+    `La fonction reçoit une copie l de la liste (passage par valeur). ${head != null ? 'curr ← l.head : curr repère la première cellule.' : "curr ← l.head : la liste est vide, curr vaut NULL."}`,
+    { kind: 'init', code: [set, L.init] });
+  while (i < cells.length) {
+    const c = cells[i];
+    const r = onCell(c, i);
+    A.emit(base({ copy: true, ptrs: [{ name: 'curr', at: c.id, cls: 'cmp' }], hl: { ...(r.hl || {}), [c.id]: r.cls || 'cmp' } }),
+      `curr ≠ NULL : on pointe bien une cellule. ${r.msg}`, { kind: r.kind || 'visit', code: [set, r.line != null ? r.line : L.body], codeCls: r.codeCls, readout: r.readout });
+    if (r.stop) return r.ret;
+    const nx = cells[i + 1];
+    A.emit(base({ copy: true, ptrs: [{ name: 'curr', at: nx ? nx.id : null }], hl: r.keep || {} }),
+      `curr ← curr->next : on passe ${nx ? `à la cellule suivante (${nx.v})` : 'au suivant… qui est NULL : on est au bout de la liste'}.`,
+      { kind: 'move', code: [set, L.next], readout: r.readout });
+    i++;
+  }
+  return endMsg();
+}
+
+function doDisplay(A) {
+  const out = [];
+  walk(A, 'displayList', { init: 3, body: 6, next: 7 }, c => {
+    out.push(c.v);
+    return { msg: `printf affiche sa valeur : ${c.v}.`, readout: ['Écran : ', out.join(' ')] };
+  }, () => {
+    A.emit(base({}), `curr vaut NULL : la condition du while est fausse, la boucle s'arrête. La liste a été affichée sans être modifiée : on n'a déplacé que curr, jamais L.head.`,
+      { kind: 'done', code: ['displayList', 4], codeCls: 'good', readout: ['Écran : ', out.join(' ') || '(rien)'] });
+  });
+  return out.length ? out.join(' ') : 'liste vide';
+}
+
+function doSearch(A, v) {
+  let res = null;
+  const ret = walk(A, 'searchList', { init: 2, body: 5, next: 7 }, c => {
+    if (c.v === v) {
+      res = 'trouvée';
+      return { stop: true, ret: true, cls: 'new', kind: 'found', line: 6, codeCls: 'good', msg: `curr->value = ${c.v} : c'est la valeur cherchée, on la trouve et la recherche s'arrête (return 1).` };
+    }
+    return { msg: `curr->value = ${c.v} ≠ ${v} : ce n'est pas la valeur cherchée.`, line: 5 };
+  }, () => {
+    A.emit(base({}), `curr vaut NULL : toute la liste a été parcourue sans trouver ${v}. La fonction renvoie 0.`,
+      { kind: 'absent', code: ['searchList', 9], codeCls: 'bad' });
+    return false;
+  });
+  return ret ? { text: 'trouvée', cls: 'ok' } : { text: 'absente', cls: 'bad' };
+}
+
+function doCount(A) {
+  let cpt = 0;
+  A.emit(base({ copy: true }), 'cpt ← 0 : le compteur démarre à zéro.', { kind: 'init', code: ['countItems', 2], readout: ['cpt = ', '0'] });
+  walk(A, 'countItems', { init: 3, body: 6, next: 7 }, () => {
+    cpt++;
+    return { msg: `cpt ← cpt + 1 : cpt vaut maintenant ${cpt}.`, readout: ['cpt = ', String(cpt)] };
+  }, () => {
+    A.emit(base({}), `curr vaut NULL : fin du parcours. La liste contient ${plural(cpt, 'cellule')} (return cpt).`,
+      { kind: 'done', code: ['countItems', 9], codeCls: 'good', readout: ['cpt = ', String(cpt)] });
+  });
+  return plural(cpt, 'cellule');
+}
+
+/* Le piège de la diapositive 39 : on avance L.head au lieu d'un pointeur de parcours. */
+function doNaive(A) {
+  if (head == null) {
+    A.emit(base({}), 'La liste est vide : la boucle ne fait rien.', { kind: 'trap', code: ['naive', 4] });
+    return 'liste vide';
+  }
+  const out = [], lost = {}, subs = {};
+  A.emit(base({ Lcls: 'cmp' }), "Affichage « naïf », directement dans main : on utilise L.head lui-même pour avancer dans la liste…", { kind: 'trap', code: ['naive', 4] });
+  for (let i = 0; i < cells.length; i++) {
+    const c = cells[i];
+    out.push(c.v);
+    A.emit(scene({ cells, head: c.id, hl: { ...lost, [c.id]: 'cmp' }, subs, Lcls: 'cmp', Lacls: 'cmp' }),
+      `L.head ≠ NULL : printf affiche L.head->value = ${c.v}.`, { kind: 'visit', code: ['naive', 6], readout: ['Écran : ', out.join(' ')] });
+    lost[c.id] = 'mute'; subs[c.id] = 'inaccessible';
+    const nx = cells[i + 1];
+    A.emit(scene({ cells, head: nx ? nx.id : null, hl: lost, subs, Lcls: 'bad', Lacls: 'bad' }),
+      `L.head ← L.head->next : on modifie L.head ! Plus aucun pointeur ne repère la cellule ${c.v}, elle est perdue.`,
+      { kind: 'trap', code: ['naive', 7], codeCls: 'bad', readout: ['Écran : ', out.join(' ')] });
+  }
+  A.emit(scene({ cells, head: null, hl: lost, subs, Lcls: 'bad' }),
+    "L.head vaut NULL : l'affichage est correct… mais la liste est maintenant vide pour le reste du programme, et ses cellules sont devenues inaccessibles (on ne peut même plus les libérer). Une fonction displayList(t_list l) travaille sur une copie et évite ce problème.",
+    { kind: 'lost', code: ['naive', 4], codeCls: 'bad', readout: ['Écran : ', out.join(' ')] });
+  cells = []; head = null;
+  return { text: 'liste perdue !', cls: 'bad' };
+}
+
+function doClear(A) {
+  const had = cells.length;
+  cells = []; head = null;
+  A.emit(base({}), had ? `L = createEmptyList() : L.head ← NULL, on repart d'une liste vide. (Dans un vrai programme, il faudrait d'abord libérer les ${had} cellules.)`
+                       : "L = createEmptyList() : L.head ← NULL, la liste est vide.", { kind: 'create', code: ['createEmptyList', 3] });
+  return 'liste vide';
+}
+
+const CODES = {
+  addCell: { title: 'addCell() — ajout en tête', lines: [
+    'void addCell(t_list *ptr_list, int val)', '{', '    t_cell *nouv = createCell(val);', '    nouv->next = ptr_list->head;',
+    '    ptr_list->head = nouv;', '    return;', '}'] },
+  displayList: { title: 'displayList() — affichage', lines: [
+    'void displayList(t_list l)', '{', '    t_cell *curr;', '    curr = l.head;', '    while (curr != NULL)   // on pointe bien un élément', '    {',
+    '        printf("%d ", curr->value);', '        curr = curr->next; // on passe au suivant', '    }', '}'] },
+  searchList: { title: 'Recherche (principe)', lines: [
+    'Algorithme searchList(l : t_list, val : entier) : booléen', 'var curr : t_cell*', 'curr ← l.head', 'Tant que (curr ≠ NULL)',
+    '    // comparer la valeur cherchée et celle de la cellule', '    Si curr->value = val alors', '        retourner VRAI       // trouvée : on arrête',
+    '    curr ← curr->next       // sinon, cellule suivante', 'Fin tant que', 'retourner FAUX           // toute la liste a été parcourue', 'Fin'] },
+  countItems: { title: 'Nombre de cellules (principe)', lines: [
+    'Algorithme countItems(l : t_list) : entier', 'var curr : t_cell*, cpt : entier', 'cpt ← 0', 'curr ← l.head', 'Tant que (curr ≠ NULL)',
+    '    // une cellule de plus', '    cpt ← cpt + 1', '    curr ← curr->next', 'Fin tant que', 'retourner cpt', 'Fin'] },
+  naive: { title: 'main() — affichage « naïf »', lines: [
+    'int main()', '{', '    t_list L;', '    // initialisation de la liste L puis affichage', '    while (L.head != NULL)', '    {',
+    '        printf("%d ", L.head->value);', '        L.head = L.head->next; // on modifie L.head !', '    }', '    return 0;', '}'] },
+  createEmptyList: { title: 'createEmptyList()', lines: [
+    't_list createEmptyList(void)', '{', '    t_list nouvliste;', '    nouvliste.head = NULL;', '    return nouvliste;', '}'] },
+};
+
+Atelier.init({
+  id: 'atelier-liste',
+  title: 'Liste chaînée simple',
+  subtitle: 'CM1 · ajout en tête, parcours, recherche et comptage dans une t_list.',
+  conv: 'value | next · NULL = fin de liste',
+  commands: {
+    add: { args: 'nums', aliases: ['ajouter', 'ajout', 'addcell', 'a'] },
+    display: { args: 'none', aliases: ['afficher', 'affiche', 'print'] },
+    search: { args: 'num', aliases: ['chercher', 'rechercher', 's'] },
+    count: { args: 'none', aliases: ['compter', 'countitems'] },
+    naive: { args: 'none', aliases: ['naif', 'naïf', 'piege', 'piège'] },
+    clear: { args: 'none', aliases: ['vider', 'new', 'reset'] },
+  },
+  help: `add 12 -3 5   ajoute en tête (5 sera la première)
+display       affiche avec un pointeur curr
+search 5      recherche une valeur
+count         compte les cellules
+naive         affichage « naïf » qui avance L.head
+clear         repart d'une liste vide
+# commentaire`,
+  quick: { input: 'num', buttons: [
+    { label: 'Ajouter en tête', cmd: 'add', arg: true, primary: true },
+    { label: 'Rechercher', cmd: 'search', arg: true },
+    { label: 'Afficher', cmd: 'display' },
+    { label: 'Compter', cmd: 'count' },
+    { label: 'Affichage naïf', cmd: 'naive', ghost: true },
+  ] },
+  codes: CODES,
+  kinds: {
+    start: { label: 'Départ', tone: 'acc' }, create: { label: 'Création', tone: 'new' }, link: { label: 'Chaînage', tone: 'acc' },
+    done: { label: 'Résultat', tone: 'new' }, init: { label: 'Initialisation', tone: 'acc' }, visit: { label: 'Cellule courante', tone: 'cmp' },
+    move: { label: 'Suivante', tone: 'cmp' }, found: { label: 'Trouvée', tone: 'new' }, absent: { label: 'Absente', tone: 'bad' },
+    trap: { label: 'Piège', tone: 'bad' }, lost: { label: 'Liste perdue', tone: 'bad' },
+  },
+  hold: { create: 1.6, link: 1.8, done: 2, init: 1.5, visit: 1.4, move: 1, found: 2.4, absent: 2.4, trap: 2, lost: 3.4 },
+  legend: [['acc', 'variable pointeur'], ['cmp', 'cellule courante'], ['new', 'nouvelle cellule / trouvée'], ['vio', 'copie l (paramètre)'], ['mute', 'cellule inaccessible']],
+  emptyMsg: 'La liste est vide.',
+  example: `# Ajouts en tête : le dernier ajouté est le premier de la liste.
+add 5 -3 12
+display
+search -3
+search 7
+count
+naive        # le piège : on avance L.head lui-même
+`,
+  build(list, A) {
+    cells = []; head = null; nextId = 1;
+    A.op('début', null, () => {
+      A.emit(base({}), 'Début du script : L = createEmptyList(), la liste est vide (L.head = NULL).', { kind: 'start', code: ['createEmptyList', 3] });
+      return '';
+    });
+    for (const o of list) {
+      if (o.cmd === 'add') o.vals.forEach(v => A.op(`add ${v}`, o.line, () => doAdd(A, v)));
+      else if (o.cmd === 'display') A.op('display', o.line, () => doDisplay(A));
+      else if (o.cmd === 'search') A.op(`search ${o.vals[0]}`, o.line, () => doSearch(A, o.vals[0]));
+      else if (o.cmd === 'count') A.op('count', o.line, () => doCount(A));
+      else if (o.cmd === 'naive') A.op('naive', o.line, () => doNaive(A));
+      else if (o.cmd === 'clear') A.op('clear', o.line, () => doClear(A));
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

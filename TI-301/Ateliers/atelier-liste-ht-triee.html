@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insertion triée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const X0 = 170, SP = 166, CW = S.LCW, NY = 132;
+
+/* ---------- Scène : la structure (head, tail), les cellules, temp / prev au-dessus, newcell en dessous.
+   Convention du cours : @ et un point dans chaque champ pointeur, NULL représenté par une « masse ». ---------- */
+function scene(st) {
+  const items = [], arrows = [], row = st.cells, n = row.length, hl = st.hl || {};
+  const toNull = (k, x, y, dir = 'right') => { items.push(S.ground('g_' + k, x, dir === 'right' ? y - 13 : y, dir)); return { k: 'g_' + k, side: dir === 'right' ? 'l' : 't' }; };
+  const hd = st.head !== undefined ? st.head : (row[0] ? row[0].id : null);
+  const tl = st.tail !== undefined ? st.tail : (row[n - 1] ? row[n - 1].id : null);
+  items.push(...S.lstruct('L', 0, -22, ['head', 'tail'], { name: 'myhtlist', namePos: 'above-left', cls: st.Lcls }));
+  const pos = {}, posY = {};
+  row.forEach((c, i) => { pos[c.id] = X0 + i * SP; posY[c.id] = 0; });
+  if (st.nc) {
+    const t = st.gap != null ? st.gap : 0, gx = X0 + t * SP - (SP - CW) / 2;
+    pos[st.nc.id] = gx - CW / 2; posY[st.nc.id] = NY;
+  }
+  arrows.push(S.arrow('aH', { k: 'L_head', dot: true }, hd != null ? 'c' + hd : toNull('Lh', 122, 20),
+    { cls: st.hcls, ctrl: hd != null && posY[hd] === 0 && pos[hd] > X0 ? { dy: -70 } : null }));
+  arrows.push(S.arrow('aT', { k: 'L_tail', dot: true }, tl != null ? { k: 'c' + tl, side: posY[tl] > 74 ? 't' : 'bl' } : toNull('Lt', 122, 74),
+    { cls: st.tcls, elbow: tl != null ? 'hv' : null }));
+  const links = st.links || {};
+  row.forEach((c, i) => {
+    const nx = links[c.id] !== undefined ? links[c.id] : (row[i + 1] ? row[i + 1].id : null);
+    items.push(S.lcell('c' + c.id, pos[c.id], 0, c.v, { cls: hl[c.id] }));
+    arrows.push(S.arrow('n' + c.id, { k: 'c' + c.id, part: 1, dot: true }, nx != null ? 'c' + nx : toNull('c' + c.id, pos[c.id] + CW + 30, 20),
+      { cls: st.lcls && st.lcls[c.id], ctrl: nx != null && posY[nx] === 0 && pos[nx] <= pos[c.id] ? { dy: -90 } : null }));
+  });
+  if (st.nc) {
+    const c = st.nc, x = pos[c.id];
+    items.push(S.lcell('c' + c.id, x, NY, c.v, { cls: st.ncCls || 'new' }));
+    arrows.push(S.arrow('n' + c.id, { k: 'c' + c.id, part: 1, dot: true }, c.next != null ? 'c' + c.next : toNull('c' + c.id, x + CW + 30, NY + 20), { cls: st.ncNextCls || 'new' }));
+    items.push(S.ptr('p_new', x + CW / 2 - 40, NY + 76, 'newcell', { cls: 'new' }));
+    arrows.push(S.arrow('pa_new', { k: 'p_new', side: 't' }, { k: 'c' + c.id, side: 'b' }, { cls: 'new' }));
+  }
+  const P = st.ptrs || {}, same = P.temp !== undefined && P.prev !== undefined && P.temp === P.prev;
+  for (const name of ['prev', 'temp']) {
+    if (P[name] === undefined) continue;
+    const at = P[name];
+    const cx = (at != null ? pos[at] + CW / 2 : X0 + n * SP + 30) + (same ? (name === 'prev' ? -32 : 32) : 0);
+    const cls = name === 'temp' ? 'cmp' : 'vio';
+    items.push(S.ptr('p_' + name, cx - 28, -112, name, { w: 56, cls }));
+    arrows.push(S.arrow('pa_' + name, { k: 'p_' + name, side: 'b' }, at != null ? { k: 'c' + at, side: 't' } : toNull('p_' + name, cx - 13, -40, 'down'), { cls }));
+  }
+  return { items, arrows };
+}
+
+/* ---------- Modèle ---------- */
+let cells, nextId;
+const vals = () => cells.map(c => c.v).join(' → ') || 'vide';
+
+function doInsert(A, v) {
+  const id = nextId++, nc = { id, v, next: null }, n = cells.length, bugHead = A.opt('bug');
+  const V = o => scene({ cells, nc, ...o });
+  const E = (o, msg, kind, line, cls) => A.emit(V(o), msg, { kind, code: ['ins', line], codeCls: cls, readout: ['Liste : ', vals()] });
+  E({ gap: 0 }, `newcell = createCell(${v}) : nouvelle cellule, son next vaut NULL. Il faut maintenant trouver sa place pour garder la liste triée.`, 'create', 3);
+  if (!n) {
+    E({ gap: 0 }, 'La liste est vide (head et tail valent NULL) : c\'est le cas numéro 1.', 'case', 4);
+    E({ gap: 0, head: id, hcls: 'new', tail: null }, 'ptr_list->head = newcell : la nouvelle cellule est la première…', 'link', 6);
+    E({ gap: 0, head: id, tail: id, hcls: 'new', tcls: 'new' }, '… et ptr_list->tail = newcell : c\'est aussi la dernière.', 'link', 7);
+    cells.push({ id, v });
+    A.emit(scene({ cells, hl: { [id]: 'new' } }), `${v} est inséré : la liste contient 1 cellule.`, { kind: 'done', code: ['ins', 31], codeCls: 'good', readout: ['Liste : ', vals()] });
+    return 'liste vide → 1 cellule';
+  }
+  let t = 0;
+  E({ gap: 0, ptrs: { temp: cells[0].id, prev: cells[0].id } }, 'La liste n\'est pas vide : temp = ptr_list->head et prev = temp. On va parcourir la liste avec ces deux pointeurs.', 'init', 11);
+  for (;;) {
+    const T = cells[t], Pp = cells[Math.max(0, t - 1)];
+    const ptrs = { temp: T ? T.id : null, prev: Pp.id };
+    if (!T) {
+      E({ gap: t, ptrs }, `temp vaut NULL : on a parcouru toute la liste sans trouver de valeur plus grande que ${v}. Il faudra insérer en fin de liste.`, 'stop', 13);
+      break;
+    }
+    if (T.v < v) {
+      E({ gap: t, ptrs, hl: { [T.id]: 'cmp' } }, `temp->value = ${T.v} < ${v} : on ne peut pas insérer ici, il faut avancer.`, 'cmp', 13);
+      t++;
+      E({ gap: t, ptrs: { temp: cells[t] ? cells[t].id : null, prev: T.id } },
+        `prev = temp, puis temp = temp->next : prev « se souvient » de la cellule ${T.v}, temp passe ${cells[t] ? 'à ' + cells[t].v : 'à NULL'}.`, 'move', [15, 16]);
+    } else {
+      E({ gap: t, ptrs, hl: { [T.id]: 'cmp' } }, `temp->value = ${T.v} ≥ ${v} : on s'arrête, newcell doit être placée AVANT temp. On ne peut pas revenir en arrière… d'où prev.`, 'stop', 13);
+      break;
+    }
+  }
+  const T = cells[t], Pp = cells[Math.max(0, t - 1)], ptrs = { temp: T ? T.id : null, prev: Pp.id };
+  if (t === 0) {
+    if (bugHead) {
+      E({ gap: 0, ptrs }, 'temp n\'a pas bougé (prev == temp == head)… mais cette version a oublié le cas particulier de la tête : elle applique le cas général.', 'bug', 18, 'bad');
+      E({ gap: 0, ptrs, links: { [Pp.id]: id }, lcls: { [Pp.id]: 'bad' } }, `prev->next = newcell : ${Pp.v} pointe maintenant sur ${v}…`, 'bug', 25, 'bad');
+      nc.next = T.id;
+      E({ gap: 0, ptrs, links: { [Pp.id]: id }, lcls: { [Pp.id]: 'bad' }, ncNextCls: 'bad', ncCls: 'bad' },
+        `…et newcell->next = temp : ${v} pointe sur ${T.v}. La liste boucle (${T.v} → ${v} → ${T.v} → …), head n'a pas changé et ${v} n'est pas en tête : la liste est corrompue !`, 'bug', 26, 'bad');
+      A.emit(scene({ cells }), `On annule cette insertion erronée. Le cas « insertion en tête » (temp == ptr_list->head) doit modifier ptr_list->head.`, { kind: 'bug', code: ['ins', 18], codeCls: 'bad', readout: ['Liste : ', vals()] });
+      return { text: 'boucle infinie !', cls: 'bad' };
+    }
+    E({ gap: 0, ptrs }, 'temp n\'a pas bougé (temp == ptr_list->head) : c\'est une insertion en tête, cas particulier.', 'case', 18);
+    nc.next = T.id;
+    E({ gap: 0, ptrs }, `newcell->next = ptr_list->head : ${v} pointe sur l'ancienne première cellule (${T.v}).`, 'link', 20);
+    E({ gap: 0, ptrs, head: id, hcls: 'new' }, `ptr_list->head = newcell : ${v} devient la première cellule. tail ne change pas.`, 'link', 21);
+  } else {
+    E({ gap: t, ptrs }, T ? `Cas général : on insère entre prev (${Pp.v}) et temp (${T.v}).` : `Insertion après prev (${Pp.v}), la dernière cellule.`, 'case', 23);
+    E({ gap: t, ptrs, links: { [Pp.id]: id }, lcls: { [Pp.id]: 'new' } }, `prev->next = newcell : la suivante de ${Pp.v} devient ${v}.`, 'link', 25);
+    nc.next = T ? T.id : null;
+    E({ gap: t, ptrs, links: { [Pp.id]: id }, lcls: { [Pp.id]: 'new' } },
+      T ? `newcell->next = temp : la suivante de ${v} est ${T.v}. La chaîne est reconstituée.` : 'newcell->next = temp : temp vaut NULL, newcell est en fin de chaîne.', 'link', 26);
+    if (!T) {
+      E({ gap: t, ptrs, links: { [Pp.id]: id }, lcls: { [Pp.id]: 'new' }, tail: id, tcls: 'new' },
+        `temp == NULL : on a inséré en fin, il faut mettre à jour ptr_list->tail = newcell (sinon tail repérerait encore ${Pp.v}).`, 'link', [27, 28]);
+    } else {
+      E({ gap: t, ptrs, links: { [Pp.id]: id }, lcls: { [Pp.id]: 'new' } }, 'temp ≠ NULL : la dernière cellule n\'a pas changé, tail reste tel quel.', 'case', 27);
+    }
+  }
+  cells.splice(t, 0, { id, v });
+  A.emit(scene({ cells, hl: { [id]: 'new' } }), `${v} est inséré à sa place : ${vals()}.`, { kind: 'done', code: ['ins', 31], codeCls: 'good', readout: ['Liste : ', vals()] });
+  return t === 0 ? 'en tête' : t === n ? 'en fin (tail mis à jour)' : `entre ${cells[t - 1].v} et ${cells[t + 1].v}`;
+}
+
+const CODES = { ins: { title: 'insertOrderedHtList()', lines: [
+  'void insertOrderedHtList(t_ht_list *ptr_list, int val)', '{', '    t_cell *newcell, *prev, *temp;', '    newcell = createCell(val);',
+  '    if (isEmptyHtList(*ptr_list) == 1)  // cas 1 : liste vide', '    {', '        ptr_list->head = newcell;', '        ptr_list->tail = newcell;', '    }',
+  '    else', '    {', '        temp = ptr_list->head;', '        prev = temp;', '        while ((temp != NULL) && (temp->value < newcell->value))', '        {',
+  '            prev = temp;', '            temp = temp->next;', '        }', '        if (temp == ptr_list->head)       // insertion en tête', '        {',
+  '            newcell->next = ptr_list->head;', '            ptr_list->head = newcell;', '        }', '        else', '        {',
+  '            prev->next = newcell;', '            newcell->next = temp;', '            if (temp == NULL)             // insertion en fin',
+  '                ptr_list->tail = newcell;', '        }', '    }', '}'] } };
+
+Atelier.init({
+  id: 'atelier-liste-ht-triee',
+  title: 'Insertion triée',
+  subtitle: 'CM2 · insérer une valeur à sa place dans une liste « head + tail » triée, avec temp et prev.',
+  conv: 'liste triée par ordre croissant',
+  options: [{ id: 'bug', label: 'oublier le cas « insertion en tête »', checked: false }],
+  commands: {
+    insert: { args: 'nums', aliases: ['ins', 'i', 'inserer', 'insérer', 'ajouter'] },
+    clear: { args: 'none', aliases: ['vider', 'reset'] },
+  },
+  defaultCmd: 'insert',
+  help: `insert 4 1 6   insère chaque valeur à sa place
+clear          repart d'une liste vide
+# commentaire`,
+  quick: { input: 'num', buttons: [
+    { label: 'Insérer', cmd: 'insert', arg: true, primary: true },
+    { label: 'Vider', cmd: 'clear', ghost: true },
+  ] },
+  codes: CODES,
+  kinds: {
+    start: { label: 'Départ', tone: 'acc' }, create: { label: 'Création', tone: 'new' }, case: { label: 'Cas', tone: 'acc' },
+    init: { label: 'Initialisation', tone: 'acc' }, cmp: { label: 'Comparaison', tone: 'cmp' }, move: { label: 'On avance', tone: 'cmp' },
+    stop: { label: 'Place trouvée', tone: 'vio' }, link: { label: 'Chaînage', tone: 'new' }, done: { label: 'Résultat', tone: 'new' },
+    bug: { label: 'Erreur', tone: 'bad' },
+  },
+  hold: { create: 1.6, case: 1.6, init: 1.6, cmp: 1.4, move: 1.2, stop: 2, link: 1.8, done: 2, bug: 2.8 },
+  legend: [['cmp', 'temp (cellule comparée)'], ['vio', 'prev'], ['new', 'newcell et nouveaux chaînages'], ['bad', 'erreur']],
+  emptyMsg: 'La liste est vide.',
+  example: `# Chaque insertion garde la liste triée.
+insert 4          # cas 1 : liste vide
+insert 1 6        # au milieu… puis en fin (tail)
+insert 3          # entre 1 et 4
+insert -3         # en tête : cas particulier
+`,
+  build(list, A) {
+    cells = []; nextId = 1;
+    A.op('début', null, () => { A.emit(scene({ cells }), 'Début : myhtlist = createHtList(), head et tail valent NULL.', { kind: 'start' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'insert') o.vals.forEach(v => A.op(`insert ${v}`, o.line, () => doInsert(A, v)));
+      else A.op('clear', o.line, () => { cells = []; A.emit(scene({ cells }), 'La liste est vidée : head et tail valent NULL.', { kind: 'start' }); return 'vide'; });
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

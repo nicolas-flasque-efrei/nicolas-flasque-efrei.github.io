@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier Pile</title>
+<script>try { const t = localStorage.getItem('atelier-pile-theme'); if (t && t !== 'auto') document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Même poste de travail que l'Atelier AVL : commandes à gauche, expression et pile animées à droite */
+:root{
+  --bg:#E8ECF1; --panel:#FFFFFF; --soft:#F2F4F8; --ink:#152033; --muted:#5A6679; --line:#D3DAE4;
+  --accent:#2B50C8; --accent-soft:#DEE5FA; --on-accent:#FFFFFF;
+  --cmp:#C98500; --cmp-soft:#FCEBC4; --on-cmp:#2A1C00;
+  --new:#1B8F62; --new-soft:#CFEFE1;
+  --bad:#C8364F; --bad-soft:#F8D8DE;
+  --node:#FFFFFF; --edge:#8C98AB; --dot:#D5DCE6;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --f-node:var(--f-mono);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="neo"]){
+  --bg:#0D1219; --panel:#141B25; --soft:#1A2230; --ink:#E4EAF2; --muted:#8F9CAE; --line:#263142;
+  --accent:#7D9BFF; --accent-soft:#22325A; --on-accent:#0D1219;
+  --cmp:#F0B23A; --cmp-soft:#46340F; --on-cmp:#1A1200;
+  --new:#3FC48E; --new-soft:#123D2C; --bad:#FF6F86; --bad-soft:#4A1C26;
+  --node:#1A2230; --edge:#56647C; --dot:#212B39; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1219; --panel:#141B25; --soft:#1A2230; --ink:#E4EAF2; --muted:#8F9CAE; --line:#263142;
+  --accent:#7D9BFF; --accent-soft:#22325A; --on-accent:#0D1219;
+  --cmp:#F0B23A; --cmp-soft:#46340F; --on-cmp:#1A1200;
+  --new:#3FC48E; --new-soft:#123D2C; --bad:#FF6F86; --bad-soft:#4A1C26;
+  --node:#1A2230; --edge:#56647C; --dot:#212B39; color-scheme:dark}
+/* Neo : fond uni, pastels désaturés, traits fins, ombres douces */
+:root[data-theme="neo"]{
+  --bg:#F6F7F9; --panel:#FFFFFF; --soft:#F3F4F6; --ink:#1F2937; --muted:#6B7280; --line:#E5E7EB;
+  --accent:#5B6BD6; --accent-soft:#ECEEFC; --on-accent:#FFFFFF;
+  --cmp:#D29B3A; --cmp-soft:#FDF4E1; --on-cmp:#3A2A08;
+  --new:#3E9F79; --new-soft:#E5F5EE; --bad:#D4677B; --bad-soft:#FCEBEE;
+  --node:#FFFFFF; --edge:#C3C9D3; --dot:transparent;
+  --f-display:"Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-body:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --f-node:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light}
+:root[data-theme="neo"] .block,:root[data-theme="neo"] .stage{border-color:transparent;border-radius:14px;
+  box-shadow:0 1px 3px rgba(16,24,40,.08),0 1px 2px rgba(16,24,40,.04)}
+:root[data-theme="neo"] .toolbar,:root[data-theme="neo"] .narr{border-color:var(--line)}
+:root[data-theme="neo"] button{border-radius:9px}
+:root[data-theme="neo"] .ib.play{border-radius:50%}
+:root[data-theme="neo"] .canvas{background-image:none}
+:root[data-theme="neo"] :is(.cell,.item){border-width:1.5px;box-shadow:0 1.5px 4px rgba(16,24,40,.12)}
+
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px}
+.app{height:100%;display:flex;flex-direction:column;gap:12px;padding-inline:16px;padding-block:12px}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px}
+.brand{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px}
+.brand h1{font-family:var(--f-display);font-size:24px;margin:0;letter-spacing:-.015em}
+.brand p{margin:0;color:var(--muted)}
+.credit{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--muted)}
+.copyleft{width:16px;height:16px;flex:none}
+.home{font-size:13px;font-weight:500;text-decoration:none;color:var(--muted)}
+.home:hover{color:var(--accent)}
+.copyleft circle,.copyleft path{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.conv{font-family:var(--f-mono);font-size:12px}
+.opts{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;color:var(--muted);font-size:13px}
+.opts label{display:flex;align-items:center;gap:6px}
+input[type=text],select{font:inherit;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:7px;padding:6px 9px}
+input[type=checkbox],input[type=range]{accent-color:var(--accent)}
+button{font:inherit;font-weight:500;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:7px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:disabled{opacity:.4;cursor:default;border-color:var(--line)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+button.ghost{background:transparent;color:var(--muted)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:minmax(290px,350px) minmax(0,1fr);gap:12px}
+.side{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.block{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.block h2{margin:0;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.block h2 .hint{letter-spacing:.02em;text-transform:none;font-weight:400;font-family:var(--f-mono)}
+#qExpr{width:100%;font-family:var(--f-mono);font-size:15px}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+.btns button{flex:1 1 auto}
+.err{color:var(--bad);font-size:13px;white-space:pre-line;margin:0}
+
+.editor{display:grid;grid-template-columns:auto minmax(0,1fr);height:150px;border:1px solid var(--line);border-radius:8px;background:var(--soft);font-family:var(--f-mono);font-size:13px;line-height:20px;overflow:hidden}
+.editor:focus-within{border-color:var(--accent)}
+#gutter{margin:0;padding:8px 6px 8px 8px;min-width:36px;text-align:right;color:var(--muted);user-select:none;overflow:hidden;border-right:1px solid var(--line)}
+#gutter span{display:block;padding:0 4px;border-radius:3px;font-variant-numeric:tabular-nums}
+#gutter span.on{background:var(--cmp);color:var(--on-cmp);font-weight:600}
+#gutter span.bad{background:var(--bad-soft);color:var(--bad)}
+#gutter span.pad{height:60px}
+#code{border:0;margin:0;background:transparent;color:var(--ink);font:inherit;line-height:inherit;padding:8px 10px;resize:none;outline:none;white-space:pre;overflow:auto;height:100%}
+
+/* Pseudo-code : la ligne exécutée est surlignée */
+#algo{margin:0;padding:8px 0;background:var(--soft);border-radius:8px;font-family:var(--f-mono);font-size:12.5px;line-height:1.75;overflow-x:auto}
+#algo span{display:block;padding:0 10px;white-space:pre;border-left:3px solid transparent;transition:background-color .2s,border-color .2s}
+#algo span.on{background:var(--cmp-soft);border-left-color:var(--cmp)}
+#algo span.bad{background:var(--bad-soft);border-left-color:var(--bad);color:var(--bad)}
+#algo span.good{background:var(--new-soft);border-left-color:var(--new);color:var(--new)}
+#algo b{font-weight:600;color:var(--accent)}
+
+#journal{list-style:none;margin:0;padding:0;max-height:210px;overflow:auto;display:flex;flex-direction:column;gap:1px}
+#journal:empty::before{content:"Aucune expression pour l'instant.";color:var(--muted);font-size:13px;padding:4px 8px}
+#journal button{width:100%;display:flex;justify-content:space-between;align-items:baseline;gap:10px;border:0;background:none;padding:5px 8px;border-radius:6px;text-align:left}
+#journal button:hover{background:var(--soft)}
+#journal li.on button{background:var(--accent-soft)}
+#journal code{font-family:var(--f-mono);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#journal span{flex:none;font-size:12px;text-align:right;font-weight:500}
+#journal span.ok{color:var(--new)}
+#journal span.bad{color:var(--bad)}
+
+.stage{min-height:0;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.transport{display:flex;align-items:center;gap:4px}
+.ib{width:34px;height:34px;padding:0;display:grid;place-items:center}
+.ib svg{width:14px;height:14px;fill:currentColor}
+.ib.start{color:var(--new);border-color:var(--new);background:var(--new-soft)}
+.ib.start:disabled{border-color:var(--new)}
+.ib.play{width:42px;height:42px;border-radius:50%;background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.speed{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+.speed output{font-family:var(--f-mono);min-width:3.5em;color:var(--ink)}
+.counter{margin-left:auto;min-width:13ch;text-align:right;font-family:var(--f-mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.canvas{position:relative;min-height:0;overflow:hidden;background-color:var(--panel);background-image:radial-gradient(var(--dot) 1.1px,transparent 1.4px);background-size:22px 22px}
+.narr{border-top:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.msgrow{display:flex;align-items:flex-start;gap:12px}
+#msg{margin:0;font-size:15.5px;line-height:1.45;height:4.35em;overflow-y:auto;max-width:80ch}
+.badge{flex:none;margin-top:2px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;background:var(--soft);color:var(--muted)}
+.badge.op,.badge.push,.badge.pop{background:var(--accent-soft);color:var(--accent)}
+.badge.test{background:var(--cmp-soft);color:var(--ink)}
+.badge.ok,.badge.done{background:var(--new-soft);color:var(--new)}
+.badge.bad{background:var(--bad-soft);color:var(--bad)}
+.readout{margin:0;font-size:13px;color:var(--muted)}
+.readout code{font-family:var(--f-mono);font-size:13.5px;font-weight:600;color:var(--ink);letter-spacing:.06em}
+.legend{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--muted)}
+.sw{display:inline-block;width:13px;height:13px;border-radius:4px;border:2px solid;margin-right:5px;vertical-align:-2px}
+.sw.cmp{background:var(--cmp-soft);border-color:var(--cmp)}
+.sw.acc{background:var(--accent-soft);border-color:var(--accent)}
+.sw.new{background:var(--new-soft);border-color:var(--new)}
+.sw.bad{background:var(--bad-soft);border-color:var(--bad)}
+.sw.arc{width:18px;height:9px;border:2px solid var(--new);border-top:0;border-radius:0 0 10px 10px;vertical-align:1px}
+
+/* Scène : expression en haut, pile (tube ouvert en haut) et zone de comparaison en dessous */
+#scene{--t:0ms;--ease:cubic-bezier(.45,0,.25,1);position:absolute;inset:0}
+#scene>*{position:absolute;left:0;top:0}
+.anim{transition:transform var(--t) var(--ease),width var(--t) var(--ease),height var(--t) var(--ease),
+  opacity var(--t) var(--ease),background-color var(--t),border-color var(--t),color var(--t),box-shadow var(--t)}
+.cell{display:grid;place-items:center;border:2px solid var(--line);border-radius:7px;background:var(--node);
+  font-family:var(--f-node);font-weight:600;color:var(--ink)}
+.cell.sp{color:var(--muted);font-weight:400}
+.cell.done{background:var(--soft);color:var(--muted)}
+.cell.open{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.cell.ok{background:var(--new-soft);border-color:var(--new);color:var(--new)}
+.cell.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.cell.cur{border-color:var(--cmp);box-shadow:0 0 0 4px var(--cmp-soft)}
+.cell.cur:not(.open,.ok,.bad){background:var(--cmp-soft);color:var(--ink)}
+.cursor{width:80px;display:flex;flex-direction:column;align-items:center;font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--cmp)}
+.cursor::after{content:"";width:0;height:0;border:7px solid transparent;border-top:9px solid var(--cmp);border-bottom:0;margin-top:3px}
+.tube{border:2.5px solid var(--edge);border-top:0;border-radius:0 0 12px 12px;background:color-mix(in srgb,var(--soft) 60%,transparent)}
+.cap{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.vide{font-size:13px;font-style:italic;color:var(--muted);text-align:center}
+.toplab{font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--accent);white-space:nowrap}
+.item{display:grid;place-items:center;border:2px solid var(--accent);border-radius:7px;background:var(--accent-soft);
+  font-family:var(--f-node);font-weight:600;color:var(--accent)}
+.item.cmp{border-color:var(--cmp);background:var(--cmp-soft);color:var(--ink)}
+.item.ok{border-color:var(--new);background:var(--new-soft);color:var(--new)}
+.item.bad{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.cmpbox{border:2px dashed var(--line);border-radius:12px;display:flex;justify-content:space-around;padding-top:6px}
+.cmpbox span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sign{width:40px;text-align:center;font-family:var(--f-mono);font-size:22px;font-weight:600;color:var(--muted)}
+.sign.ok{color:var(--new)} .sign.bad{color:var(--bad)}
+.verdict{padding:7px 16px;border-radius:999px;font-weight:600;font-size:15px;white-space:nowrap}
+.verdict.ok{background:var(--new-soft);color:var(--new)}
+.verdict.bad{background:var(--bad-soft);color:var(--bad)}
+.empty{inset:0!important;display:grid;place-items:center;padding:16px;text-align:center;color:var(--muted);font-size:15px}
+#arcs{width:100%;height:100%;overflow:visible;pointer-events:none}
+#arcs path{fill:none;stroke:var(--new);stroke-width:2.5;stroke-linecap:round}
+#arcs path.new{stroke-dasharray:1;stroke-dashoffset:1;animation:draw var(--t) var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+@media (max-width:860px){
+  html,body{height:auto}
+  .app{height:auto}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .stage{order:-1;height:72vh;min-height:460px}
+  .side{overflow:visible}
+}
+@media (prefers-reduced-motion: reduce){#arcs path.new{animation:none;stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <h1>Atelier Pile</h1>
+      <span class="credit"><svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - IA Claude code</span>
+      <a class="home" href="index.html">← tous les ateliers</a>
+      <p>Vérifier qu'une expression est bien parenthésée à l'aide d'une pile, caractère par caractère.</p>
+    </div>
+    <div class="opts">
+      <span class="conv">ouvrantes ( [ · fermantes ) ]</span>
+      <label for="optTheme">Thème
+        <select id="optTheme"><option value="auto">Auto</option><option value="light">Clair</option><option value="dark">Sombre</option><option value="neo">Neo</option></select></label>
+      <label class="chk"><input type="checkbox" id="optD"> détailler les autres caractères</label>
+    </div>
+  </header>
+
+  <main class="grid">
+    <aside class="side">
+      <section class="block">
+        <h2>Nouvelle expression</h2>
+        <form id="quick" class="btns" novalidate>
+          <input id="qExpr" type="text" autocomplete="off" spellcheck="false" placeholder="Par exemple ([a + b] * c)" aria-label="Expression">
+          <button type="submit" class="primary">Analyser</button>
+          <button type="button" id="bRand">+ expression aléatoire</button>
+        </form>
+        <p id="qErr" class="err" hidden></p>
+      </section>
+
+      <section class="block">
+        <h2>Expressions <span class="hint">une par ligne</span></h2>
+        <div class="editor">
+          <pre id="gutter" aria-hidden="true"></pre>
+          <textarea id="code" spellcheck="false" wrap="off" aria-label="Liste des expressions"></textarea>
+        </div>
+        <p id="err" class="err" hidden></p>
+        <div class="btns"><button type="button" id="bClear" class="ghost">Vider la liste</button></div>
+      </section>
+
+      <section class="block">
+        <h2>Algorithme</h2>
+        <pre id="algo"></pre>
+      </section>
+
+      <section class="block">
+        <h2>Résultats <span class="hint">cliquer pour revoir</span></h2>
+        <ol id="journal"></ol>
+      </section>
+    </aside>
+
+    <section class="stage" aria-label="Animation de la pile">
+      <div class="toolbar">
+        <div class="transport">
+          <button type="button" class="ib start" id="bStart" title="Retour à la première expression" aria-label="Retour à la première expression"><svg viewBox="0 0 16 16"><path d="M2 3h2v10H2zM9 3v10L4 8zM15 3v10l-5-5z"/></svg></button>
+          <button type="button" class="ib" id="bFirst" title="Début de l'expression" aria-label="Début de l'expression"><svg viewBox="0 0 16 16"><path d="M2 3h2v10H2zM9 3v10L4 8zM15 3v10l-5-5z"/></svg></button>
+          <button type="button" class="ib" id="bPrev" title="Étape précédente (←)" aria-label="Étape précédente"><svg viewBox="0 0 16 16"><path d="M12 2v12L4 8z"/></svg></button>
+          <button type="button" class="ib play" id="bPlay" title="Lecture / pause (espace)" aria-label="Lecture"><svg viewBox="0 0 16 16"><path id="playIcon" d="M5 2.5v11L13.5 8z"/></svg></button>
+          <button type="button" class="ib" id="bNext" title="Étape suivante (→)" aria-label="Étape suivante"><svg viewBox="0 0 16 16"><path d="M4 2v12l8-6z"/></svg></button>
+          <button type="button" class="ib" id="bLast" title="Aller à la fin" aria-label="Aller à la fin"><svg viewBox="0 0 16 16"><path d="M14 3h-2v10h2zM7 3v10l5-5zM1 3v10l5-5z"/></svg></button>
+        </div>
+        <label class="speed" for="speed">Vitesse <input type="range" id="speed" min="0" max="4" step="1" value="2"> <output id="speedOut">×1</output></label>
+        <span class="counter" id="counter">étape 0 / 0</span>
+      </div>
+      <div class="canvas" id="canvas">
+        <div id="scene"><svg id="arcs" aria-hidden="true"></svg></div>
+      </div>
+      <div class="narr">
+        <div class="msgrow"><span class="badge" id="badge">—</span><p id="msg" aria-live="polite"></p></div>
+        <p class="readout">Pile (du fond vers le sommet) : <code id="stackTxt">vide</code></p>
+        <ul class="legend">
+          <li><i class="sw cmp"></i>caractère lu / comparé</li>
+          <li><i class="sw acc"></i>ouvrante dans la pile</li>
+          <li><i class="sw new"></i>paire correcte</li>
+          <li><i class="sw bad"></i>erreur</li>
+          <li><i class="sw arc"></i>paire associée</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const ta = $('#code'), gut = $('#gutter'), scene = $('#scene'), arcs = $('#arcs');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MAXLEN = 60;
+
+/* ---------- Algorithme affiché (les numéros de ligne servent au surlignage) ---------- */
+const ALGO = [
+  'pile ← <b>vide</b>',
+  'pour chaque caractère c de s :',
+  "  si c = '(' ou c = '[' :",
+  '    <b>empiler</b>(pile, c)',
+  "  sinon si c = ')' ou c = ']' :",
+  '    si pile vide : <b>ÉCHEC</b>',
+  '    o ← <b>dépiler</b>(pile)',
+  '    si o ne correspond pas à c : <b>ÉCHEC</b>',
+  'si pile vide : <b>SUCCÈS</b>',
+  'sinon : <b>ÉCHEC</b>',
+];
+$('#algo').innerHTML = ALGO.map(l => `<span>${l}</span>`).join('');
+
+/* ---------- Modèle : chaque état intermédiaire devient une étape ---------- */
+const OPEN = { '(': ')', '[': ']' }, CLOSE = { ')': '(', ']': '[' };
+const NAME = { '(': 'une parenthèse ouvrante', '[': 'un crochet ouvrant', ')': 'une parenthèse fermante', ']': 'un crochet fermant' };
+const q = c => `« ${c} »`;
+const plural = (n, w) => `${n} ${w}${n > 1 ? 's' : ''}`;
+const frames = [], journal = [], items = new Map();
+let nextId = 1, detail = false;
+
+function analyse(s, line, op) {
+  const n = s.length, cells = Array(n).fill(''), stack = [], pairs = [];
+  let depth = 0;
+  for (let d = 0, k = 0; k < n; k++) {
+    if (OPEN[s[k]]) depth = Math.max(depth, ++d); else if (CLOSE[s[k]] && d) d--;
+  }
+  let i = -1;
+  const emit = (msg, kind, code, o = {}) => frames.push({
+    op, line, s, i, depth, msg, kind, code, codeCls: o.codeCls || 'on',
+    cells: cells.slice(), stack: stack.slice(), pairs: pairs.slice(),
+    pop: o.pop ?? null, cl: o.cl ?? null, cmp: o.cmp || null, stackBad: !!o.stackBad, verdict: o.verdict || null });
+
+  emit(`Analyse de ${q(s)} : on part d'une pile vide et on lit l'expression de gauche à droite.`, 'op', 0);
+  for (i = 0; i < n; i++) {
+    const c = s[i];
+    if (OPEN[c]) {
+      const id = nextId++;
+      items.set(id, { ch: c, src: i }); stack.push(id); cells[i] = 'open';
+      emit(`s[${i}] = ${q(c)} : c'est ${NAME[c]}, on l'empile. La pile contient ${plural(stack.length, 'élément')}, ${q(c)} est au sommet.`, 'push', 3);
+    } else if (CLOSE[c]) {
+      emit(`s[${i}] = ${q(c)} : c'est ${NAME[c]}. Avant de dépiler, on vérifie que la pile n'est pas vide.`, 'test', 5);
+      if (!stack.length) {
+        cells[i] = 'bad';
+        emit(`La pile est vide : aucune ouvrante n'attend d'être fermée, ${q(c)} n'a pas de partenaire. L'expression est mal parenthésée.`,
+          'bad', 5, { codeCls: 'bad', verdict: 'bad' });
+        return { ok: false, text: `✗ pile vide en s[${i}]` };
+      }
+      const id = stack.pop(), { ch: o, src } = items.get(id);
+      emit(`La pile n'est pas vide : on dépile son sommet ${q(o)} (lu en s[${src}]) et on le compare à ${q(c)}.`, 'pop', 6, { pop: id, cl: i });
+      if (CLOSE[c] === o) {
+        cells[src] = cells[i] = 'ok'; pairs.push([src, i]);
+        emit(`${q(o)} correspond bien à ${q(c)} : la paire s[${src}] … s[${i}] est validée, on continue la lecture.`, 'ok', 7, { pop: id, cl: i, cmp: 'ok' });
+      } else {
+        cells[src] = cells[i] = 'bad';
+        emit(`${q(o)} ne correspond pas à ${q(c)} : ${NAME[c]} doit refermer ${NAME[CLOSE[c]]}. L'expression est mal parenthésée.`,
+          'bad', 7, { pop: id, cl: i, cmp: 'bad', codeCls: 'bad', verdict: 'bad' });
+        return { ok: false, text: `✗ ${o} fermé par ${c} en s[${i}]` };
+      }
+    } else {
+      cells[i] = 'done';
+      if (detail) emit(`s[${i}] = ${c === ' ' ? 'une espace' : q(c)} : ni parenthèse ni crochet, on l'ignore.`, 'skip', 1);
+    }
+  }
+  i = n;
+  emit("Fin de l'expression. Dernier test : la pile doit être vide.", 'test', 8);
+  if (stack.length) {
+    for (const id of stack) cells[items.get(id).src] = 'bad';
+    const k = stack.length, left = stack.map(id => items.get(id).ch).join(' ');
+    emit(`La pile contient encore ${plural(k, 'ouvrante')} jamais ${k > 1 ? 'refermées' : 'refermée'} (${left}) : l'expression est mal parenthésée.`,
+      'bad', 9, { stackBad: true, codeCls: 'bad', verdict: 'bad' });
+    return { ok: false, text: `✗ ${plural(k, 'ouvrante')} en trop` };
+  }
+  emit("La pile est vide : chaque ouvrante a été refermée par la bonne fermante. L'expression est bien parenthésée.",
+    'done', 8, { codeCls: 'good', verdict: 'ok' });
+  return { ok: true, text: '✓ correcte' };
+}
+
+function rebuild(list) {
+  frames.length = 0; journal.length = 0; items.clear(); nextId = 1; shown = null;
+  list.forEach((o, k) => {
+    const entry = { label: o.s, first: frames.length, text: '', ok: false };
+    journal.push(entry);
+    Object.assign(entry, analyse(o.s, o.line, k));
+  });
+  if (!frames.length) frames.push({ op: -1, line: null, s: '', i: -1, depth: 0, cells: [], stack: [], pairs: [],
+    msg: 'Aucune expression : écrivez-en une par ligne dans la liste.', kind: 'op', code: -1, pop: null, cl: null });
+  renderJournal();
+}
+
+/* ---------- Analyse de la liste ---------- */
+let errLines = new Set();
+function parse(text) {
+  const out = [], errs = []; errLines = new Set();
+  text.split('\n').forEach((raw, i) => {
+    const s = raw.replace(/\s+#.*$/, '').trim();
+    if (!s || s.startsWith('#')) return;
+    if (s.length > MAXLEN) { errs.push(`Ligne ${i + 1} : expression trop longue (${s.length} caractères, ${MAXLEN} au plus).`); errLines.add(i); return; }
+    out.push({ s, line: i });
+  });
+  return { out, errs };
+}
+
+/* ---------- Lecture ---------- */
+let cur = -1, playing = false, timer = 0;
+const SPEEDS = [0.25, 0.5, 1, 2, 4];
+const speed = () => SPEEDS[+$('#speed').value];
+const TRANS = 750, HOLD = 600;
+const TRANS_BY_KIND = { skip: 0.6, test: 0.7 };
+const HOLD_BY_KIND = { op: 1.6, push: 1.3, test: 1.5, pop: 1.4, ok: 1.5, bad: 3, done: 3, skip: 0.5 };
+const transDur = f => (f && TRANS_BY_KIND[f.kind] || 1) * TRANS / speed();
+const holdDur = f => (f && HOLD_BY_KIND[f.kind] || 1) * HOLD / speed();
+
+function show(i, anim = true) {
+  if (i < 0 || i >= frames.length) return;
+  cur = i; render(frames[i], anim && !reduce); updateUI();
+}
+function loop() {
+  clearTimeout(timer);
+  if (!playing) return;
+  timer = setTimeout(() => {
+    if (cur < frames.length - 1) { show(cur + 1); loop(); } else { playing = false; updateUI(); }
+  }, transDur(frames[cur]) + holdDur(frames[cur]));
+}
+function play(advance = true) {
+  if (!frames.length) return;
+  if (cur >= frames.length - 1) { const j = journal[journal.length - 1]; show(j ? j.first : 0); }
+  else if (advance) show(cur + 1);
+  playing = true; loop(); updateUI();
+}
+function pause() { playing = false; clearTimeout(timer); updateUI(); }
+function opStart() {
+  const f = frames[cur]; if (!f) return 0;
+  const j = journal[f.op]; if (!j) return 0;
+  return cur > j.first ? j.first : (journal[f.op - 1] ? journal[f.op - 1].first : 0);
+}
+
+const KIND = { op: 'Départ', skip: 'Ignoré', push: 'Empiler', test: 'Test', pop: 'Dépiler', ok: 'Correspond', bad: 'Erreur', done: 'Résultat' };
+function updateUI() {
+  const f = frames[cur];
+  $('#counter').textContent = `étape ${cur + 1} / ${frames.length}`;
+  $('#playIcon').setAttribute('d', playing ? 'M4 2.5h3v11H4zM9 2.5h3v11H9z' : 'M5 2.5v11L13.5 8z');
+  $('#bPlay').setAttribute('aria-label', playing ? 'Pause' : 'Lecture');
+  $('#bPrev').disabled = $('#bFirst').disabled = $('#bStart').disabled = cur <= 0;
+  $('#bNext').disabled = $('#bLast').disabled = cur >= frames.length - 1;
+  if (!f) return;
+  const badge = $('#badge');
+  badge.textContent = KIND[f.kind] || '—'; badge.className = 'badge ' + f.kind;
+  $('#msg').textContent = f.msg;
+  $('#stackTxt').textContent = f.stack.map(id => items.get(id).ch).join(' ') || 'vide';
+  [...$('#algo').children].forEach((sp, k) => sp.className = k === f.code ? f.codeCls : '');
+  [...$('#journal').children].forEach((li, k) => li.classList.toggle('on', f.op === k));
+  const on = $('#journal li.on'), ol = $('#journal');
+  if (on && (on.offsetTop < ol.scrollTop || on.offsetTop + on.offsetHeight > ol.scrollTop + ol.clientHeight))
+    ol.scrollTop = on.offsetTop - ol.clientHeight / 2;
+  markGutter();
+}
+
+/* ---------- Rendu animé (éléments HTML positionnés, transitions CSS) ---------- */
+const els = new Map();      // jetons de la pile et de la zone de comparaison, par identifiant
+let cells = [], shown = null;
+const fixed = {};
+function mk(cls, parent = scene) {
+  const e = document.createElement('div'); e.className = cls; parent.appendChild(e); return e;
+}
+for (const k of ['tube', 'cap', 'vide', 'toplab', 'cmpbox', 'sign', 'cursor', 'verdict']) fixed[k] = mk(k + ' anim');
+fixed.cap.textContent = 'pile'; fixed.vide.textContent = 'vide'; fixed.toplab.textContent = 'sommet ▸';
+fixed.cmpbox.innerHTML = '<span>dépilé</span><span>lu</span>';
+fixed.empty = mk('empty'); fixed.empty.textContent = 'Aucune expression. Saisissez-en une à gauche.';
+
+function place(e, x, y, w, h, o = 1, s = 1) {
+  e.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${s})`;
+  if (w != null) e.style.width = w.toFixed(1) + 'px';
+  if (h != null) e.style.height = h.toFixed(1) + 'px';
+  e.style.opacity = o;
+}
+function jump(e, fn) {             // pose un élément sans transition
+  e.classList.remove('anim'); fn(); void e.offsetWidth; e.classList.add('anim');
+}
+
+function geo(f) {
+  const W = scene.clientWidth, H = scene.clientHeight, n = Math.max(f.s.length, 1);
+  const cw = Math.max(15, Math.min(46, Math.floor((W - 40) / n)));
+  const rx = (W - n * cw) / 2, ry = 50;
+  const top = ry + cw + 70, bottom = H - 34;
+  const iw = Math.min(84, Math.max(52, W * 0.12));
+  const ih = Math.max(18, Math.min(46, (bottom - top - 8) / Math.max(f.depth + 1, 5)));
+  const narrow = W < 600;
+  const tx = narrow ? Math.max(W * 0.28, iw / 2 + 90) : W / 2 - 130;
+  const cx = narrow ? W * 0.7 : W / 2 + 140;
+  const cy = top + (bottom - top) * 0.42;
+  return { W, H, n, cw, rx, ry, top, bottom, iw, ih, tx, cx, cy };
+}
+const cellBox = (G, k) => ({ x: G.rx + k * G.cw + 2, y: G.ry, w: G.cw - 4, h: G.cw - 4 });
+const slot = (G, k) => ({ x: G.tx - G.iw / 2, y: G.bottom - 4 - (k + 1) * G.ih, w: G.iw, h: G.ih - 4 });
+const cmpL = G => ({ x: G.cx - 20 - G.iw, y: G.cy - (G.ih - 4) / 2, w: G.iw, h: G.ih - 4 });
+const cmpR = G => ({ x: G.cx + 20, y: G.cy - (G.ih - 4) / 2, w: G.iw, h: G.ih - 4 });
+
+function buildCells(f) {
+  cells.forEach(c => c.remove());
+  for (const e of els.values()) { clearTimeout(e._t); e.remove(); }
+  els.clear();
+  cells = [...f.s].map(ch => {
+    const c = mk('cell anim' + (ch === ' ' ? ' sp' : ''));
+    c.textContent = ch === ' ' ? '·' : ch; c.dataset.sp = ch === ' ' ? '1' : '';
+    return c;
+  });
+  shown = f.op + '|' + f.s;
+}
+
+function render(f, anim) {
+  const dur = anim ? transDur(f) : 0;
+  scene.style.setProperty('--t', dur + 'ms');
+  const fresh = shown !== f.op + '|' + f.s;
+  if (fresh) buildCells(f);
+  const G = geo(f), n = f.s.length, put = fresh || !dur ? (e, fn) => jump(e, fn) : (e, fn) => fn();
+  const none = !n;
+  fixed.empty.hidden = !none;
+  for (const k of ['tube', 'cap', 'vide', 'toplab', 'cmpbox', 'sign', 'cursor', 'verdict']) fixed[k].hidden = none;
+  arcs.innerHTML = '';
+  if (none) return;
+
+  /* Expression */
+  cells.forEach((c, k) => {
+    const b = cellBox(G, k);
+    c.className = 'cell anim' + (c.dataset.sp ? ' sp' : '') + (f.cells[k] ? ' ' + f.cells[k] : '') + (k === f.i ? ' cur' : '');
+    c.style.fontSize = Math.round(G.cw * 0.5) + 'px';
+    put(c, () => place(c, b.x, b.y, b.w, b.h));
+  });
+  const ci = Math.max(-1, Math.min(n, f.i));
+  fixed.cursor.textContent = f.i < 0 ? 'début' : f.i >= n ? 'fin' : `i = ${f.i}`;
+  put(fixed.cursor, () => place(fixed.cursor, G.rx + (ci + 0.5) * G.cw - 40, G.ry - 34));
+
+  /* Paires associées : un arc sous l'expression relie l'ouvrante à sa fermante */
+  const y0 = G.ry + G.cw;
+  f.pairs.forEach(([a, b], k) => {
+    const xa = G.rx + (a + 0.5) * G.cw, xb = G.rx + (b + 0.5) * G.cw, d = Math.min(52, 12 + (b - a) * G.cw * 0.16);
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', `M${xa} ${y0 + 2} C${xa} ${y0 + d}, ${xb} ${y0 + d}, ${xb} ${y0 + 2}`);
+    p.setAttribute('pathLength', '1');
+    if (dur && f.kind === 'ok' && k === f.pairs.length - 1) p.setAttribute('class', 'new');
+    arcs.appendChild(p);
+  });
+
+  /* Tube de la pile */
+  const tubeTop = G.top - 6;
+  put(fixed.tube, () => place(fixed.tube, G.tx - G.iw / 2 - 9, tubeTop, G.iw + 18, G.bottom - tubeTop + 2));
+  put(fixed.cap, () => place(fixed.cap, G.tx - 20, G.bottom + 8, 40));
+  fixed.cap.style.textAlign = 'center';
+  put(fixed.vide, () => place(fixed.vide, G.tx - G.iw / 2, G.bottom - 30, G.iw, null, f.stack.length ? 0 : 1));
+  const topK = f.stack.length - 1, ts = slot(G, Math.max(topK, 0));
+  put(fixed.toplab, () => place(fixed.toplab, G.tx - G.iw / 2 - 86, ts.y + ts.h / 2 - 9, 72, null, topK >= 0 ? 1 : 0));
+  fixed.toplab.style.textAlign = 'right';
+
+  /* Zone de comparaison */
+  const active = f.pop != null;
+  const L = cmpL(G), Rr = cmpR(G);
+  put(fixed.cmpbox, () => place(fixed.cmpbox, L.x - 14, L.y - 30, Rr.x + Rr.w - L.x + 28, L.h + 46, active ? 1 : 0.35));
+  fixed.sign.className = 'sign anim' + (f.cmp ? ' ' + f.cmp : '');
+  fixed.sign.textContent = f.cmp === 'ok' ? '✓' : f.cmp === 'bad' ? '≠' : '?';
+  put(fixed.sign, () => place(fixed.sign, G.cx - 20, G.cy - 15, null, null, active ? 1 : 0));
+  fixed.verdict.className = 'verdict anim ' + (f.verdict || '');
+  fixed.verdict.textContent = f.verdict === 'ok' ? '✓ bien parenthésée' : '✗ mal parenthésée';
+  put(fixed.verdict, () => place(fixed.verdict, Math.max(8, Math.min(G.W - 190, G.cx - 85)), L.y + L.h + 36, null, null, f.verdict ? 1 : 0));
+
+  /* Jetons : ceux de la pile, celui qu'on vient de dépiler et la copie de la fermante lue */
+  const want = new Map(), fs = Math.round(Math.min(22, G.ih * 0.55)) + 'px';
+  f.stack.forEach((id, k) => want.set(id, { box: slot(G, k), cls: f.stackBad ? 'bad' : '', ch: items.get(id).ch, src: items.get(id).src, fromCell: true }));
+  if (active) {
+    const it = items.get(f.pop);
+    want.set(f.pop, { box: L, cls: f.cmp || 'cmp', ch: it.ch, src: it.src, fromCell: false });
+    want.set(`g${f.cl}`, { box: Rr, cls: f.cmp || 'cmp', ch: f.s[f.cl], src: f.cl, fromCell: true });
+  }
+  for (const [key, w] of want) {
+    let e = els.get(key);
+    if (e && e._dying) { clearTimeout(e._t); e._dying = false; }
+    if (!e) {
+      e = mk('item anim'); e.textContent = w.ch; e._src = w.src; els.set(key, e);
+      const c = cellBox(G, w.src), b = w.box;
+      jump(e, () => w.fromCell ? place(e, c.x, c.y, c.w, c.h, 0) : place(e, b.x, b.y, b.w, b.h, 0, 0.6));
+    }
+    e.className = 'item anim' + (w.cls ? ' ' + w.cls : '');
+    e.style.fontSize = fs;
+    put(e, () => place(e, w.box.x, w.box.y, w.box.w, w.box.h));
+  }
+  for (const [key, e] of els) {
+    if (want.has(key) || e._dying) continue;
+    e._dying = true;
+    /* en reculant avant sa lecture, le jeton retourne dans l'expression ; sinon il est consommé sur place */
+    if (e._src >= f.i) { const c = cellBox(G, e._src); place(e, c.x, c.y, c.w, c.h, 0); }
+    else e.style.opacity = 0, e.style.transform += ' scale(0.6)';
+    e._t = setTimeout(() => { e.remove(); els.delete(key); }, dur + 40);
+  }
+}
+new ResizeObserver(() => { if (cur >= 0 && frames[cur]) render(frames[cur], false); }).observe(scene);
+
+/* ---------- Journal et éditeur ---------- */
+function renderJournal() {
+  const ol = $('#journal'); ol.innerHTML = '';
+  journal.forEach((j, i) => {
+    const li = document.createElement('li'), b = document.createElement('button');
+    b.type = 'button'; b.dataset.i = i; b.title = j.label;
+    const c = document.createElement('code'); c.textContent = j.label;
+    const s = document.createElement('span'); s.textContent = j.text; s.className = j.ok ? 'ok' : 'bad';
+    b.append(c, s); li.append(b); ol.append(li);
+  });
+  ol.scrollTop = ol.scrollHeight;
+}
+$('#journal').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  pause(); show(journal[+b.dataset.i].first);
+});
+
+function renderGutter() {
+  const n = ta.value.split('\n').length; let html = '';
+  for (let i = 0; i < n; i++) html += `<span data-l="${i}">${i + 1}</span>`;
+  gut.innerHTML = html + '<span class="pad"></span>';
+  markGutter();
+}
+function markGutter() {
+  const f = frames[cur], act = f && f.line != null ? f.line : -1;
+  for (const s of gut.children) {
+    if (!s.dataset.l) continue;
+    const l = +s.dataset.l;
+    s.classList.toggle('on', l === act);
+    s.classList.toggle('bad', errLines.has(l));
+  }
+  if (act >= 0 && document.activeElement !== ta) {
+    const top = act * 20;
+    if (top < ta.scrollTop || top > ta.scrollTop + ta.clientHeight - 40) ta.scrollTop = top - 40;
+  }
+  gut.scrollTop = ta.scrollTop;
+}
+ta.addEventListener('scroll', () => { gut.scrollTop = ta.scrollTop; });
+const STORE = 'atelier-pile-script-v1';
+function save() { try { localStorage.setItem(STORE, ta.value); } catch (e) {} }
+
+/* Relit la liste et reconstruit la chronologie. Les expressions inchangées gardent leurs étapes :
+   le lecteur reste où il était, ou recule juste avant la première expression modifiée.
+   Renvoie l'indice de cette première expression modifiée, ou -1 si la liste contient une erreur. */
+function sync(anim = true) {
+  const { out, errs } = parse(ta.value);
+  const err = $('#err');
+  err.hidden = !errs.length; err.textContent = errs.join('\n');
+  if (errs.length && frames.length) { markGutter(); return -1; }
+  const oldLabels = journal.map(j => j.label), oldCur = cur;
+  const oldOp = frames[cur] ? frames[cur].op : 0;
+  rebuild(errs.length ? [] : out);
+  let k = 0;
+  while (k < oldLabels.length && k < journal.length && oldLabels[k] === journal[k].label) k++;
+  const target = oldOp < k ? oldCur : (k < journal.length ? journal[k].first - 1 : frames.length - 1);
+  cur = -1;
+  show(Math.max(0, Math.min(target, frames.length - 1)), anim);
+  return errs.length ? -1 : k;
+}
+
+let syncTimer = 0;
+ta.addEventListener('input', () => {
+  renderGutter(); save();
+  clearTimeout(syncTimer); syncTimer = setTimeout(() => sync(), 400);
+});
+
+/* ---------- Nouvelle expression : elle s'ajoute à la liste, puis est jouée ---------- */
+function appendLine(text) {
+  clearTimeout(syncTimer);
+  ta.value = ta.value.replace(/\s*$/, '') + '\n' + text + '\n';
+  ta.scrollTop = ta.scrollHeight;
+  renderGutter(); save();
+  const k = sync();
+  if (k >= 0 && k < journal.length) { show(journal[k].first); play(false); }
+}
+$('#quick').addEventListener('submit', e => {
+  e.preventDefault();
+  const input = $('#qExpr'), s = input.value.replace(/#.*$/, '').trim(), qErr = $('#qErr');
+  qErr.textContent = !s ? 'Saisissez une expression.' : s.length > MAXLEN ? `${MAXLEN} caractères au plus.` : '';
+  qErr.hidden = !qErr.textContent;
+  if (qErr.textContent) { input.focus(); return; }
+  appendLine(s); input.select();
+});
+
+/* Expression aléatoire : bien parenthésée, puis abîmée une fois sur deux. */
+function randomExpr() {
+  const r = n => Math.floor(Math.random() * n), V = 'abcxyz', OPS = [' + ', ' - ', ' * '];
+  const pairs = 2 + r(3), st = []; let out = '', opened = 0, needOp = false;
+  while (opened < pairs || st.length) {
+    if (needOp) { out += OPS[r(3)]; needOp = false; }
+    if (opened < pairs && (!st.length || Math.random() < 0.55)) {
+      const o = Math.random() < 0.5 ? '(' : '['; st.push(o); out += o; opened++;
+      if (Math.random() < 0.6) { out += V[r(6)]; needOp = true; }
+    } else {
+      if (!/[a-z]$/.test(out) && !/[)\]]$/.test(out)) out += V[r(6)];
+      out += OPEN[st.pop()]; needOp = Math.random() < 0.5;
+    }
+  }
+  const mode = r(6), idx = [...out].map((c, k) => (OPEN[c] || CLOSE[c]) ? k : -1).filter(k => k >= 0);
+  const closes = idx.filter(k => CLOSE[out[k]]), k = closes[r(closes.length)];
+  if (mode === 0) return out.slice(0, k) + (out[k] === ')' ? ']' : ')') + out.slice(k + 1);   // mauvaise fermante
+  if (mode === 1) return out.slice(0, k) + out.slice(k + 1);                                  // fermante oubliée
+  if (mode === 2) return out + (Math.random() < 0.5 ? ')' : ']');                             // fermante en trop
+  return out;
+}
+$('#bRand').addEventListener('click', () => appendLine(randomExpr() + '   # aléatoire'));
+$('#bClear').addEventListener('click', () => { ta.value = ''; renderGutter(); save(); sync(false); });
+
+/* ---------- Commandes de lecture ---------- */
+$('#bStart').addEventListener('click', () => { pause(); show(0); });
+$('#bPlay').addEventListener('click', () => playing ? pause() : play());
+$('#bPrev').addEventListener('click', () => { pause(); show(cur - 1); });
+$('#bNext').addEventListener('click', () => { pause(); show(cur + 1); });
+$('#bFirst').addEventListener('click', () => { pause(); show(opStart()); });
+$('#bLast').addEventListener('click', () => { pause(); show(frames.length - 1); });
+$('#speed').addEventListener('input', () => {
+  $('#speedOut').textContent = '×' + String(speed()).replace('.', ',');
+  if (playing) loop();
+});
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input,textarea,select')) return;
+  if (e.key === ' ' && !e.target.closest('button')) { e.preventDefault(); playing ? pause() : play(); }
+  else if (e.key === 'ArrowRight') { pause(); show(cur + 1); }
+  else if (e.key === 'ArrowLeft') { pause(); show(cur - 1); }
+});
+
+/* ---------- Options ---------- */
+const optD = $('#optD');
+try { optD.checked = localStorage.getItem('atelier-pile-detail') === '1'; } catch (e) {}
+detail = optD.checked;
+optD.addEventListener('change', () => {
+  detail = optD.checked;
+  try { localStorage.setItem('atelier-pile-detail', detail ? '1' : '0'); } catch (e) {}
+  const op = frames[cur] ? frames[cur].op : 0;
+  pause(); rebuild(parse(ta.value).out); cur = -1;
+  show(journal[op] ? journal[op].first : 0, false);
+});
+
+/* Thème : Auto suit le réglage du système ; le choix est mémorisé dans le navigateur. */
+const themeSel = $('#optTheme');
+themeSel.value = document.documentElement.dataset.theme || 'auto';
+themeSel.addEventListener('change', () => {
+  const t = themeSel.value;
+  if (t === 'auto') delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = t;
+  try { localStorage.setItem('atelier-pile-theme', t); } catch (e) {}
+});
+
+/* ---------- Démarrage : la liste d'exemples est construite, le lecteur se place au début ---------- */
+const EXAMPLE = `# Une expression par ligne, chacune analysée avec une pile vide.
+[(a + b) * c] - (d)
+([)]          # « [ » refermé par « ) »
+((x + 1) * [y]
+x + y)]       # fermante alors que la pile est vide
+`;
+let saved = null;
+try { saved = localStorage.getItem(STORE); } catch (e) {}
+ta.value = saved && saved.trim() ? saved : EXAMPLE;
+renderGutter();
+sync(false);
+show(0, false);
+})();
+</script>
+</body>
+</html>

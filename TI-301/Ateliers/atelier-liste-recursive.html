@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Récursivité sur les listes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const X0 = 160, SP = 166, CW = S.LCW, FY = 128, FH = 32, FG = 40, FX = 26;
+
+/* ---------- Scène : la liste en haut (convention @ / NULL du cours), la pile des appels en dessous ---------- */
+function scene(st) {
+  const items = [], arrows = [], hl = st.hl || {}, subs = st.subs || {};
+  const row = st.cells;
+  const toNull = (k, x, y) => { items.push(S.ground('g_' + k, x, y - 13)); return { k: 'g_' + k, side: 'l' }; };
+  items.push(...S.lstruct('L', 0, -22, ['head'], { name: 'L' }));
+  arrows.push(S.arrow('aL', { k: 'L_head', dot: true }, st.head != null ? 'c' + st.head : toNull('L', 120, 20)));
+  row.forEach((c, i) => {
+    const nx = row[i + 1], x = X0 + i * SP;
+    items.push(S.lcell('c' + c.id, x, 0, c.v, { cls: hl[c.id], sub: subs[c.id] }));
+    if (nx) arrows.push(S.arrow('n' + c.id, { k: 'c' + c.id, part: 1, dot: true }, 'c' + nx.id, { cls: nx.freed ? 'bad dash' : '' }));
+    else if (!c.dangling) arrows.push(S.arrow('n' + c.id, { k: 'c' + c.id, part: 1, dot: true }, toNull('c' + c.id, x + CW + 30, 20)));
+  });
+  if (st.calls.length) items.push(S.text('hdr', 0, FY - 14, 'Pile des appels (le plus récent en bas)', { align: 'start', cls: 'muted' }));
+  st.calls.forEach((f, d) => {
+    items.push(S.box('f' + d, d * FX, FY + d * FG, Math.max(250, 30 + f.label.length * 8.2), FH, f.label, { cls: 'frame ' + f.st, rx: 6 }));
+  });
+  return { items, arrows };
+}
+
+/* ---------- Modèle ---------- */
+let cells, head, nextId;
+const MODES = {
+  display: { set: 'display', cell: 'afficheCellRec', list: 'afficheListRec(L)' },
+  reverse: { set: 'reverse', cell: 'afficheCellRecInv', list: 'afficheListRecInv(L)' },
+  free: { set: 'free', cell: 'freeCellRec', list: 'freeListRec(&L)' },
+  freebad: { set: 'freebad', cell: 'freeCellRecFaux', list: 'freeListRecFaux(&L)' },
+};
+
+function run(A, mode) {
+  const M = MODES[mode], n = cells.length, calls = [], out = [], hl = {}, subs = {};
+  const view = () => scene({ cells, head, calls: calls.map(c => ({ ...c })), hl: { ...hl }, subs: { ...subs } });
+  const rd = () => mode === 'display' || mode === 'reverse' ? ['Écran : ', out.join(' ') || '(rien)'] : null;
+  const E = (msg, kind, line, cls) => A.emit(view(), msg, { kind, code: [M.set, line], codeCls: cls, readout: rd() });
+  const lbl = i => `${M.cell}(${i < n ? '@' + cells[i].v : 'NULL'})`;
+  const isFree = mode === 'free' || mode === 'freebad';
+
+  calls.push({ label: M.list, st: 'run' });
+  E(`Appel de ${M.list} : elle se contente de lancer la récursivité sur la tête de liste, de type t_cell *.`, 'call', 11);
+  calls[0].st = 'wait';
+  /* Descente : un nouvel appel par cellule, puis un dernier avec NULL */
+  for (let i = 0; i <= n; i++) {
+    calls.push({ label: lbl(i), st: 'run' });
+    if (i < n) hl[cells[i].id] = 'cmp';
+    E(i < n ? `Appel de ${lbl(i)} : un nouveau cadre s'empile, l'appel précédent attend son retour.`
+            : `Appel de ${lbl(i)} : on a dépassé la dernière cellule.`, 'call', i === 0 ? 11 : mode === 'freebad' ? 5 : mode === 'display' ? 5 : 4);
+    if (i === n) {
+      calls[i + 1].st = 'done';
+      E(`ptr_cell vaut NULL : la condition est fausse, rien à faire. C'est le cas d'arrêt : la fonction se termine sans nouvel appel.`, 'stop', 2, 'bad');
+      calls.pop();
+      break;
+    }
+    E(`ptr_cell ≠ NULL : il reste une cellule à traiter (${cells[i].v}).`, 'test', 2);
+    if (mode === 'display') {
+      out.push(cells[i].v); hl[cells[i].id] = 'new';
+      E(`printf affiche ${cells[i].v} AVANT l'appel récursif : les valeurs sortent dans l'ordre de la liste.`, 'act', 4);
+    } else if (mode === 'freebad') {
+      cells[i].freed = true; hl[cells[i].id] = 'bad'; subs[cells[i].id] = 'libérée';
+      E(`free(ptr_cell) : la cellule ${cells[i].v} est libérée AVANT d'avoir lu son champ next…`, 'bug', 4, 'bad');
+      if (i + 1 <= n) E(`…et l'appel suivant lit ptr_cell->next dans une zone mémoire déjà libérée : comportement indéfini ! Le programme peut sembler fonctionner, afficher n'importe quoi ou planter.`, 'bug', 5, 'bad');
+    } else {
+      E(`On n'agit pas tout de suite : on lance d'abord l'appel récursif sur ptr_cell->next.`, 'call', 4);
+    }
+    calls[i + 1].st = 'wait';
+    if (hl[cells[i].id] === 'cmp') hl[cells[i].id] = isFree ? '' : 'acc';
+  }
+  /* Remontée : les appels se terminent du plus récent au plus ancien */
+  for (let i = n - 1; i >= 0; i--) {
+    const c = cells[i], lb = calls[i + 1].label;
+    calls[i + 1].st = 'run';
+    if (mode === 'reverse') {
+      out.push(c.v); hl[c.id] = 'new';
+      E(`Retour dans ${lb} : l'appel récursif est terminé, printf affiche maintenant ${c.v}. Les valeurs sortent en ordre inverse.`, 'act', 5);
+    } else if (mode === 'free') {
+      hl[c.id] = 'bad'; subs[c.id] = 'free';
+      E(`Retour dans ${lb} : toute la suite est déjà libérée, on peut libérer la cellule ${c.v} sans rien perdre.`, 'act', 5);
+      cells.splice(i, 1);
+      if (i > 0) cells[i - 1].dangling = true;
+    } else {
+      E(`Retour dans ${lb} : l'appel récursif était sa dernière instruction, elle se termine à son tour.`, 'ret', 7);
+    }
+    calls[i + 1].st = 'done';
+    E(`${lb} se termine : son cadre est retiré de la pile des appels.`, 'ret', 7);
+    calls.pop();
+  }
+  calls[0].st = 'run';
+  if (isFree) {
+    if (mode === 'freebad') { cells = []; }
+    head = null;
+    E(`Retour dans ${M.list} : ptr_list->head ← NULL, la liste est vide et ne pointe plus sur de la mémoire libérée.`, 'act', 12);
+  }
+  calls[0].st = 'done';
+  E(mode === 'display' ? `Fin : la liste a été affichée dans l'ordre (${out.join(' ') || 'rien'}).`
+    : mode === 'reverse' ? `Fin : la liste a été affichée à l'envers (${out.join(' ') || 'rien'}), sans aucune liste auxiliaire : c'est la pile des appels qui a mémorisé les cellules.`
+    : mode === 'free' ? `Fin : ${plural(n, 'cellule libérée', 'cellules libérées')}, de la dernière à la première, sans jamais lire une cellule déjà libérée.`
+    : `Fin… mais ce code est faux : chaque appel a lu le champ next d'une cellule déjà libérée. Il faut lire la suivante avant de libérer.`,
+    mode === 'freebad' ? 'bug' : 'done', mode === 'free' || mode === 'freebad' ? 13 : 12, mode === 'freebad' ? 'bad' : 'good');
+  calls.pop();
+  for (const c of cells) { delete c.dangling; delete c.freed; }
+  A.emit(scene({ cells, head, calls: [] }), 'La pile des appels est vide : on est revenu dans le programme principal.', { kind: 'done', code: [M.set, -1], readout: rd() });
+  if (mode === 'display' || mode === 'reverse') return out.join(' ') || 'liste vide';
+  return { text: mode === 'free' ? plural(n, 'cellule libérée', 'cellules libérées') : 'accès illégaux !', cls: mode === 'free' ? 'ok' : 'bad' };
+}
+
+function doList(A, vals) {
+  cells = vals.map(v => ({ id: nextId++, v }));
+  head = cells.length ? cells[0].id : null;
+  A.emit(scene({ cells, head, calls: [] }), `Nouvelle liste : ${vals.join(' → ')} (${plural(vals.length, 'cellule')}).`, { kind: 'build' });
+  return plural(vals.length, 'cellule');
+}
+
+const head2 = ['void afficheListRec(t_list list)', '{', '    afficheCellRec(list.head); // démarrage en tête', '}'];
+const CODES = {
+  display: { title: 'Affichage récursif', lines: [
+    'void afficheCellRec(t_cell *ptr_cell)', '{', '    if (ptr_cell != NULL)', '    {', '        printf("%d ", ptr_cell->value);',
+    '        afficheCellRec(ptr_cell->next); // appel récursif', '    }', '}', '', ...head2] },
+  reverse: { title: 'Affichage récursif inversé', lines: [
+    'void afficheCellRecInv(t_cell *ptr_cell)', '{', '    if (ptr_cell != NULL)', '    {', '        afficheCellRecInv(ptr_cell->next); // d\'abord la suite',
+    '        printf("%d ", ptr_cell->value);  // puis la cellule', '    }', '}', '', 'void afficheListRecInv(t_list list)', '{', '    afficheCellRecInv(list.head);', '}'] },
+  free: { title: 'Libération récursive (principe)', lines: [
+    'Algorithme freeCellRec(ptr_cell : t_cell*)', 'début', '    si ptr_cell ≠ NULL alors', '        // l\'ordre des deux instructions est essentiel',
+    '        freeCellRec(ptr_cell->next)   // d\'abord la suite', '        libérer(ptr_cell)              // puis la cellule', '    fin si', 'fin', '',
+    'Algorithme freeListRec(ptr_list : t_list*)', 'début', '    freeCellRec(ptr_list->head)', '    ptr_list->head ← NULL', 'fin'] },
+  freebad: { title: 'Libération dans le mauvais ordre (FAUX)', lines: [
+    'Algorithme freeCellRecFaux(ptr_cell : t_cell*)', 'début', '    si ptr_cell ≠ NULL alors', '        // ordre inversé : ERREUR',
+    '        libérer(ptr_cell)                  // trop tôt !', '        freeCellRecFaux(ptr_cell->next)    // lit une cellule libérée', '    fin si', 'fin', '',
+    'Algorithme freeListRecFaux(ptr_list : t_list*)', 'début', '    freeCellRecFaux(ptr_list->head)', '    ptr_list->head ← NULL', 'fin'] },
+};
+
+Atelier.init({
+  id: 'atelier-liste-recursive',
+  title: 'Récursivité sur les listes',
+  subtitle: 'CM1 · affichage récursif et libération d\'une liste, avec la pile des appels.',
+  conv: 'vert : appel actif · bleu : en attente · rouge : terminé',
+  commands: {
+    list: { args: 'nums', aliases: ['liste', 'create', 'creer', 'créer'] },
+    display: { args: 'none', aliases: ['afficher', 'affiche'] },
+    reverse: { args: 'none', aliases: ['inverse', 'envers', 'rev'] },
+    free: { args: 'none', aliases: ['liberer', 'libérer', 'detruire', 'détruire'] },
+    freebad: { args: 'none', aliases: ['free_faux', 'faux', 'liberer_faux'] },
+  },
+  help: `list 12 -3 5   crée la liste 12 → -3 → 5
+display        affichage récursif
+reverse        affichage récursif inversé
+free           libération récursive (correcte)
+freebad        libération dans le mauvais ordre
+# commentaire`,
+  quick: { buttons: [
+    { label: 'Afficher', cmd: 'display', primary: true },
+    { label: 'Afficher à l\'envers', cmd: 'reverse' },
+    { label: 'Libérer', cmd: 'free' },
+    { label: 'Libérer (faux)', cmd: 'freebad', ghost: true },
+    { label: 'Nouvelle liste', line: () => 'list ' + Array.from({ length: 3 + Math.floor(Math.random() * 2) }, () => Math.floor(Math.random() * 99) - 30).join(' ') },
+  ] },
+  codes: CODES,
+  kinds: {
+    build: { label: 'Liste', tone: 'acc' }, call: { label: 'Appel', tone: 'new' }, test: { label: 'Test', tone: 'cmp' },
+    act: { label: 'Traitement', tone: 'acc' }, stop: { label: 'Cas d\'arrêt', tone: 'bad' }, ret: { label: 'Retour', tone: 'vio' },
+    bug: { label: 'Erreur', tone: 'bad' }, done: { label: 'Terminé', tone: 'new' },
+  },
+  hold: { call: 1.3, test: 1.1, act: 1.7, stop: 2, ret: 1, bug: 2.6, done: 2 },
+  legend: [['new', 'appel actif'], ['acc', 'appel en attente'], ['bad', 'appel terminé / cellule libérée'], ['cmp', 'cellule traitée par l\'appel actif']],
+  emptyMsg: 'La liste est vide.',
+  example: `list 12 -3 5
+display
+reverse
+free
+`,
+  build(list, A) {
+    cells = []; head = null; nextId = 1;
+    A.op('début', null, () => { A.emit(scene({ cells, head, calls: [] }), 'Début du script : la liste est vide.', { kind: 'build' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'list') A.op(`list ${o.vals.join(' ')}`, o.line, () => doList(A, o.vals));
+      else A.op(o.cmd, o.line, () => run(A, o.cmd));
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

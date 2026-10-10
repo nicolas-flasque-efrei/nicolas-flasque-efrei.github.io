@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pile : tableau ou liste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const NBMAX = 8, CWD = 56, LY = 236, LX0 = 170, SP = 166, CW = S.LCW;
+
+/* ---------- Scène : la pile tableau (values + nbElts) en haut, la pile liste (head + cellules) en bas ---------- */
+function scene(st) {
+  const items = [], arrows = [], tab = st.tab, nb = st.nb, hl = st.hl || {};
+  items.push(S.text('t_tab', 0, -40, `Avec un tableau : t_stacktab (NBMAX = ${NBMAX})`, { align: 'start', cls: 'muted' }));
+  for (let i = 0; i < NBMAX; i++) {
+    const used = i < nb, v = tab[i];
+    items.push(S.box('t' + i, i * CWD, 0, CWD - 4, 44, v == null ? '' : v,
+      { cls: hl['t' + i] || (used ? 'acc' : v != null ? 'ghost' : ''), sub: String(i), rx: 4 }));
+  }
+  const nx = Math.min(nb, NBMAX) * CWD + (CWD - 4) / 2;
+  items.push(S.ptr('nb', nx - 52, 84, `nbElts = ${nb}`, { w: 104, cls: st.nbCls }));
+  arrows.push(S.arrow('nbA', { k: 'nb', side: 't' }, { x: nx, y: 68 }, { cls: st.nbCls || 'acc' }));
+  if (st.val != null) items.push(S.box('val', NBMAX * CWD + 40, 0, 100, 44, `val = ${st.val}`, { cls: 'new', enter: st.valFrom }));
+  if (st.err) items.push(S.text('err', NBMAX * CWD + 40, 22, st.err, { align: 'start', cls: 'mono', fs: 14 }));
+
+  items.push(S.text('t_lst', 0, LY - 64, 'Avec une liste : t_stacklist (le sommet est en tête)', { align: 'start', cls: 'muted' }));
+  const toNull = (k, x, y) => { items.push(S.ground('g_' + k, x, y - 13)); return { k: 'g_' + k, side: 'l' }; };
+  const row = st.lst, lh = st.lhead !== undefined ? st.lhead : (row[0] ? row[0].id : null);
+  items.push(...S.lstruct('S', 0, LY - 22, ['head'], { name: 'stack', namePos: 'below-left', cls: st.Scls }));
+  const pos = {};
+  row.forEach((c, i) => { pos[c.id] = LX0 + i * SP; });
+  if (st.nc) pos[st.nc.id] = LX0 - 20;
+  const yOf = id => st.nc && id === st.nc.id ? LY + 110 : LY;
+  arrows.push(S.arrow('aS', { k: 'S_head', dot: true }, lh != null ? 'l' + lh : toNull('S', 120, LY + 20),
+    { cls: st.Scls, ctrl: lh != null && yOf(lh) === LY && pos[lh] > LX0 ? { dy: -70 } : null }));
+  const all = st.nc ? [st.nc, ...row] : row;
+  for (const c of all) {
+    const i = row.indexOf(c), nxt = c === st.nc ? c.next : (row[i + 1] ? row[i + 1].id : null);
+    items.push(S.lcell('l' + c.id, pos[c.id], yOf(c.id), c.v, { cls: hl['l' + c.id] || (c === st.nc ? 'new' : '') }));
+    arrows.push(S.arrow('ln' + c.id, { k: 'l' + c.id, part: 1, dot: true }, nxt != null ? 'l' + nxt : toNull('l' + c.id, pos[c.id] + CW + 30, yOf(c.id) + 20),
+      { cls: c === st.nc ? 'new' : '' }));
+  }
+  return { items, arrows };
+}
+
+/* ---------- Modèle : les deux piles évoluent en parallèle ---------- */
+let tab, nb, lst, nextId;
+const content = () => tab.slice(0, nb).join(' ') || 'vide';
+const RD = v => v == null ? ['Pile (fond → sommet) : ', content()] : ['Pile (fond → sommet) : ', content(), '   ·   valeur obtenue : ', String(v)];
+const V = o => scene({ tab, nb, lst, ...o });
+
+function doPush(A, v) {
+  const E = (o, msg, kind, line, cls) => A.emit(V(o), msg, { kind, code: ['push', line], codeCls: cls, readout: RD() });
+  if (nb >= NBMAX) {
+    E({ nbCls: 'bad' }, `isFullStack : nbElts = ${NBMAX} = NBMAX, le tableau est plein. On ne peut pas empiler ${v} (la version liste, elle, n'est jamais pleine : seule la mémoire disponible la limite).`, 'full', 2, 'bad');
+    return { text: 'pile pleine (tableau)', cls: 'bad' };
+  }
+  E({}, `nbElts = ${nb} < NBMAX : il reste de la place. La prochaine case libre a pour indice nbElts = ${nb}.`, 'test', 2);
+  const id = nextId++, nc = { id, v, next: lst[0] ? lst[0].id : null };
+  tab[nb] = v;
+  E({ hl: { ['t' + nb]: 'new' }, nc }, `Tableau : values[nbElts] ← ${v}, accès direct en O(1). Liste : nouvelle cellule, newcell->next ← head.`, 'push', 4);
+  nb++; lst.unshift({ id, v });
+  E({ hl: { ['t' + (nb - 1)]: 'new', ['l' + id]: 'new' }, nbCls: 'new', Scls: 'new' },
+    `Tableau : nbElts ← ${nb}. Liste : head ← newcell (ajout en tête, O(1) aussi). ${v} est au sommet des deux piles.`, 'push', 5);
+  return `sommet = ${v}`;
+}
+
+function doPop(A) {
+  const checked = A.opt('check'), set = checked ? 'popB' : 'popA';
+  const E = (o, msg, kind, line, cls, val) => A.emit(V(o), msg, { kind, code: [set, line], codeCls: cls, readout: RD(val) });
+  if (!nb) {
+    if (checked) {
+      E({ nbCls: 'bad' }, 'isEmptyStack(*p_stack) est vrai : la pile est vide. pop renvoie 0 pour signaler qu\'aucune valeur n\'a été récupérée (*p_val n\'est pas modifié).', 'empty', [3, 5], 'bad');
+      return { text: 'vide → renvoie 0', cls: 'bad' };
+    }
+    E({ nbCls: 'bad', err: 'Assertion failed: p_stack->nbElts > 0' }, 'assert(p_stack->nbElts > 0) est faux : le programme s\'arrête avec une erreur. Cette version exige qu\'on vérifie isEmptyStack AVANT d\'appeler pop.', 'empty', 5, 'bad');
+    return { text: 'assert échoue !', cls: 'bad' };
+  }
+  const v = tab[nb - 1], top = lst[0];
+  E({ hl: { ['t' + (nb - 1)]: 'cmp', ['l' + top.id]: 'cmp' } }, `La pile n'est pas vide (nbElts = ${nb}). Le sommet est dans la case d'indice nbElts − 1 = ${nb - 1}.`, 'test', checked ? 3 : 5);
+  E({ hl: { ['t' + (nb - 1)]: 'cmp', ['l' + top.id]: 'cmp' }, val: v, valFrom: 't' + (nb - 1) },
+    `Tableau : val ← values[${nb - 1}] = ${v}. Liste : val ← head->value.`, 'pop', checked ? [7, 8] : [6, 7], 'on', v);
+  nb--;
+  E({ hl: { ['l' + top.id]: 'bad' }, lhead: lst[1] ? lst[1].id : null, val: v, nbCls: 'cmp', Scls: 'cmp' },
+    `Tableau : nbElts ← ${nb}. La valeur ${v} est toujours dans la case ${nb}, mais elle ne fait plus partie de la pile. Liste : head ← head->next, puis free de l'ancienne tête.`, 'pop', checked ? 9 : 8, 'on', v);
+  lst.shift();
+  E({ val: v }, `pop renvoie ${v}${checked ? ' dans *p_val, et 1 pour dire que tout s\'est bien passé' : ''}.`, 'done', checked ? 10 : 9, 'good', v);
+  return `→ ${v}`;
+}
+
+function doTop(A) {
+  const E = (o, msg, kind, line, cls, val) => A.emit(V(o), msg, { kind, code: ['top', line], codeCls: cls, readout: RD(val) });
+  if (!nb) { E({ nbCls: 'bad' }, 'La pile est vide : il n\'y a rien à consulter (même précondition que pop).', 'empty', 2, 'bad'); return { text: 'pile vide', cls: 'bad' }; }
+  const v = tab[nb - 1];
+  E({ hl: { ['t' + (nb - 1)]: 'cmp', ['l' + lst[0].id]: 'cmp' }, val: v, valFrom: 't' + (nb - 1) },
+    `top renvoie le sommet ${v} (values[nbElts − 1] ou head->value) SANS le retirer : nbElts et head ne changent pas.`, 'top', 3, 'good', v);
+  return `sommet = ${v}`;
+}
+
+function doEmpty(A) {
+  const e = nb === 0;
+  A.emit(V({ nbCls: e ? 'new' : 'cmp' }), `isEmptyStack : nbElts == 0 ? ${e ? 'oui, la pile est vide (renvoie 1)' : `non, nbElts = ${nb} (renvoie 0)`}. Avec la liste : head == NULL ?`,
+    { kind: 'test', code: ['empty', 2], codeCls: 'good', readout: RD() });
+  return e ? 'vide' : 'non vide';
+}
+
+const CODES = {
+  push: { title: 'push() — tableau (principe)', lines: ['Algorithme push(p_stack : t_stacktab*, val : entier)', 'début',
+    '    // précondition : la pile n\'est pas pleine (nbElts < NBMAX)', '    // la prochaine case libre a pour indice nbElts',
+    '    p_stack->values[p_stack->nbElts] ← val', '    p_stack->nbElts ← p_stack->nbElts + 1', 'fin'] },
+  popA: { title: 'pop() — version qui exige une pile non vide', lines: ['int pop(t_stacktab *p_stack)', '{', '    int val;', '    int position;',
+    '    // exiger que la pile ne soit pas vide', '    assert(p_stack->nbElts > 0);  // sinon : erreur à l\'exécution',
+    '    position = p_stack->nbElts;', '    val = p_stack->values[position-1];', '    p_stack->nbElts = position - 1;', '    return val;', '}'] },
+  popB: { title: 'pop() — version qui vérifie', lines: ['int pop(t_stacktab *p_stack, int *p_val)', '{', '    int position;',
+    '    if (isEmptyStack(*p_stack))', '    {', '        return 0;  // pas de valeur à extraire', '    }', '    position = p_stack->nbElts;',
+    '    *p_val = p_stack->values[position-1];', '    p_stack->nbElts = position - 1;', '    return 1;      // une valeur a bien été récupérée', '}'] },
+  top: { title: 'top() — consulter le sommet (principe)', lines: ['Algorithme top(s : t_stacktab) : entier', 'début',
+    '    // précondition : la pile n\'est pas vide', '    retourner s.values[s.nbElts − 1]', 'fin'] },
+  empty: { title: 'isEmptyStack()', lines: ['int isEmptyStack(t_stacktab s)', '{', '    return (s.nbElts == 0);', '}'] },
+};
+
+Atelier.init({
+  id: 'atelier-pile-tableau-liste',
+  title: 'Pile : tableau ou liste',
+  subtitle: 'CM3 · les mêmes opérations push / pop / top sur deux implémentations, côte à côte.',
+  conv: 'LIFO : dernier entré, premier sorti',
+  options: [{ id: 'check', label: 'pop qui vérifie (renvoie 0 / 1)', checked: false }],
+  commands: {
+    push: { args: 'nums', aliases: ['empiler', 'p'] },
+    pop: { args: 'num?', min: 1, max: 20, aliases: ['depiler', 'dépiler'] },
+    top: { args: 'none', aliases: ['sommet', 'consulter', 'peek'] },
+    isempty: { args: 'none', aliases: ['vide', 'empty', 'isemptystack'] },
+  },
+  help: `push 3 7 1   empile 3, puis 7, puis 1
+pop          dépile une valeur
+pop 2        dépile deux fois
+top          consulte le sommet
+isempty      la pile est-elle vide ?
+# commentaire`,
+  quick: { input: 'num', buttons: [
+    { label: 'Empiler (push)', cmd: 'push', arg: true, primary: true },
+    { label: 'Dépiler (pop)', cmd: 'pop' },
+    { label: 'Sommet (top)', cmd: 'top' },
+    { label: 'Vide ?', cmd: 'isempty', ghost: true },
+  ] },
+  codes: CODES,
+  kinds: {
+    start: { label: 'Départ', tone: 'acc' }, test: { label: 'Test', tone: 'cmp' }, push: { label: 'Empiler', tone: 'acc' },
+    pop: { label: 'Dépiler', tone: 'vio' }, top: { label: 'Consulter', tone: 'new' }, done: { label: 'Résultat', tone: 'new' },
+    empty: { label: 'Pile vide', tone: 'bad' }, full: { label: 'Pile pleine', tone: 'bad' },
+  },
+  hold: { test: 1.4, push: 1.8, pop: 1.9, top: 2, done: 1.6, empty: 2.8, full: 2.8 },
+  legend: [['acc', 'case utilisée (dans la pile)'], ['ghost', 'case hors pile (valeur restée)'], ['cmp', 'sommet lu'], ['new', 'écrit / valeur obtenue'], ['bad', 'retiré / erreur']],
+  example: `push 3 7 1
+top
+pop
+pop
+push 9
+pop 3        # la troisième fois, la pile est vide !
+`,
+  build(list, A) {
+    tab = Array(NBMAX).fill(null); nb = 0; lst = []; nextId = 1;
+    A.op('début', null, () => { A.emit(V({}), 'Deux piles vides : nbElts = 0 pour le tableau, head = NULL pour la liste.', { kind: 'start', readout: RD() }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'push') o.vals.forEach(v => A.op(`push ${v}`, o.line, () => doPush(A, v)));
+      else if (o.cmd === 'pop') for (let k = 0; k < (o.vals[0] || 1); k++) A.op('pop', o.line, () => doPop(A));
+      else if (o.cmd === 'top') A.op('top', o.line, () => doTop(A));
+      else A.op('isempty', o.line, () => doEmpty(A));
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

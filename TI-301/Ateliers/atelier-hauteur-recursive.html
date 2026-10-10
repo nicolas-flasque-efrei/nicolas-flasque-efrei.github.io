@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hauteur et nombre de nœuds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+<script src="commun/arbres.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const T = Arbres;
+const STC = { run: 'new', wait: 'acc', done: 'vio' };
+const CFG = {
+  height: { fn: 'nodeHeight', v: 'h', nul: -1, set: 'height', name: 'hauteur', L: { test: 2, nul: 3, left: 4, right: 5, ret: 6 } },
+  count: { fn: 'nodeCount', v: 'n', nul: 0, set: 'count', name: 'nombre de nœuds', L: { test: 2, nul: 3, left: 4, right: 5, ret: 6 } },
+};
+
+/* ---------- Scène : l'arbre (avec ses NULL si demandé) et les valeurs remontées, la pile des appels à droite ---------- */
+let root;
+function scene(st, A) {
+  const hl = {}, sub = {}, subCls = {};
+  for (const [id, s] of Object.entries(st.state || {})) hl[id] = STC[s];
+  for (const [id, v] of Object.entries(st.val || {})) { sub[id] = v; subCls[id] = 'strong'; }
+  const D = T.draw(root, { hl, sub, subCls, nulls: A.opt('nulls'), nullSub: st.val, });
+  const items = D.items, arrows = D.arrows, fx = D.box.x1 + 80;
+  if (st.calls && st.calls.length) items.push(S.text('hdr', fx, D.box.y0 - 6, 'Pile des appels', { align: 'start', cls: 'muted' }));
+  (st.calls || []).forEach((f, d) => items.push(S.box('f' + d, fx + d * 14, D.box.y0 + 12 + d * 36, Math.max(200, 26 + f.label.length * 8), 30, f.label, { cls: 'frame ' + f.st, rx: 6 })));
+  return { items, arrows };
+}
+
+/* ---------- Modèle : calcul postfixe, la valeur d'un nœud dépend de celles de ses deux fils ---------- */
+function compute(A, what) {
+  const C = CFG[what], calls = [], state = {}, val = {}, showNulls = A.opt('nulls');
+  const E = (msg, kind, line, cls) => A.emit(scene({ calls: calls.map(c => ({ ...c })), state: { ...state }, val: { ...val } }, A), msg,
+    { kind, code: [C.set, line], codeCls: cls });
+  const fmt = v => `${C.v} = ${v}`;
+  function rec(n, parent, side) {
+    if (!n) {
+      const key = parent ? `${parent.id}${side}` : null;
+      if (showNulls || !parent) {
+        calls.push({ label: `${C.fn}(NULL)`, st: 'run' });
+        if (key) val[key] = fmt(C.nul);
+        E(`${parent ? `Le fils ${side === 'L' ? 'gauche' : 'droit'} de ${parent.v} est NULL` : 'L\'arbre est vide'} : un arbre vide a pour ${C.name} ${C.nul}. C'est le cas d'arrêt.`, 'stop', C.L.nul, 'bad');
+        calls.pop();
+      }
+      return C.nul;
+    }
+    calls.push({ label: `${C.fn}(${n.v})`, st: 'run' }); state[n.id] = 'run';
+    E(parent ? `Appel sur le fils ${side === 'L' ? 'gauche' : 'droit'} de ${parent.v} : ${C.fn}(${n.v}).` : `Appel sur la racine : ${C.fn}(${n.v}).`, 'call', C.L.test);
+    calls[calls.length - 1].st = 'wait'; state[n.id] = 'wait';
+    const l = rec(n.left, n, 'L');
+    calls[calls.length - 1].st = 'run'; state[n.id] = 'run';
+    if (n.left || showNulls) E(`Retour dans ${C.fn}(${n.v}) : à gauche, ${C.v} = ${l}.`, 'ret', C.L.left);
+    calls[calls.length - 1].st = 'wait'; state[n.id] = 'wait';
+    const r = rec(n.right, n, 'R');
+    calls[calls.length - 1].st = 'run'; state[n.id] = 'run';
+    if (n.right || showNulls) E(`Retour dans ${C.fn}(${n.v}) : à droite, ${C.v} = ${r}.`, 'ret', C.L.right);
+    const res = what === 'height' ? 1 + Math.max(l, r) : 1 + l + r;
+    state[n.id] = 'done'; val[n.id] = fmt(res); calls[calls.length - 1].st = 'done';
+    E(what === 'height' ? `Traitement postfixe : 1 + max(${l}, ${r}) = ${res}. ${C.fn}(${n.v}) renvoie ${res}.`
+                        : `Traitement postfixe : 1 + ${l} + ${r} = ${res}. ${C.fn}(${n.v}) renvoie ${res}.`, 'calc', C.L.ret);
+    calls.pop();
+    return res;
+  }
+  const res = rec(root, null, null);
+  E(`Résultat : l'arbre a pour ${C.name} ${res}. Chaque valeur n'a pu être calculée qu'après celles des deux fils : c'est un calcul postfixe.`, 'end', C.L.ret, 'good');
+  return `${C.name} = ${res}`;
+}
+
+const CODES = {
+  height: { title: 'nodeHeight() — calcul postfixe', lines: [
+    'int nodeHeight(t_node *pn)', '{', '    if (pn == NULL)', '        return -1;          // hauteur d\'un arbre vide',
+    '    int leftHeight = nodeHeight(pn->left);    // récursivité à gauche', '    int rightHeight = nodeHeight(pn->right);  // récursivité à droite',
+    '    return 1 + max(leftHeight, rightHeight);  // puis traitement', '}'] },
+  count: { title: 'Nombre de nœuds (principe)', lines: [
+    'Algorithme nodeCount(pn : t_node*) : entier', 'début', '    si pn = NULL alors', '        retourner 0                  // arbre vide',
+    '    nbG ← nodeCount(pn->left)', '    nbD ← nodeCount(pn->right)', '    retourner 1 + nbG + nbD          // le nœud + ses deux sous-arbres', 'fin'] },
+};
+
+Atelier.init({
+  id: 'atelier-hauteur-recursive',
+  title: 'Hauteur et nombre de nœuds',
+  subtitle: 'CM4 · deux calculs récursifs postfixes : chaque nœud attend les résultats de ses deux fils.',
+  conv: 'hauteur d\'un arbre vide = −1 · d\'une feuille = 0',
+  options: [{ id: 'nulls', label: 'montrer les appels sur NULL', checked: true }],
+  commands: { ...T.commands, height: { args: 'none', aliases: ['hauteur', 'h'] }, count: { args: 'none', aliases: ['compter', 'nombre', 'nodecount'] } },
+  help: T.help + `
+height                            calcule la hauteur
+count                             compte les nœuds
+# commentaire`,
+  quick: { buttons: [
+    { label: 'Hauteur', cmd: 'height', primary: true }, { label: 'Nombre de nœuds', cmd: 'count' },
+    { label: 'ABR du cours', line: () => 'bst 8 3 10 1 6 14 4 7 13', ghost: true },
+  ] },
+  codes: CODES,
+  kinds: {
+    tree: { label: 'Arbre', tone: 'acc' }, call: { label: 'Appel', tone: 'new' }, stop: { label: 'Cas d\'arrêt', tone: 'bad' },
+    ret: { label: 'Retour', tone: 'acc' }, calc: { label: 'Calcul', tone: 'vio' }, end: { label: 'Résultat', tone: 'new' },
+  },
+  hold: { tree: 1.6, call: 1.1, stop: 1.2, ret: 1, calc: 1.8, end: 2.8 },
+  legend: [['new', 'appel actif'], ['acc', 'en attente des fils'], ['vio', 'valeur calculée'], ['ghost', 'sous-arbre vide (NULL)']],
+  example: `bst 8 3 10 1 6 14
+height
+count
+`,
+  emptyMsg: 'Créez un arbre avec « tree » ou « bst ».',
+  build(list, A) {
+    T.reset(); root = null;
+    A.op('début', null, () => { A.emit(scene({}, A), 'Créez un arbre avec « tree » ou « bst », puis lancez un calcul.', { kind: 'tree' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'height' || o.cmd === 'count') { A.op(o.cmd, o.line, () => compute(A, o.cmd)); continue; }
+      const r = T.fromCommand(o);
+      A.op(r.label, o.line, () => { root = r.root; A.emit(scene({}, A), `Nouvel arbre de ${plural(T.count(root), 'nœud')}.`, { kind: 'tree' }); return plural(T.count(root), 'nœud'); });
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

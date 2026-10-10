@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parcours en profondeur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="commun/atelier.css">
+<script src="commun/atelier.js"></script>
+<script src="commun/arbres.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const T = Arbres;
+const FN = { prefix: 'prefixTraversal', infix: 'infixTraversal', postfix: 'postfixTraversal' };
+const NAME = { prefix: 'préfixe', infix: 'infixe', postfix: 'postfixe' };
+const ORDER = { prefix: ['print', 'left', 'right'], infix: ['left', 'print', 'right'], postfix: ['left', 'right', 'print'] };
+const LINES = { prefix: { print: 4, left: 5, right: 6 }, infix: { left: 4, print: 5, right: 6 }, postfix: { left: 4, right: 5, print: 6 } };
+const STC = { run: 'new', wait: 'acc', done: 'bad' };
+
+/* ---------- Scène : l'arbre à gauche, la pile des appels à droite ---------- */
+let root;
+function scene(st, A) {
+  const hl = {}, sub = {}, subCls = {};
+  for (const [id, s] of Object.entries(st.state || {})) hl[id] = STC[s];
+  for (const [id, k] of Object.entries(st.order || {})) { sub[id] = '#' + k; subCls[id] = 'strong'; }
+  if (st.nullHl) hl[st.nullHl] = 'cmp';
+  const D = T.draw(root, { hl, sub, subCls, nulls: A.opt('nulls') });
+  const items = D.items, arrows = D.arrows;
+  const fx = D.box.x1 + 80;
+  if (st.calls && st.calls.length) items.push(S.text('hdr', fx, D.box.y0 - 6, 'Pile des appels', { align: 'start', cls: 'muted' }));
+  (st.calls || []).forEach((f, d) => items.push(S.box('f' + d, fx + d * 14, D.box.y0 + 12 + d * 36, Math.max(200, 26 + f.label.length * 8), 30, f.label, { cls: 'frame ' + f.st, rx: 6 })));
+  return { items, arrows };
+}
+
+/* ---------- Modèle ---------- */
+function traverse(A, kind) {
+  const calls = [], state = {}, order = {}, out = [], fn = FN[kind], L = LINES[kind], showNulls = A.opt('nulls');
+  const E = (msg, k, line, cls, extra = {}) => A.emit(scene({ calls: calls.map(c => ({ ...c })), state: { ...state }, order: { ...order }, ...extra }, A), msg,
+    { kind: k, code: [kind, line], codeCls: cls, readout: ['Sortie : ', out.join(' ') || '(rien)'] });
+  if (!root) { E('L\'arbre est vide : l\'appel sur la racine (NULL) ne fait rien.', 'stop', 2, 'bad'); return 'arbre vide'; }
+  function rec(n, parent, side) {
+    const sideTxt = side === 'left' ? 'gauche' : 'droit';
+    if (!n) {
+      if (showNulls) {
+        calls.push({ label: `${fn}(NULL)`, st: 'run' });
+        E(`Appel sur le fils ${sideTxt} de ${parent.v}, qui vaut NULL : pn == NULL, la fonction ne fait rien et se termine aussitôt.`, 'stop', 2, 'bad', { nullHl: `${parent.id}${side === 'left' ? 'L' : 'R'}` });
+        calls.pop();
+      }
+      return;
+    }
+    calls.push({ label: `${fn}(${n.v})`, st: 'run' }); state[n.id] = 'run';
+    E(parent ? `Appel récursif sur le fils ${sideTxt} de ${parent.v} : ${fn}(${n.v}) s'empile, ${parent.v} attend son retour.`
+             : `Appel sur la racine : ${fn}(${n.v}).`, 'call', parent ? L[side] : 2);
+    for (const step of ORDER[kind]) {
+      if (step === 'print') {
+        out.push(n.v); order[n.id] = out.length;
+        E(`afficher(${n.v}) : ${n.v} est le n° ${out.length} de la sortie.${kind === 'prefix' ? ' En préfixe, on traite le nœud AVANT ses deux sous-arbres.' : kind === 'infix' ? ' En infixe, le nœud est traité ENTRE ses deux sous-arbres.' : ' En postfixe, le nœud est traité APRÈS ses deux sous-arbres.'}`, 'print', L.print);
+        continue;
+      }
+      const child = n[step];
+      if (!child && !showNulls) continue;
+      calls[calls.length - 1].st = 'wait'; state[n.id] = 'wait';
+      rec(child, n, step);
+      calls[calls.length - 1].st = 'run'; state[n.id] = 'run';
+      if (child || showNulls) E(`Retour dans ${fn}(${n.v}) : le sous-arbre ${step === 'left' ? 'gauche' : 'droit'} est terminé.`, 'ret', L[step]);
+    }
+    calls[calls.length - 1].st = 'done'; state[n.id] = 'done';
+    E(`${fn}(${n.v}) a fini son travail : son cadre est retiré de la pile des appels.`, 'done', 8);
+    calls.pop();
+  }
+  rec(root, null, null);
+  E(`Parcours ${NAME[kind]} terminé : ${out.join(' ')}.`, 'end', 8, 'good');
+  return out.join(' ');
+}
+
+const mk = (kind) => {
+  const body = { print: '        afficher(pn->value);', left: '        ' + FN[kind] + '(pn->left);   // appel à gauche', right: '        ' + FN[kind] + '(pn->right);  // appel à droite' };
+  return { title: `Parcours ${NAME[kind]}`, lines: [`void ${FN[kind]}(t_node *pn)`, '{', '    if (pn != NULL)', '    {', ...ORDER[kind].map(s => body[s]), '    }', '    return;', '}'] };
+};
+const CODES = { prefix: mk('prefix'), infix: mk('infix'), postfix: mk('postfix') };
+
+Atelier.init({
+  id: 'atelier-parcours-profondeur',
+  title: 'Parcours en profondeur',
+  subtitle: 'CM4 · préfixe, infixe et postfixe : la place de l\'affichage par rapport aux deux appels récursifs.',
+  conv: 'vert : appel actif · bleu : en attente · rouge : terminé',
+  options: [{ id: 'nulls', label: 'montrer les appels sur NULL', checked: false }],
+  commands: {
+    ...T.commands,
+    prefix: { args: 'none', aliases: ['prefixe', 'préfixe', 'pre'] },
+    infix: { args: 'none', aliases: ['infixe', 'in'] },
+    postfix: { args: 'none', aliases: ['postfixe', 'suffixe', 'post'] },
+  },
+  help: T.help + `
+prefix | infix | postfix          lance un parcours
+# commentaire`,
+  quick: { buttons: [
+    { label: 'Préfixe', cmd: 'prefix', primary: true }, { label: 'Infixe', cmd: 'infix' }, { label: 'Postfixe', cmd: 'postfix' },
+    { label: 'Arbre du cours', line: () => 'tree (- (+ 3 1) (/ 7 (x 3 2)))', ghost: true },
+    { label: 'ABR du cours', line: () => 'bst 8 3 10 1 6 14 4 7 13', ghost: true },
+  ] },
+  codes: CODES,
+  kinds: {
+    tree: { label: 'Arbre', tone: 'acc' }, call: { label: 'Appel', tone: 'new' }, print: { label: 'Affichage', tone: 'cmp' },
+    ret: { label: 'Retour', tone: 'acc' }, done: { label: 'Terminé', tone: 'bad' }, stop: { label: 'NULL', tone: 'bad' }, end: { label: 'Résultat', tone: 'new' },
+  },
+  hold: { tree: 1.6, call: 1.2, print: 1.6, ret: 1, done: 1, stop: 1.2, end: 2.6 },
+  legend: [['new', 'appel actif'], ['acc', 'appel en attente'], ['bad', 'appel terminé'], ['', '#k : rang dans la sortie']],
+  example: `# L'arbre d'expression du cours, puis les trois parcours.
+tree (- (+ 3 1) (/ 7 (x 3 2)))
+prefix
+infix
+postfix
+`,
+  emptyMsg: 'Créez un arbre avec « tree » ou « bst ».',
+  build(list, A) {
+    T.reset(); root = null;
+    A.op('début', null, () => { A.emit(scene({}, A), 'Créez un arbre avec « tree » ou « bst », puis lancez un parcours.', { kind: 'tree' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'tree' || o.cmd === 'bst') {
+        const r = T.fromCommand(o);
+        A.op(r.label, o.line, () => {
+          root = r.root;
+          A.emit(scene({}, A), `Nouvel arbre de ${plural(T.count(root), 'nœud')}, de hauteur ${T.height(root)}.${r.dups && r.dups.length ? ` Doublons ignorés : ${r.dups.join(', ')}.` : ''}`, { kind: 'tree' });
+          return plural(T.count(root), 'nœud');
+        });
+      } else A.op(o.cmd, o.line, () => traverse(A, o.cmd));
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>
