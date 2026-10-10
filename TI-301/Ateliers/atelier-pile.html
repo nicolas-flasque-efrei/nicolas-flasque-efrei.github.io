@@ -62,6 +62,11 @@ try { let t = localStorage.getItem('ateliers-ti301-theme');
 :root[data-theme="neon"] :is(.brand,.head) h1{width:fit-content;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 :root[data-theme="neon"] :is(button.primary,.ib.play,.badge.t-strong){background:var(--grad);border-color:transparent;color:#fff}
 :root[data-theme="neon"] :is(.cell,.item){border-width:1.5px;box-shadow:0 1.5px 4px rgba(16,24,40,.12)}
+/* Neon : comme dans l'Atelier AVL, les cases au repos ont une bordure en dégradé bleu → rouge */
+:root[data-theme="neon"] .cell:not(.done,.open,.ok,.bad,.cur){border-color:transparent;
+  background:linear-gradient(var(--node),var(--node)) padding-box,linear-gradient(90deg,#0041EA,#EA0E4C) border-box}
+:root[data-theme="neon"] .item:not(.cmp,.ok,.bad){border-color:transparent;
+  background:linear-gradient(var(--accent-soft),var(--accent-soft)) padding-box,linear-gradient(90deg,#0041EA,#EA0E4C) border-box}
 
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}

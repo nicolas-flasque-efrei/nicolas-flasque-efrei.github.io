@@ -235,6 +235,9 @@ details.help pre{margin:8px 0 0;padding:10px;background:var(--soft);border-radiu
 :root[data-theme="neon"] .it :is(rect,circle,polygon){stroke-width:1.5}
 :root[data-theme="neon"] .it:not(.text,.zone,.frame) :is(rect,circle){filter:drop-shadow(0 1.5px 2px rgba(16,24,40,.14))}
 :root[data-theme="neon"] .ar path{stroke-width:1.6}
+/* Neon : comme dans l'Atelier AVL, les éléments au repos ont un contour en dégradé bleu → rouge (#neonStroke, créé par le moteur) */
+:root[data-theme="neon"] .it:not(.cmp,.acc,.new,.bad,.vio,.strong,.ghost,.text,.zone,.frame,.var,.ground,.struct) :is(rect,circle,polygon):not(.cmp,.acc,.new,.bad,.vio,.ghost,.dotc){stroke:url(#neonStroke)}
+:root[data-theme="neon"] .it:is(.cmp,.acc,.new,.bad,.vio) :is(rect,circle,polygon){stroke-width:2.2}
 
 @media (max-width:860px){
   html,body{height:auto}

@@ -146,6 +146,9 @@ function init(cfg) {
   $.speedOut = el('output', { text: '×1' });
   $.counter = el('span', { class: 'counter', text: 'étape 0 / 0' });
   $.svg = sv('svg', { class: 'scene', preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': cfg.title });
+  // contour en dégradé bleu → rouge des éléments au repos, en thème Neon (même définition que l'Atelier AVL)
+  const neonStroke = sv('linearGradient', { id: 'neonStroke', x1: 0, y1: 0, x2: 1, y2: 0 }, sv('defs', {}, $.svg));
+  sv('stop', { offset: 0, 'stop-color': '#0041EA' }, neonStroke); sv('stop', { offset: 1, 'stop-color': '#EA0E4C' }, neonStroke);
   $.gZ = sv('g', {}, $.svg); $.gA = sv('g', {}, $.svg); $.gI = sv('g', {}, $.svg); $.gAT = sv('g', {}, $.svg); $.gT = sv('g', {}, $.svg);
   $.empty = el('div', { class: 'empty', hidden: true, text: cfg.emptyMsg || 'Rien à afficher pour l\'instant.' });
   $.badge = el('span', { class: 'badge', text: '—' });
