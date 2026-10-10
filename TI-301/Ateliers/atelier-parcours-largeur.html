@@ -112,7 +112,7 @@ bfs
       const r = T.fromCommand(o);
       A.op(r.label, o.line, () => {
         root = r.root;
-        A.emit(scene({}, A), `Nouvel arbre de ${plural(T.count(root), 'nœud')} sur ${plural(T.height(root) + 1, 'niveau')}.`, { kind: 'tree' });
+        A.emit(scene({}, A), `Nouvel arbre de ${plural(T.count(root), 'nœud')} sur ${plural(T.height(root) + 1, 'niveau', 'niveaux')}.`, { kind: 'tree' });
         return plural(T.count(root), 'nœud');
       });
     }
