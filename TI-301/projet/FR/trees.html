@@ -1,0 +1,235 @@
+<div id="arbres-lies" class="al" aria-label="Un même arbre vu de trois façons : arbre informatique (racine en haut), arbre informatique (racine en bas), arbre de rameaux">
+<style>
+/* Bloc autonome : tous les sélecteurs sont préfixés par .al pour ne pas toucher au reste de la page */
+.al{--al-wood:#7A4E2D;--al-wood-soft:#EBDDD0;--al-bud:#2F9A3E;--al-bud-soft:#DAF0DC;--al-hl:#E08A00;--al-hl-soft:#FFE7BF;
+  --al-ink:#1E2420;--al-muted:#7C847C;--al-grid:#E6E2D8;--al-edge:#9AA09A;
+  position:relative;margin:16px 0 20px;padding:14px 14px 10px;border-radius:12px;background:#fff;border:1px solid #DCD8CD;
+  color:var(--al-ink);font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;line-height:1.4}
+.al *{box-sizing:border-box}
+.al-panels{display:flex;flex-wrap:wrap;gap:8px 0}
+.al-panel{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;padding:0 10px}
+.al-panel+.al-panel{border-left:1px solid #E8E5DD}
+@media (max-width:760px){.al-panel+.al-panel{border-left:0;border-top:1px solid #E8E5DD;padding-top:10px}}
+.al-panel h4{margin:0 0 2px;font-size:15px;font-weight:700}
+.al-panel p{margin:0 0 6px;font-size:12.5px;color:var(--al-muted)}
+.al svg{width:100%;height:auto;display:block;overflow:visible}
+.al .al-axis{fill:var(--al-muted);font-size:11px}
+.al .al-grid line{stroke:var(--al-grid);stroke-width:1}
+.al .al-sol{stroke:var(--al-edge);stroke-width:2}
+/* arbre informatique : les liens sont fins et gris — ce ne sont PAS des rameaux */
+.al .al-lien{stroke:var(--al-edge);stroke-width:1.3;stroke-dasharray:4 3}
+.al .al-noeud{cursor:pointer;outline:none}
+.al .al-noeud circle{stroke-width:2.5;transition:stroke .15s,fill .15s,r .15s}
+.al .al-noeud.bois circle{fill:var(--al-wood-soft);stroke:var(--al-wood)}
+.al .al-noeud.bourgeon circle{fill:var(--al-bud-soft);stroke:var(--al-bud)}
+.al .al-noeud text{font-size:14px;font-weight:700;fill:var(--al-ink);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+/* arbre de rameaux : chaque segment est un rameau */
+.al .al-rameau{cursor:pointer}
+.al .al-rameau .al-seg{stroke:var(--al-wood);stroke-width:4;stroke-linecap:round;transition:stroke .15s,stroke-width .15s,opacity .15s}
+.al .al-rameau .al-zone{stroke:transparent;stroke-width:16;stroke-linecap:round}
+.al .al-rameau .al-bout{transition:fill .15s,opacity .15s}
+.al .al-rameau.bois .al-bout{fill:var(--al-wood)}
+.al .al-rameau.bourgeon .al-bout{fill:var(--al-bud)}
+.al .al-rameau text{font-size:12.5px;font-weight:700;fill:var(--al-ink);pointer-events:none;transition:opacity .15s}
+.al .al-depart{fill:none;stroke:var(--al-hl);stroke-width:2;stroke-dasharray:3 2;opacity:0;transition:opacity .15s}
+/* état « survol » */
+.al.actif .al-rameau:not(.hl) .al-seg,.al.actif .al-rameau:not(.hl) .al-bout{opacity:.25}
+.al.actif .al-rameau:not(.hl) text{opacity:.35}
+.al .al-rameau.hl .al-seg{stroke:var(--al-hl);stroke-width:7}
+.al .al-rameau.hl .al-bout{fill:var(--al-hl)}
+.al .al-rameau.hl text{font-size:15px}
+.al.actif .al-depart{opacity:1}
+.al .al-noeud.hl circle{fill:var(--al-hl-soft);stroke:var(--al-hl);r:24}
+.al-legende{display:flex;flex-wrap:wrap;gap:4px 18px;margin:8px 10px 0;font-size:12.5px;color:var(--al-muted)}
+.al-legende span{display:inline-flex;align-items:center;gap:6px}
+.al-legende i{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid}
+.al-legende .l-bois{background:var(--al-wood-soft);border-color:var(--al-wood)}
+.al-legende .l-bud{background:var(--al-bud-soft);border-color:var(--al-bud)}
+.al-legende .l-lien{width:22px;height:0;border-radius:0;border:0;border-top:1.5px dashed var(--al-edge)}
+.al-legende .l-seg{width:22px;height:4px;border-radius:2px;border:0;background:var(--al-wood)}
+/* fenêtre d'information */
+.al-pop{position:absolute;z-index:5;min-width:190px;padding:10px 12px;border-radius:10px;background:#1F2620;color:#E6EDE6;
+  font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.18);pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s}
+.al-pop.on{opacity:1;transform:none}
+.al-pop b{display:block;margin-bottom:6px;font-size:14px}
+.al-pop b em{font-style:normal;font-weight:600;font-size:11.5px;margin-left:8px;padding:1px 8px;border-radius:999px}
+.al-pop b em.bois{background:var(--al-wood-soft);color:var(--al-wood)}
+.al-pop b em.bourgeon{background:var(--al-bud-soft);color:var(--al-bud)}
+.al-pop dl{display:grid;grid-template-columns:auto auto;gap:2px 14px;margin:0}
+.al-pop dt{color:#9FAA9F}
+.al-pop dd{margin:0;font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:12.5px}
+@media (prefers-reduced-motion: reduce){.al *,.al-pop{transition:none!important}}
+</style>
+
+  <div class="al-panels">
+    <div class="al-panel">
+      <h4>Arbre informatique</h4>
+      <p>racine (le pied) en haut</p>
+      <svg class="al-haut" viewBox="0 0 340 400" role="img" aria-label="Arbre informatique, racine en haut"></svg>
+    </div>
+    <div class="al-panel">
+      <h4>Arbre informatique</h4>
+      <p>racine (le pied) en bas</p>
+      <svg class="al-bas" viewBox="0 0 340 400" role="img" aria-label="Arbre informatique, racine en bas"></svg>
+    </div>
+    <div class="al-panel">
+      <h4>Arbre de rameaux</h4>
+      <p>de profil, le pied en bas</p>
+      <svg class="al-profil" viewBox="0 0 340 400" role="img" aria-label="Arbre de rameaux, de profil"></svg>
+    </div>
+  </div>
+  <div class="al-legende">
+    <span><i class="l-bois"></i>nœud = rameau de bois</span>
+    <span><i class="l-bud"></i>nœud = rameau qui porte un bourgeon</span>
+    <span><i class="l-lien"></i>lien « est né à l'extrémité de »</span>
+    <span><i class="l-seg"></i>un rameau</span>
+  </div>
+  <div class="al-pop" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  const racine = document.currentScript.parentElement;
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs, parent) => {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  };
+  const fr = (v, d = 2) => v.toFixed(d).replace('.', ',');
+
+  /* L'arbre de l'exemple : contenu de exemple1.txt (saison, parent, direction, longueur) */
+  const PIED = { x: 4.5, y: 1.0 };
+  const LIGNES = [[1,0,0,1.0],[1,0,-45,0.8],[2,1,5,1.0],[2,1,50,0.8],[2,1,-40,0.7],
+                  [3,3,0,1.0],[3,2,-50,0.6],[4,6,-5,0.9],[4,6,45,0.7]];
+
+  // équivalent de lire_arbre / pousser_rameau
+  const R = [{ num: 0, x: PIED.x, y: PIED.y, dir: 0, lg: PIED.y, saison: 0, gen: 0, parent: -1, fils: [] }];
+  for (const [saison, p, dir, lg] of LIGNES) {
+    const par = R[p], t = dir * Math.PI / 180;
+    const r = { num: R.length, x: par.x + lg * Math.sin(t), y: par.y + lg * Math.cos(t), dir, lg, saison, gen: par.gen + 1, parent: p, fils: [] };
+    par.fils.push(r.num); R.push(r);
+  }
+  R.forEach(r => (r.etat = r.fils.length ? 'bois' : 'bourgeon'));
+  const H = Math.max(...R.map(r => r.gen));
+
+  // disposition : feuilles côte à côte (parcours en profondeur), nœud interne au milieu de ses fils
+  let nf = 0;
+  (function place(i) {
+    const r = R[i];
+    if (!r.fils.length) { r.col = nf++; return; }
+    r.fils.forEach(place);
+    r.col = r.fils.reduce((s, f) => s + R[f].col, 0) / r.fils.length;
+  })(0);
+
+  const vues = { noeuds: [], rameaux: [] };
+
+  /* ---------- Arbres informatiques (racine en haut / en bas) ---------- */
+  function arbreInfo(svg, enBas) {
+    const X0 = 40, X1 = 250, Y0 = 32, Y1 = 368;
+    const tx = c => X0 + c / (nf - 1) * (X1 - X0);
+    const ty = g => { const f = g / H; return enBas ? Y1 - f * (Y1 - Y0) : Y0 + f * (Y1 - Y0); };
+    for (let g = 0; g <= H; g++) el('text', { x: 290, y: ty(g) + 4, class: 'al-axis', 'text-anchor': 'middle' }, svg).textContent = `gén. ${g}`;
+    const liens = el('g', {}, svg);
+    R.forEach(r => { if (r.parent >= 0) el('line', { x1: tx(R[r.parent].col), y1: ty(R[r.parent].gen), x2: tx(r.col), y2: ty(r.gen), class: 'al-lien' }, liens); });
+    R.forEach(r => {
+      const g = el('g', { class: `al-noeud ${r.etat}`, 'data-r': r.num, tabindex: 0, role: 'button', 'aria-label': `Rameau ${r.num}` }, svg);
+      el('circle', { cx: tx(r.col), cy: ty(r.gen), r: 19 }, g);
+      el('text', { x: tx(r.col), y: ty(r.gen) }, g).textContent = r.num;
+      (vues.noeuds[r.num] ||= []).push(g);
+    });
+  }
+  arbreInfo(racine.querySelector('.al-haut'), false);
+  arbreInfo(racine.querySelector('.al-bas'), true);
+
+  /* ---------- Arbre de rameaux, de profil ---------- */
+  const sp = racine.querySelector('.al-profil');
+  const XA = 3, XB = 6, YB = 5.3, L = 44, RR = 330, T = 22, B = 362;
+  const px = x => L + (x - XA) / (XB - XA) * (RR - L);
+  const py = y => B - y / YB * (B - T);
+  const grille = el('g', { class: 'al-grid' }, sp);
+  for (let y = 0; y <= 5; y++) {
+    el('line', { x1: L, x2: RR, y1: py(y), y2: py(y) }, grille);
+    el('text', { x: L - 8, y: py(y) + 4, class: 'al-axis', 'text-anchor': 'end' }, sp).textContent = `y = ${y}`;
+  }
+  for (let x = XA; x <= XB; x++) el('line', { x1: px(x), x2: px(x), y1: T, y2: B }, grille);
+  for (let c = XA; c < XB; c++) el('text', { x: px(c + .5), y: B + 20, class: 'al-axis', 'text-anchor': 'middle' }, sp).textContent = `colonne ${c}`;
+  el('line', { x1: L, x2: RR, y1: B, y2: B, class: 'al-sol' }, sp);
+
+  const depart = el('circle', { r: 9, class: 'al-depart' });  // cercle sur le point de départ du rameau survolé
+  const segs = el('g', {}, sp), bouts = el('g', {}, sp);
+  R.forEach(r => {
+    const base = r.parent < 0 ? { x: r.x, y: 0 } : R[r.parent];   // le pied part du sol
+    const g = el('g', { class: `al-rameau ${r.etat}`, 'data-r': r.num }, segs);
+    el('line', { x1: px(base.x), y1: py(base.y), x2: px(r.x), y2: py(r.y), class: 'al-seg' }, g);
+    el('line', { x1: px(base.x), y1: py(base.y), x2: px(r.x), y2: py(r.y), class: 'al-zone' }, g);
+    // extrémité + numéro, dessinés au-dessus de tous les segments
+    const b = el('g', { class: `al-rameau ${r.etat}`, 'data-r': r.num }, bouts);
+    el('circle', { cx: px(r.x), cy: py(r.y), r: r.etat === 'bourgeon' ? 7 : 3.5, class: 'al-bout' }, b);
+    const dx = r.dir < -20 || (r.etat === 'bourgeon' && r.dir < 0) ? -20 : 10;
+    el('text', { x: px(r.x) + dx, y: py(r.y) + 4 }, b).textContent = r.num;
+    vues.rameaux[r.num] = [g, b];
+    r.base = base;
+  });
+  sp.appendChild(depart);
+
+  /* ---------- Survol : nœud <-> rameau, fenêtre d'information ---------- */
+  const pop = racine.querySelector('.al-pop');
+  let courant = null;
+
+  function montrer(n, ancre) {
+    if (courant === n) return;
+    cacher();
+    courant = n;
+    const r = R[n];
+    racine.classList.add('actif');
+    vues.noeuds[n].forEach(e => e.classList.add('hl'));
+    vues.rameaux[n].forEach(e => { e.classList.add('hl'); e.parentNode.appendChild(e); });
+    depart.setAttribute('cx', px(r.base.x)); depart.setAttribute('cy', py(r.base.y));
+
+    const fils = r.fils.length ? r.fils.join(', ') : 'aucun';
+    pop.innerHTML =
+      `<b>Rameau ${r.num}<em class="${r.etat}">${r.etat}</em></b><dl>` +
+      `<dt>parent</dt><dd>${r.parent < 0 ? '– (c\'est le pied)' : r.parent}</dd>` +
+      `<dt>fils</dt><dd>${fils}</dd>` +
+      `<dt>saison</dt><dd>${r.saison}</dd>` +
+      `<dt>génération</dt><dd>${r.gen}</dd>` +
+      `<dt>direction</dt><dd>${r.dir}°</dd>` +
+      `<dt>longueur</dt><dd>${r.parent < 0 ? '–' : fr(r.lg, 1)}</dd>` +
+      `<dt>extrémité</dt><dd>(${fr(r.x)} ; ${fr(r.y)})</dd></dl>`;
+
+    // place la fenêtre à côté de l'élément survolé, sans sortir du bloc
+    const bc = racine.getBoundingClientRect(), ba = ancre.getBoundingClientRect();
+    pop.classList.add('on');
+    const w = pop.offsetWidth, h = pop.offsetHeight;
+    let x = ba.right - bc.left + 10, y = ba.top - bc.top + ba.height / 2 - h / 2;
+    if (x + w > bc.width - 6) x = ba.left - bc.left - w - 10;
+    x = Math.max(6, Math.min(x, bc.width - w - 6));
+    y = Math.max(6, Math.min(y, bc.height - h - 6));
+    pop.style.left = x + 'px'; pop.style.top = y + 'px';
+  }
+  function cacher() {
+    if (courant === null) return;
+    vues.noeuds[courant].forEach(e => e.classList.remove('hl'));
+    vues.rameaux[courant].forEach(e => e.classList.remove('hl'));
+    // remet les rameaux dans l'ordre des numéros
+    for (const [g, b] of vues.rameaux) { segs.appendChild(g); bouts.appendChild(b); }
+    racine.classList.remove('actif');
+    pop.classList.remove('on');
+    courant = null;
+  }
+
+  const cible = e => e.target.closest && e.target.closest('.al-noeud, .al-rameau');
+  racine.addEventListener('pointerover', e => {
+    const t = cible(e);
+    if (t) montrer(+t.dataset.r, t.matches('.al-rameau') ? vues.rameaux[t.dataset.r][1] : t);
+  });
+  racine.addEventListener('pointerout', e => {
+    const t = cible(e);
+    if (t && !(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest(`[data-r="${t.dataset.r}"]`))) cacher();
+  });
+  racine.addEventListener('focusin', e => { const t = cible(e); if (t) montrer(+t.dataset.r, t); });
+  racine.addEventListener('focusout', cacher);
+})();
+</script>
+</div>
