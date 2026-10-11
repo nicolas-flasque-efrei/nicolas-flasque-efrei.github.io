@@ -7,7 +7,7 @@
 <meta name="description" content="TI301 – Projet SSD2 et Probabilités : la forêt et la lumière, partie 1.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap">
 <!-- KaTeX : rendu des formules écrites entre \( … \) (dans le texte) ou $$ … $$ (centrées) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
@@ -23,22 +23,21 @@
     <h1>La forêt et la lumière <span class="part">Partie 1</span></h1>
     <p class="lede">Ce projet est rédigé en commun pour les modules SDD2 et Probabilités.</p>
     <p class="lede"><hr><strong>Idée originale, conception, réalisation : </strong>Nicolas FLASQUE <hr> <strong>Validation pour le module de probabilités :</strong> Federico ZALAMEA, Brice JUANICO <hr> <strong>Site web du projet et animations :</strong> Nicolas FLASQUE et Claude code pro - modèle Opus 5.5</p>
-    <div class="hero-tools">
-      <label class="theme">Thème
-        <select id="optTheme">
-          <option value="auto">Automatique</option>
-          <option value="light">Clair</option>
-          <option value="dark">Sombre</option>
-          <option value="neon">Neon</option>
-        </select>
-      </label>
-    </div>
   </div>
 </header>
 
 <div class="layout">
 
 <nav class="toc" aria-label="Sommaire">
+  <label class="theme">Thème
+    <select id="optTheme">
+      <option value="auto">Automatique</option>
+      <option value="light">Clair</option>
+      <option value="dark">Sombre</option>
+      <option value="neon">Neon</option>
+      <option value="klear">Klear (accessibilité)</option>
+    </select>
+  </label>
   <p class="toc-title">Sommaire</p>
   <ol>
     <li><a href="#intro">Introduction</a></li>

@@ -1,5 +1,5 @@
 /* TI301 — Projet « La forêt et la lumière », partie 1.
-   - thème clair / sombre / Neon (mémorisé, même clé que les Ateliers TI301)
+   - thème clair / sombre / Neon / Klear (mémorisé, même clé que les Ateliers TI301)
    - formules LaTeX rendues par KaTeX
    - sommaire actif, boutons « Copier », coloration du code C */
 
@@ -7,7 +7,7 @@ const THEME_KEY = 'ateliers-ti301-theme';
 try {
   let t = localStorage.getItem(THEME_KEY);
   if (t === 'neo') t = 'neon';   // ancien thème « Neo » des Ateliers, remplacé par « Neon »
-  if (t === 'light' || t === 'dark' || t === 'neon') document.documentElement.dataset.theme = t;
+  if (t === 'light' || t === 'dark' || t === 'neon' || t === 'klear') document.documentElement.dataset.theme = t;
 } catch (e) {}
 
 /* ------------------------------------------------------------------

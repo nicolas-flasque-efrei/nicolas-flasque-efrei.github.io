@@ -14,7 +14,7 @@
   --f-mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
   color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="neon"]){
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="neon"]):not([data-theme="klear"]){
   --bg:#111511; --panel:#181E19; --soft:#1F2620; --ink:#E5EAE4; --muted:#97A197; --line:#2C352D;
   --accent:#7D9BFF; --accent-soft:#22325A;
   --wood:#C99566; --wood-soft:#3A2B1E;
@@ -53,9 +53,9 @@ strong{font-weight:600}
 .hero h1{font-family:var(--f-display);font-size:clamp(30px,5.5vw,52px);line-height:1.05;letter-spacing:-.02em;margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
 .part{font-size:.45em;letter-spacing:0;padding:4px 12px;border-radius:999px;background:#7A4E2D;color:#fff;text-shadow:none}
 .lede{margin:12px 0 0;color:rgba(255,255,255,.9)}
-.hero-tools{margin-top:18px;display:flex;justify-content:flex-end}
 .theme{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
-.hero .theme{color:rgba(255,255,255,.88)}
+.toc .theme{margin:0 0 20px;padding:0 8px;flex-wrap:wrap}
+.toc .theme select{max-width:100%}
 .theme select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:3px 6px}
 
 /* ---------- Mise en page : sommaire + contenu ---------- */
@@ -270,3 +270,68 @@ pre.console .copy{border-color:var(--line);background:var(--soft)}
 .fig.anim img{display:block;margin:0 auto;max-width:100%;height:auto;max-height:520px;width:auto}
 .fig.anim .replay{margin-left:8px;font:500 13px/1 var(--f-body);font-style:normal;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:inherit;cursor:pointer}
 .fig.anim .replay:hover{border-color:currentColor}
+
+/* =====================================================================
+   Thème « Klear » — accessibilité :
+   noir sur blanc (contrastes WCAG AAA, au moins 7:1), police Atkinson Hyperlegible,
+   texte agrandi, liens soulignés, focus clavier très visible, aucune animation.
+   ===================================================================== */
+:root[data-theme="klear"]{
+  --bg:#FFFFFF; --panel:#FFFFFF; --soft:#F2F2F2; --ink:#000000; --muted:#262626; --line:#595959;
+  --accent:#0033A0; --accent-soft:#E3EAFF;
+  --wood:#5C3311; --wood-soft:#F3E6D8;
+  --bud:#0B5A1C; --bud-soft:#DDF2E0;
+  --warn:#A1001C; --warn-soft:#FFE3E8;
+  --opt:#4B1D99; --opt-soft:#EEE6FF;
+  --code-bg:#000000; --code-ink:#FFFFFF; --code-kw:#8CFFA5; --code-cm:#D0D0D0;
+  --grid:#BDBDBD;
+  --f-display:"Atkinson Hyperlegible","Verdana",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Verdana",system-ui,sans-serif;
+  --f-mono:"Atkinson Hyperlegible Mono","Cascadia Mono",Consolas,monospace;
+  color-scheme:light}
+[data-theme="klear"] body{font-size:19px;line-height:1.7;letter-spacing:.01em}
+[data-theme="klear"] strong,[data-theme="klear"] b{font-weight:700}
+[data-theme="klear"] h3{font-size:24px}
+[data-theme="klear"] h4{font-size:20px}
+
+/* aucun texte en dessous de 15px */
+[data-theme="klear"] .toc{font-size:17px}
+[data-theme="klear"] .toc-title,[data-theme="klear"] .kicker,[data-theme="klear"] .tag,[data-theme="klear"] .step-n,
+[data-theme="klear"] .pleg,[data-theme="klear"] .credit,[data-theme="klear"] .formula small,[data-theme="klear"] .badge,
+[data-theme="klear"] .slices em,[data-theme="klear"] .copy{font-size:15px}
+[data-theme="klear"] .theme{font-size:16px;color:var(--ink)}
+[data-theme="klear"] pre.code{font-size:16px}
+[data-theme="klear"] table.data{font-size:17px}
+[data-theme="klear"] .fig figcaption{font-size:17px;font-style:normal;color:var(--ink)}
+[data-theme="klear"] .hint,[data-theme="klear"] .note{color:var(--muted)}
+
+/* liens et focus clavier */
+[data-theme="klear"] a{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+[data-theme="klear"] :focus-visible{outline:3px solid #000;outline-offset:2px;box-shadow:0 0 0 6px #FFD400}
+[data-theme="klear"] .toc a{color:var(--ink);text-decoration:none}
+[data-theme="klear"] .toc a:hover{text-decoration:underline}
+[data-theme="klear"] .toc a.active{background:#000;color:#fff;font-weight:700}
+[data-theme="klear"] .theme select{border:2px solid #000;color:#000}
+
+/* bandeau : forêt plus assombrie pour garder le titre lisible */
+[data-theme="klear"] .hero{background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,.6) 50%,rgba(0,0,0,.85) 100%),url(img/foret.jpg) center 60%/cover no-repeat,#1E2A10}
+[data-theme="klear"] .hero-in{text-shadow:0 1px 4px #000}
+[data-theme="klear"] .kicker,[data-theme="klear"] .lede{color:#fff}
+
+/* cadres nets */
+[data-theme="klear"] .parts li,[data-theme="klear"] .table-wrap,[data-theme="klear"] .formula,[data-theme="klear"] .fig,
+[data-theme="klear"] .todo,[data-theme="klear"] .check,[data-theme="klear"] .option,[data-theme="klear"] pre.console{border:2px solid var(--line)}
+[data-theme="klear"] .callout,[data-theme="klear"] .warn{border-left-width:6px}
+[data-theme="klear"] .goal{border-width:3px}
+[data-theme="klear"] .copy{opacity:1;border-color:#fff}
+[data-theme="klear"] pre.code .hole{color:#FFD54F}
+
+/* bloc des trois arbres : couleurs foncées, traits et textes renforcés */
+[data-theme="klear"] .al{--al-wood:#5C3311;--al-wood-soft:#F3E6D8;--al-bud:#0B6B1F;--al-bud-soft:#DDF2E0;
+  --al-hl:#B34700;--al-hl-soft:#FFE08A;--al-ink:#000;--al-muted:#262626;--al-edge:#4D4D4D;--al-grid:#BDBDBD;
+  border:2px solid var(--line);font-family:var(--f-body);font-size:17px}
+[data-theme="klear"] .al .al-panel+.al-panel{border-color:var(--line)}
+
+/* pas d'apparition animée des blocs */
+[data-theme="klear"] .reveal{opacity:1;transform:none;transition:none}
+html[data-theme="klear"]{scroll-behavior:auto}
