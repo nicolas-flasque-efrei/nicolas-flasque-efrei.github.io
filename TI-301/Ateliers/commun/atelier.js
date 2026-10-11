@@ -85,7 +85,8 @@ function init(cfg) {
   const credit = el('span', { class: 'credit', html: '<svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - IA Claude code' });
   $.theme = el('select', { id: 'optTheme' },
     el('option', { value: 'auto', text: 'Auto' }), el('option', { value: 'light', text: 'Clair' }),
-    el('option', { value: 'dark', text: 'Sombre' }), el('option', { value: 'neon', text: 'Neon' }));
+    el('option', { value: 'dark', text: 'Sombre' }), el('option', { value: 'neon', text: 'Neon' }),
+    el('option', { value: 'klear', text: 'Klear (accessibilité)' }));
   const opts = el('div', { class: 'opts' });
   if (cfg.conv) opts.append(el('span', { class: 'conv', text: cfg.conv }));
   opts.append(el('label', { for: 'optTheme' }, 'Thème ', $.theme));

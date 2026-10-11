@@ -13,7 +13,7 @@
   --f-mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
   --f-node:var(--f-mono);
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="neon"]){
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="neon"]):not([data-theme="klear"]){
   --bg:#0D1219; --panel:#141B25; --soft:#1A2230; --ink:#E4EAF2; --muted:#8F9CAE; --line:#263142;
   --accent:#7D9BFF; --accent-soft:#22325A; --on-accent:#0D1219;
   --cmp:#F0B23A; --cmp-soft:#46340F; --on-cmp:#1A1200;
@@ -52,6 +52,28 @@
 :root[data-theme="neon"] :is(.brand,.head) h1{width:fit-content;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 :root[data-theme="neon"] :is(button.primary,.ib.play,.badge.t-strong){background:var(--grad);border-color:transparent;color:#fff}
 
+/* Klear : accessibilité — noir sur blanc (contrastes WCAG AAA), police Atkinson Hyperlegible,
+   texte agrandi, traits épaissis, focus clavier très visible */
+:root[data-theme="klear"]{
+  --bg:#FFFFFF; --panel:#FFFFFF; --soft:#F2F2F2; --ink:#000000; --muted:#262626; --line:#595959;
+  --accent:#0033A0; --accent-soft:#E3EAFF; --on-accent:#FFFFFF;
+  --cmp:#9A4A00; --cmp-soft:#FFE08A; --on-cmp:#000000;
+  --new:#0B6B3A; --new-soft:#D4F2E2; --bad:#A1001C; --bad-soft:#FFE3E8;
+  --vio:#4B1D99; --vio-soft:#EEE6FF;
+  --node:#FFFFFF; --edge:#000000; --dot:#B0B0B0;
+  --f-display:"Atkinson Hyperlegible","Verdana",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Verdana",system-ui,sans-serif;
+  --f-mono:"Atkinson Hyperlegible Mono","Cascadia Mono",Consolas,monospace;
+  --f-node:var(--f-mono);
+  color-scheme:light}
+:root[data-theme="klear"] body{font-size:16px;letter-spacing:.01em}
+:root[data-theme="klear"] :is(.block h2,.badge,.legend,.journal span,.conv,.opts,.home,.credit,details.help pre){font-size:14px}
+:root[data-theme="klear"] :is(.block,.stage,button,select,input[type=text]){border-width:2px}
+:root[data-theme="klear"] button.ghost{color:var(--ink)}
+:root[data-theme="klear"] a{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+:root[data-theme="klear"] :focus-visible{outline:3px solid #000;outline-offset:2px;box-shadow:0 0 0 6px #FFD400}
+:root[data-theme="klear"] .it :is(rect,circle,polygon){stroke-width:2.5}
+:root[data-theme="klear"] .it text.sub,:root[data-theme="klear"] .it text.lbl{font-weight:700}
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{height:100%}
