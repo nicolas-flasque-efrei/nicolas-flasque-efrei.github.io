@@ -71,9 +71,9 @@
 
   <h3 class="caption-title">Organisation du projet</h3>
   <ol class="parts">
-    <li class="is-current"><b>Partie 1</b> faire pousser au hasard un arbre seul, en pleine lumière, le mesurer et l'enregistrer dans un fichier ;</li>
-    <li><b>Partie 2</b> faire pousser une forêt entière, dans laquelle les arbres se font de l'ombre ;</li>
-    <li><b>Partie 3</b> simuler des milliers de forêts, analyser et visualiser les résultats.</li>
+    <li class="is-current"><b>Partie 1</b> Faire pousser au hasard un arbre seul, en pleine lumière, le mesurer et l'enregistrer dans un fichier ;</li>
+    <li><b>Partie 2</b> Faire pousser une forêt entière, dans laquelle les arbres se font de l'ombre ;</li>
+    <li><b>Partie 3</b> Simuler des milliers de forêts, analyser et visualiser les résultats.</li>
   </ol>
 </section>
 
@@ -81,18 +81,19 @@
 <section id="arbre">
   <h2><span class="num">1</span>Qu'est-ce qu'un arbre ?</h2>
 
-  <h3>Il faut bien distinguer deux types d'arbre dans ce projet</h3>
+  <h3>Il faut bien distinguer deux types d'arbres dans ce projet</h3>
   <ul>
     <li>les arbres qui « poussent » dans la simulation : ce sont les <strong>arbres à rameaux</strong> ;</li>
     <li>les arbres 3-aires qui les représentent : ce sont les <strong>arbres informatiques</strong>.</li>
   </ul>
 
   <h3>Les rameaux des arbres à rameaux</h3>
-  <p>Un arbre est fait de <strong>rameaux</strong>. Chaque rameau est un petit segment, qui part de l'extrémité de son rameau <strong>parent</strong>. Le premier rameau, appelé le <strong>pied</strong>, part du sol.</p>
-  <p>On regardera une forêt (plusieurs arbres) <strong>de profil</strong> : l'axe \(x\) suit la rangée d'arbres (de gauche à droite), l'axe \(y\) mesure l'altitude au-dessus du sol.</p>
+  <p>Un arbre à rameaux est fait de... <strong>rameaux !</strong>. Chaque rameau est un petit segment, qui part de l'extrémité de son rameau <strong>parent</strong>. Le premier rameau, appelé le <strong>pied</strong>, part du sol.</p>
+  <p>Un arbre à rameaux est vu <strong>en 2D</strong> : l'axe \(x\) pour la direction horizontale (de gauche à droite - nous en aurons besoin pour les parties suivantes), l'axe \(y\) mesure l'altitude au-dessus du sol.</p>
   <p>Pour chaque <strong>rameau</strong>, on stocke :</p>
   <ul>
     <li>la <strong>position de son extrémité</strong> : \(x\) et \(y\) ;</li>
+      <li>sa <strong>longueur </strong>: une valeur float, entre 0.7 et 1.3, arrondie à un chiffre après la virgule;</li>
     <li>sa <strong>direction</strong> : un angle en degrés, 0 pour un rameau vertical, positif s'il penche vers la droite, négatif s'il penche vers la gauche ;</li>
     <li>la <strong>saison</strong> à laquelle il est apparu (0 pour le pied) ;</li>
     <li>son <strong>état</strong> :
@@ -112,7 +113,7 @@
   </ul>
   <div class="callout">
     <p>La <strong>génération</strong> d'un nœud (rameau) est sa <strong>distance = profondeur</strong> au pied dans l'arbre : le pied est de génération 0, ses fils de génération 1, les fils de ses fils de génération 2, et ainsi de suite.</p>
-    <p>La <strong>hauteur</strong> de l'arbre informatique est la plus grande génération de ses rameaux. Attention à ne pas la confondre avec l'<strong>altitude</strong> de la cime, qui est mesurée en unités de longueur.</p>
+    <p>La <strong>hauteur</strong> de l'arbre informatique est la plus grande génération de ses rameaux. Attention à ne pas la confondre avec l'<strong>altitude</strong> des rameaux, qui est mesurée en unités de longueur.</p>
   </div>
 
   <h3 class="caption-title">Exemple</h3>
