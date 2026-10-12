@@ -84,8 +84,11 @@ a{color:var(--accent)}
 .brand{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px}
 .brand h1{font-family:var(--f-display);font-size:24px;margin:0;letter-spacing:-.015em}
 .brand p{margin:0;color:var(--muted)}
-.home{font-size:13px;font-weight:500;text-decoration:none;color:var(--muted)}
-.home:hover{color:var(--accent)}
+/* retour au sommaire : un bouton, en haut à gauche, avant le titre */
+.home{align-self:center;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:5px 11px}
+.home:hover{border-color:var(--accent);color:var(--accent)}
+:root[data-theme="neon"] .home{border-radius:9px}
+:root[data-theme="klear"] a.home{text-decoration:none;border-width:2px}
 .credit{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--muted)}
 .copyleft{width:16px;height:16px;flex:none}
 .copyleft circle,.copyleft path{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}

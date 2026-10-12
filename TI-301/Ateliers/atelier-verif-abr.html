@@ -27,19 +27,19 @@ const I = (a, b) => `[${fb(a)} ; ${fb(b)}]`;
 const num = n => +n.v;
 const cap = s => s[0].toUpperCase() + s.slice(1);
 const nonNumeric = n => !n ? null : !/^-?\d+$/.test(String(n.v)) ? n : nonNumeric(n.left) || nonNumeric(n.right);
-const isNodeBST = (n, mn, mx) => !n || (num(n) >= mn && num(n) <= mx && isNodeBST(n.left, mn, num(n)) && isNodeBST(n.right, num(n) + 1, mx));
+const isNodeBST = (n, mn, mx) => !n || (num(n) >= mn && num(n) <= mx && isNodeBST(n.left, mn, num(n) - 1) && isNodeBST(n.right, num(n) + 1, mx));
 const find = (n, p) => !n ? null : p(n) ? n : find(n.left, p) || find(n.right, p);
 const sub = (n, out = []) => { if (n) { out.push(n); sub(n.left, out); sub(n.right, out); } return out; };
 /* premier nœud (préfixe) dont un descendant est du mauvais côté */
 function violation(n) {
   if (!n) return null;
   const v = num(n);
-  const l = find(n.left, d => num(d) > v); if (l) return { anc: n, d: l, side: 'L' };
+  const l = find(n.left, d => num(d) >= v); if (l) return { anc: n, d: l, side: 'L' };
   const r = find(n.right, d => num(d) <= v); if (r) return { anc: n, d: r, side: 'R' };
   return violation(n.left) || violation(n.right);
 }
-const why = x => x.side === 'L' ? `${x.d.v} est dans le sous-arbre gauche de ${x.anc.v} alors que ${x.d.v} > ${x.anc.v}`
-                                 : `${x.d.v} est dans le sous-arbre droit de ${x.anc.v} alors que ${x.d.v} ≤ ${x.anc.v}`;
+const why = x => x.side === 'L' ? `${x.d.v} est dans le sous-arbre gauche de ${x.anc.v} alors que ${x.d.v} ${num(x.d) === num(x.anc) ? '=' : '>'} ${x.anc.v}`
+                                 : `${x.d.v} est dans le sous-arbre droit de ${x.anc.v} alors que ${x.d.v} ${num(x.d) === num(x.anc) ? '=' : '<'} ${x.anc.v}`;
 
 /* ---------- Scène : l'arbre, l'intervalle de chaque nœud, la pile des appels à droite ---------- */
 let root;
@@ -90,14 +90,14 @@ function runCheck(A) {
     st.hl[n.id] = 'cmp'; st.sub[n.id] = I(mn, mx); st.subCls[n.id] = 'strong';
     if (parent) st.ecls[n.id] = 'acc';
     E(!parent ? `Appel sur la racine : isNodeBST(${n.v}, −∞, +∞). Aucun ancêtre, donc aucune contrainte.`
-      : side === 'L' ? `Appel sur ${where} : toutes ses valeurs doivent être ≤ ${parent.v}. La borne max devient ${parent.v}, la borne min ${fb(mn)} est héritée telle quelle.`
+      : side === 'L' ? `Appel sur ${where} : toutes ses valeurs doivent être < ${parent.v}. La borne max devient ${parent.v} − 1 = ${mx}, la borne min ${fb(mn)} est héritée telle quelle.`
                      : `Appel sur ${where} : toutes ses valeurs doivent être > ${parent.v}. La borne min devient ${parent.v} + 1 = ${mn}, la borne max ${fb(mx)} est héritée telle quelle.`,
       'call', 0, 'on', ro);
 
     if (v < mn || v > mx) {
       const src = v > mx ? sMax : sMin, prev = st.hl[src.id];
       st.hl[n.id] = 'bad'; st.hl[src.id] = 'vio';
-      let msg = v > mx ? `${v} > ${mx} : hors de l'intervalle ! ${v} est dans le sous-arbre gauche de ${src.v}, il devrait être ≤ ${src.v}.`
+      let msg = v > mx ? `${v} > ${mx} : hors de l'intervalle ! ${v} est dans le sous-arbre gauche de ${src.v}, il devrait être < ${src.v}.`
                        : `${v} < ${mn} : hors de l'intervalle ! ${v} est dans le sous-arbre droit de ${src.v}, il devrait être > ${src.v}.`;
       if (src !== parent) msg += ` Comparer ${v} à son seul parent ${parent.v} ne l'aurait pas détecté : la borne vient d'un ancêtre plus haut.`;
       E(msg + ' L\'appel renvoie 0.', 'fail', [4, 5], 'bad', ro);
@@ -111,7 +111,7 @@ function runCheck(A) {
               : `${v} est dans ${I(mn, mx)} : la valeur respecte les contraintes de tous ses ancêtres. ${next}`, 'test', 4, 'good', ro);
 
     st.hl[n.id] = 'acc'; st.subCls[n.id] = '';
-    const l = rec(n.left, mn, v, sMin, n, n, 'L');
+    const l = rec(n.left, mn, v - 1, sMin, n, n, 'L');
     st.hl[n.id] = 'cmp'; st.subCls[n.id] = 'strong';
     if (!l) {
       st.hl[n.id] = 'bad'; st.subCls[n.id] = '';
@@ -164,8 +164,8 @@ function runNaive(A) {
     let bad = null;
     st.hl[n.id] = 'cmp';
     if (n.left) {
-      const ok = num(n.left) <= v; st.ecls[n.left.id] = ok ? 'new' : 'bad';
-      parts.push(`fils gauche ${n.left.v} ${ok ? '≤' : '>'} ${v} ${ok ? '✓' : '✗'}`); if (!ok) bad = [4, 5];
+      const ok = num(n.left) < v; st.ecls[n.left.id] = ok ? 'new' : 'bad';
+      parts.push(`fils gauche ${n.left.v} ${ok ? '<' : '≥'} ${v} ${ok ? '✓' : '✗'}`); if (!ok) bad = [4, 5];
     }
     if (n.right && !bad) {
       const ok = num(n.right) > v; st.ecls[n.right.id] = ok ? 'new' : 'bad';
@@ -200,13 +200,13 @@ const CODES = {
     'Algorithme isNodeBST(pn : t_node*, min, max : entier) : entier', 'début',
     '    si pn = NULL alors', '        retourner 1        // arbre vide : un ABR',
     '    si pn->value < min ou pn->value > max alors', '        retourner 0        // hors de [min ; max]',
-    '    si isNodeBST(pn->left, min, pn->value) = 0 alors', '        retourner 0        // à gauche : ≤ pn->value',
+    '    si isNodeBST(pn->left, min, pn->value - 1) = 0 alors', '        retourner 0        // à gauche : < pn->value',
     '    retourner isNodeBST(pn->right, pn->value + 1, max)', 'fin', '',
     'Algorithme isBST(t : t_tree) : entier', 'début', '    retourner isNodeBST(t.root, -∞, +∞)   // INT_MIN, INT_MAX', 'fin'] },
   naive: { title: 'Le piège : comparer aux fils seulement', lines: [
     'Algorithme naif(pn : t_node*) : entier      // FAUX en général !', 'début',
     '    si pn = NULL alors', '        retourner 1',
-    '    si pn->left ≠ NULL et pn->left->value > pn->value alors', '        retourner 0',
+    '    si pn->left ≠ NULL et pn->left->value ≥ pn->value alors', '        retourner 0',
     '    si pn->right ≠ NULL et pn->right->value ≤ pn->value alors', '        retourner 0',
     '    retourner naif(pn->left) et naif(pn->right)', 'fin'] },
 };
@@ -217,7 +217,7 @@ Atelier.init({
   id: 'atelier-verif-abr',
   title: 'Est-ce un ABR ?',
   subtitle: 'TP4 · vérifier la propriété d\'ABR avec des bornes [min ; max] héritées des ancêtres, et le piège du test parent-fils.',
-  conv: 'à gauche : valeurs ≤ nœud · à droite : valeurs > nœud',
+  conv: 'à gauche : valeurs < nœud · à droite : valeurs > nœud',
   options: [{ id: 'nulls', label: 'montrer les appels sur NULL', checked: false }],
   commands: { ...T.commands,
     check: { args: 'none', aliases: ['isbst', 'abr?', 'verifier', 'vérifier'] },
@@ -231,7 +231,7 @@ naive                             le test parent-fils (piège)
     ...TP.map((v, i) => ({ label: `Arbre ${i + 1}`, line: () => `tree ${v}`, ghost: true })),
   ] },
   codes: CODES,
-  note: 'Comparer un nœud à ses deux fils ne suffit pas : chaque nœud doit respecter <b>tous</b> ses ancêtres. En descendant, on transmet donc un intervalle [min ; max] : à gauche de v, max devient v ; à droite, min devient v + 1.',
+  note: 'Comparer un nœud à ses deux fils ne suffit pas : chaque nœud doit respecter <b>tous</b> ses ancêtres. En descendant, on transmet donc un intervalle [min ; max] : à gauche de v, max devient v − 1 ; à droite, min devient v + 1.',
   kinds: {
     tree: { label: 'Arbre', tone: 'acc' }, call: { label: 'Appel', tone: 'cmp' }, test: { label: 'Test', tone: 'new' },
     stop: { label: 'Cas d\'arrêt', tone: 'new' }, ok: { label: 'Vrai', tone: 'new' }, fail: { label: 'Échec', tone: 'bad' },

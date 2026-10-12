@@ -99,8 +99,8 @@ function init(cfg) {
     opts.append(el('label', { class: 'chk' }, cb, ' ' + o.label));
   }
   const header = el('header', { class: 'top' },
-    el('div', { class: 'brand' }, el('h1', { text: cfg.title }), credit,
-      el('a', { class: 'home', href: 'index.html', text: '← tous les ateliers' }),
+    el('div', { class: 'brand' }, el('a', { class: 'home', href: 'index.html', text: '← Tous les ateliers' }),
+      el('h1', { text: cfg.title }), credit,
       el('p', { text: cfg.subtitle || '' })),
     opts);
 

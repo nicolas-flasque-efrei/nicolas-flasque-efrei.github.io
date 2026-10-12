@@ -95,8 +95,11 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);fo
 .brand p{margin:0;color:var(--muted)}
 .credit{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--muted)}
 .copyleft{width:16px;height:16px;flex:none}
-.home{font-size:13px;font-weight:500;text-decoration:none;color:var(--muted)}
-.home:hover{color:var(--accent)}
+/* retour au sommaire : un bouton, en haut à gauche, avant le titre */
+.home{align-self:center;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:5px 11px}
+.home:hover{border-color:var(--accent);color:var(--accent)}
+:root[data-theme="neon"] .home{border-radius:9px}
+:root[data-theme="klear"] a.home{text-decoration:none;border-width:2px}
 .copyleft circle,.copyleft path{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .conv{font-family:var(--f-mono);font-size:12px}
 .opts{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;color:var(--muted);font-size:13px}
@@ -230,9 +233,9 @@ svg.noH .n .h,svg.noF .n .f{display:none}
 <div class="app">
   <header class="top">
     <div class="brand">
+      <a class="home" href="index.html">← Tous les ateliers</a>
       <h1>Atelier AVL</h1>
       <span class="credit"><svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - IA Claude code</span>
-      <a class="home" href="index.html">← tous les ateliers</a>
       <p>Insertion, suppression et recherche dans un arbre AVL, étape par étape.</p>
     </div>
     <div class="opts">
