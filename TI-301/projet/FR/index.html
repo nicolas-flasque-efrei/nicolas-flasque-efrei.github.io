@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" xmlns="http://www.w3.org/1999/html">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -42,9 +42,18 @@
   <ol>
     <li><a href="#intro">Introduction</a></li>
     <li><a href="#arbre">1 Qu'est-ce qu'un arbre ?</a></li>
-    <li><a href="#environnement">2 L'environnement</a></li>
-    <li><a href="#pousse">3 La pousse en pleine lumière</a></li>
-    <li><a href="#hasard">Le hasard en C</a></li>
+    <li><a href="#environnement">2 L'environnement</a>
+      <ol>
+        <li><a href="#etape1">Prendre en main le code fourni</a></li>
+      </ol>
+    </li>
+    <li><a href="#pousse">3 La pousse en pleine lumière</a>
+      <ol>
+        <li><a href="#etape2">Faire pousser un arbre en pleine lumière</a></li>
+        <li><a href="#etape3">Faire pousser une seule saison</a></li>
+      </ol>
+    </li>
+    <li><a href="#hasard">4 Le hasard en C</a></li>
   </ol>
 </nav>
 
@@ -463,10 +472,11 @@ typedef struct s_rameau {
     struct s_rameau **p_fils;   // rameaux nés à son extrémité : tableau dynamique de nb_fils cases
 } t_rameau;</code></pre>
   <h4>L'arbre</h4>
-  <p>Un arbre est simplement désigné par son pied ; on mémorise aussi son nombre de rameaux.</p>
+  <p>Un arbre est simplement désigné par son pied ; on mémorise aussi son nombre de rameaux et sa graine, qui détermine les tirages au hasard de sa pousse.</p>
 <pre class="code"><code>typedef struct {
     t_rameau *pied;    // premier rameau : la racine de l'arbre
     int nb_rameaux;    // nombre de rameaux de l'arbre
+    int seed;          // graine du hasard de l'arbre
 } t_arbre;</code></pre>
 
   <h3>Le module <code>arbre.h</code> / <code>arbre.c</code></h3>
@@ -477,7 +487,7 @@ typedef struct s_rameau {
       <thead><tr><th>Fonction</th><th>Déclarée dans</th><th>Rôle</th></tr></thead>
       <tbody>
         <tr><td><code>t_rameau *createBranch(float x, float y, float dir, float longueur, int saison, int gen, int num)</code></td><td><code>arbre.h</code></td><td>crée avec <code>malloc</code> un rameau d'extrémité (x ; y), de direction <code>dir</code>, de longueur <code>longueur</code>, apparu à la saison <code>saison</code>, de génération <code>gen</code> et de numéro <code>num</code>. Le rameau est un bourgeon, sans fils (<code>p_fils</code> vaut <code>NULL</code>). Le programme s'arrête si l'allocation échoue.</td></tr>
-        <tr><td><code>t_arbre createTree(float x, float y)</code></td><td><code>arbre.h</code></td><td>crée un arbre ne contenant que son pied : un bourgeon vertical de numéro 0, de génération 0, apparu à la saison 0, d'extrémité (x ; y). Le pied part du sol, au point (x ; 0) : sa longueur vaut donc y. L'arbre compte 1 rameau.</td></tr>
+        <tr><td><code>t_arbre createTree(float x, float y, int seed)</code></td><td><code>arbre.h</code></td><td>crée un arbre ne contenant que son pied : un bourgeon vertical de numéro 0, de génération 0, apparu à la saison 0, d'extrémité (x ; y). Le pied part du sol, au point (x ; 0) : sa longueur vaut donc y. L'arbre compte 1 rameau. La graine <code>seed</code> est mémorisée dans l'arbre, et le générateur de nombres au hasard est initialisé avec elle (<code>randomInit(seed)</code>).</td></tr>
         <tr><td><code>t_rameau *growBranch(t_arbre *a, t_rameau *parent, int saison, float dir, float longueur)</code></td><td><code>arbre.h</code></td><td>crée un nouveau rameau qui pousse à l'extrémité de <code>parent</code>, avec la direction <code>dir</code> et la longueur <code>longueur</code>, apparu à la saison <code>saison</code>. Elle calcule son extrémité, sa génération (<code>parent-&gt;gen + 1</code>) et son numéro (<code>a-&gt;nb_rameaux</code>, qui augmente de 1), et fait passer <code>parent</code> à l'état <code>BOIS</code>.</td></tr>
       </tbody>
     </table>
@@ -538,8 +548,8 @@ typedef struct s_rameau {
         </tbody>
       </table>
     </div>
-      <p>Leur code se trouve dans <code>croissance.c</code></p>
-      <div class="table-wrap">
+    <p>Leur code se trouve dans <code>croissance.c</code></p>
+    <div class="table-wrap">
       <table class="data">
         <thead><tr><th>Fonction</th><th>Déclarée dans</th><th>Rôle</th></tr></thead>
         <tbody>
@@ -556,6 +566,7 @@ typedef struct s_rameau {
     <div class="callout">
       <h4>À faire</h4>
       <p>Écrivez les fonctions suivantes, <strong>dans cet ordre</strong>, et testez chacune d'elles depuis <code>src/main_etape2.c</code> (cible CMake <code>etape_2</code>) avant de passer à la suivante.</p>
+      <p class="warn">⚠️ Le générateur aléatoire est initialisé par <code>createTree</code>, avec la graine de l'arbre : voud ne devriez <strong>JAMAIS</strong> appeler la fonction <code>randomInit</code> vous-même !</p>
     </div>
 
     <div class="todo">
@@ -563,8 +574,8 @@ typedef struct s_rameau {
       <p><strong>Rôle</strong> : tire au hasard le nombre de nouveaux rameaux d'un bourgeon qui pousse. Elle renvoie 1 avec la probabilité <code>p1</code> (en %), 2 avec la probabilité <code>p2</code> (en %), et 3 dans les autres cas.</p>
       <p><strong>Indices</strong> :</p>
       <ul>
-        <li>tirez <strong>un seul</strong> nombre \(u\) = <code>randomReal()</code> : voir « Tirer dans une table » dans la partie <a href="#hasard">Le hasard en C</a> ;</li>
-        <li>un deuxième tirage décalerait toute la suite des nombres au hasard : vous ne retrouveriez plus les arbres fournis.</li>
+        <li>Tirez <strong>un seul</strong> nombre \(u\) = <code>randomReal()</code> : voir « Tirer dans une table » dans la partie <a href="#hasard">Le hasard en C</a> ;</li>
+        <li>Un deuxième tirage décalerait toute la suite des nombres au hasard : vous ne retrouveriez plus les arbres fournis.</li>
       </ul>
       <p><strong>→ Écrivez son prototype dans <code>croissance.h</code> et sa définition dans <code>croissance.c</code></strong></p>
     </div>
@@ -576,51 +587,75 @@ typedef struct s_rameau {
       <ul>
         <li>allouez le tableau des fils avec <code>malloc(n * sizeof(t_rameau *))</code></li>
       </ul>
-      <p>→ Écrivez son prototype dans <code>croissance.h</code> et sa définition dans <code>croissance.c</code>.</p>
+      <p><strong>→ Écrivez son prototype dans <code>croissance.h</code> et sa définition dans <code>croissance.c</code>.</strong></p>
     </div>
 
     <div class="todo">
-      <h4><code>void growTree(int graine, t_arbre *a, int nbSaisons)</code></h4>
-      <p><strong>Rôle</strong> : initialise le hasard avec la graine (<code>randomInit</code>), puis fait pousser l'arbre <code>a</code> pendant les saisons 1 à <code>nbSaisons</code>, en suivant le principe de la pousse décrit ci-dessus. L'arbre est créé avant l'appel, avec <code>createTree(0, 1)</code>.</p>
+      <h4><code>void growTree(t_arbre *a, int nbSaisons)</code></h4>
+      <p><strong>Rôle</strong> : fait pousser l'arbre <code>a</code> pendant les saisons 1 à <code>nbSaisons</code>, en suivant le principe de la pousse décrit ci-dessus. Le hasard a déjà été initialisé par <code>createTree</code>, avec la graine de l'arbre.</p>
       <p><strong>Indices</strong> :</p>
       <ul>
         <li>utilisez deux files : \(F\), les bourgeons de la saison en cours, et \(G\), ceux de la saison suivante.</li>
         <li>Après la dernière saison, videz \(F\) avec <code>dequeue</code> .</li>
       </ul>
-      <p>→ Écrivez son prototype dans <code>croissance.h</code> et sa définition dans <code>croissance.c</code>.</p>
+      <p><strong>→ Écrivez son prototype dans <code>croissance.h</code> et sa définition dans <code>croissance.c</code>.</strong></p>
     </div>
-
-    <div class="todo">
-      <h4>Une saison à la fois : <code>croissance_step.h</code> / <code>croissance_step.c</code></h4>
-      <p><strong>Rôle</strong> : dans la partie 2, tous les arbres d'une forêt pousseront <strong>ensemble</strong>, saison par saison. Il faut donc pouvoir faire pousser un arbre <strong>une saison à la fois</strong>. L'arbre doit alors garder sa file de bourgeons d'une saison à l'autre :</p>
-<pre class="code"><code>typedef struct s_arbre_step {
-    t_arbre arbre;        // l'arbre lui-même (pied, nombre de rameaux)
-    t_queue bourgeons;    // bourgeons qui peuvent pousser à la prochaine saison
-    int saison;           // nombre de saisons déjà écoulées
-} t_arbre_step;</code></pre>
-      <ul>
-        <li><code>t_arbre_step createTreeStep(float x, float y)</code> : crée un arbre réduit à son pied, dont la file de bourgeons contient seulement le pied, à la saison 0 ;</li>
-        <li><code>void growTreeStep(t_arbre_step *a)</code> : fait pousser l'arbre pendant une seule saison, la saison <code>a-&gt;saison + 1</code>. Le hasard doit avoir été initialisé avant, avec <code>randomInit</code> ;</li>
-        <li><code>void clearBuds(t_arbre_step *a)</code> : vide la file des bourgeons (libère ses cellules, pas les rameaux) ; l'arbre ne peut plus pousser ensuite.</li>
-      </ul>
-      <p><strong>Indices</strong> :</p>
-      <ul>
-        <li><code>growTreeStep</code> fait exactement ce que fait <code>growTree</code> pendant une saison, la file \(F\) étant <code>a-&gt;bourgeons</code> : commencez par augmenter <code>a-&gt;saison</code> ;</li>
-        <li>ne rappelez pas <code>randomInit</code> à chaque saison : la suite des nombres au hasard recommencerait au début.</li>
-      </ul>
-      <p>→ Créez les fichiers <code>croissance_step.h</code> et <code>croissance_step.c</code> : écrivez la structure et les prototypes dans <code>croissance_step.h</code>, et les définitions dans <code>croissance_step.c</code>.</p>
-    </div>
-
     <div class="check">
       <h4>Validation de l'étape 2</h4>
       <ul>
         <li>Appelez 1 000 000 de fois <code>howManyBranches(70, 25)</code> et comptez les résultats : vous devez obtenir des nombres proches (à environ 2 000 près) de 700 000 fois 1 ; 250 000 fois 2 et 50 000 fois 3. Avec <code>canGrow(95)</code>, un bourgeon donne donc 1 rameau dans \(0{,}95 \times 0{,}70 = 66{,}5\,\%\) des saisons.</li>
         <li>Deux simulations avec la <strong>même graine</strong> donnent exactement le même arbre ; deux graines différentes donnent (presque toujours) des arbres différents.</li>
-        <li>Avec la graine 3 et 8 saisons, <code>growTree</code> et 8 appels à <code>growTreeStep</code> (après <code>randomInit(3)</code>) donnent exactement le même arbre.</li>
         <li>Avec la graine 5 et \(S = 3\), vous devez obtenir le même arbre que celui du fichier fourni <code>arbre_petit.txt</code> : mêmes numéros, saisons, générations, états et fils (comparez-les avec <code>displayTree</code>). Seules les extrémités peuvent différer de quelques centièmes, car le fichier arrondit les directions et les longueurs à 2 chiffres après la virgule. De même, avec la graine 3 et \(S = 8\), vous devez retrouver <code>arbre_moyen.txt</code>, et avec la graine 4 et \(S = 30\), <code>arbre_grand.txt</code> (5 518 rameaux).</li>
         <li>Dessinez les arbres obtenus avec <code>drawSvg</code>, et animez leur pousse avec <code>animateSvg</code>. Avec la graine 3, vous devez retrouver les animations fournies <code>animation_8_saisons.svg</code> (\(S = 8\)) et <code>animation_15_saisons.svg</code> (\(S = 15\)). Les 8 premières saisons des deux animations sont identiques : expliquez pourquoi dans votre rapport.</li>
       </ul>
     </div>
+  </article>
+  <article id="etape3" class="step">
+    <h3><span class="step-n">Étape 3</span>Faire pousser une seule saison</h3>
+    <div class="todo">
+      <h4>Une saison à la fois : <code>croissance_step.h</code> / <code>croissance_step.c</code></h4>
+      <p><strong>Rôle</strong> : dans la partie 2, tous les arbres d'une forêt pousseront <strong>ensemble</strong>, saison par saison. Il faut donc pouvoir faire pousser un arbre <strong>une saison à la fois</strong>. L'arbre doit alors garder sa file de bourgeons d'une saison à l'autre :</p>
+<pre class="code"><code>typedef struct s_arbre_step {
+    t_arbre arbre;        // l'arbre lui-même (pied, nombre de rameaux, graine)
+    t_queue bourgeons;    // bourgeons qui peuvent pousser à la prochaine saison
+    int saison;           // nombre de saisons déjà écoulées
+} t_arbre_step;</code></pre>
+    </div>
+    <div class="callout">
+      <h4>À faire</h4>
+      <p>→ Éditez les fichiers <code>croissance_step.h</code> et
+      <code>croissance_step.c</code> : écrivez la structure et les prototypes des fonctions dans <code>croissance_step.h</code>, et les définitions des fonctions dans <code>croissance_step.c</code>.</p>
+    </div>
+
+    <div class="todo">
+      <h4>fonction : <code>createTreeStep</code></h4>
+      <p><strong>Rôle</strong> : crée un arbre réduit à son pied, dont la file de bourgeons contient seulement le pied, à la saison 0.</p>
+      <p><strong>Indices</strong> :</p>
+      <ul>
+        <li>😉 <code>createTreeStep</code> va appeler <code>createTree</code>, sauf si vous voulez tout refaire depuis le début…</li>
+      </ul>
+      <p><strong>→ 🤔 À vous de déterminer son prototype : écrivez-le dans <code>croissance_step.h</code>, et sa définition dans <code>croissance_step.c</code>.</strong></p>
+    </div>
+
+    <div class="todo">
+      <h4>fonction : <code>growTreeStep</code></h4>
+      <p><strong>Rôle</strong> : fait pousser l'arbre pendant une seule saison, n'oubliez pas de mettre à jour la saison.</p>
+      <p><strong>→ 🤔 À vous de déterminer son prototype : écrivez-le dans <code>croissance_step.h</code>, et sa définition dans <code>croissance_step.c</code>.</strong></p>
+    </div>
+
+    <div class="todo">
+      <h4>fonction : <code>clearBuds</code></h4>
+      <p><strong>Rôle</strong> : vide la file des bourgeons : l'arbre ne peut plus pousser ensuite.</p>
+      <p><strong>→ 🤔 À vous de déterminer son prototype : écrivez-le dans <code>croissance_step.h</code>, et sa définition dans <code>croissance_step.c</code>.</strong></p>
+    </div>
+
+    <div class="check">
+      <h4>Validation de l'étape 3</h4>
+      <ul>
+        <li>Avec la même graine et 8 saisons, <code>growTree</code> et 8 appels à <code>growTreeStep</code> donnent exactement le même arbre.</li>
+      </ul>
+    </div>
+
   </article>
 </section>
 
