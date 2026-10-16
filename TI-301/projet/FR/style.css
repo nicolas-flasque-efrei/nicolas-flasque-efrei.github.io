@@ -56,6 +56,9 @@ strong{font-weight:600}
 .theme{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
 .toc .theme{margin:0 0 20px;padding:0 8px;flex-wrap:wrap}
 .toc .theme select{max-width:100%}
+.toc .lang{display:flex;gap:6px;margin:-8px 0 20px;padding:0 8px}
+.toc .lang a{display:inline-block;padding:2px 10px;border:1px solid var(--line);font-size:13px;font-weight:600;letter-spacing:.04em}
+.toc .lang a[aria-current]{color:var(--wood);background:var(--wood-soft);border-color:transparent}
 .theme select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:3px 6px}
 
 /* ---------- Mise en page : sommaire + contenu ---------- */
