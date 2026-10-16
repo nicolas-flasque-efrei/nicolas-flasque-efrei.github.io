@@ -566,7 +566,7 @@ typedef struct s_rameau {
     <div class="callout">
       <h4>À faire</h4>
       <p>Écrivez les fonctions suivantes, <strong>dans cet ordre</strong>, et testez chacune d'elles depuis <code>src/main_etape2.c</code> (cible CMake <code>etape_2</code>) avant de passer à la suivante.</p>
-      <p class="warn">⚠️ Le générateur aléatoire est initialisé par <code>createTree</code>, avec la graine de l'arbre : voud ne devriez <strong>JAMAIS</strong> appeler la fonction <code>randomInit</code> vous-même !</p>
+      <p class="warn">⚠️ Le générateur aléatoire est initialisé par <code>createTree</code>, avec la graine de l'arbre : vous ne devriez <strong>JAMAIS</strong> appeler la fonction <code>randomInit</code> vous-même !</p>
     </div>
 
     <div class="todo">
@@ -585,7 +585,14 @@ typedef struct s_rameau {
       <p><strong>Rôle</strong> : fait naître <code>n</code> nouveaux rameaux (1, 2 ou 3), apparus à la saison <code>saison</code>, à l'extrémité du bourgeon <code>b</code> de l'arbre <code>a</code>. À la fin, <code>b</code> est du bois, ses <code>n</code> fils sont rangés dans son tableau <code>p_fils</code>, et <code>b-&gt;nb_fils</code> vaut <code>n</code>.</p>
       <p><strong>Indices</strong> :</p>
       <ul>
-        <li>allouez le tableau des fils avec <code>malloc(n * sizeof(t_rameau *))</code></li>
+        <li>allouez le tableau des fils avec <code>malloc(n * sizeof(t_rameau *))</code> ;</li>
+        <li>pour retrouver les arbres fournis, faites les tirages <strong>dans cet ordre</strong>, rameau par rameau (du rameau 0 au rameau <code>n - 1</code>) :
+          <ul>
+            <li>premier rameau : sa direction, <code>b-&gt;dir + randomBetween(-10, 10)</code>, puis sa longueur, <code>randomBetween(0.7, 1.3)</code> ;</li>
+            <li>rameaux suivants : le côté, <code>randomInt(2)</code> (0 : à gauche, la direction diminue ; 1 : à droite, elle augmente), puis l'angle, <code>randomBetween(30, 60)</code>, puis la longueur, <code>randomBetween(0.7, 1.3)</code> ;</li>
+          </ul>
+        </li>
+        <li>ramenez chaque direction entre −80° et +80° avec <code>clampDirection</code>, juste avant d'appeler <code>growBranch</code>.</li>
       </ul>
       <p><strong>→ Écrivez son prototype dans <code>croissance.h</code> et sa définition dans <code>croissance.c</code>.</strong></p>
     </div>
