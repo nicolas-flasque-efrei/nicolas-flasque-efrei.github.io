@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Forest and the Light – Part 1</title>
+<meta name="description" content="TI301 – SDD2 and Probability project: the forest and the light, part 1.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap">
+<!-- KaTeX : rendu des formules écrites entre \( … \) (dans le texte) ou $$ … $$ (centrées) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="style.css">
+<script src="script.js" defer></script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <p class="kicker">TI301 – Algorithms and Data Structures 2 · Computer Science and Mathematics Project</p>
+    <h1>The Forest and the Light <span class="part">Part 1</span></h1>
+    <p class="lede">This project is written jointly for the SDD2 and Probability modules.</p>
+    <p class="lede"><strong>Original idea, design, implementation: </strong>Nicolas FLASQUE<br><strong>Validation for the probability module:</strong> Federico ZALAMEA, Brice JUANICO<br><strong>Project website and animations:</strong> Nicolas FLASQUE and Claude Code Pro – Opus 5.5 model</p>
+  </div>
+</header>
+
+<div class="layout">
+
+<nav class="toc" aria-label="Contents">
+  <label class="theme">Theme
+    <select id="optTheme">
+      <option value="auto">Automatic</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="neon">Neon</option>
+      <option value="klear">Klear (accessibility)</option>
+    </select>
+  </label>
+  <p class="toc-title">Contents</p>
+  <ol>
+    <li><a href="#intro">Introduction</a></li>
+    <li><a href="#arbre">1 What is a tree?</a></li>
+    <li><a href="#environnement">2 The environment</a>
+      <ol>
+        <li><a href="#etape1">Getting started with the provided code</a></li>
+      </ol>
+    </li>
+    <li><a href="#pousse">3 Growing in full light</a>
+      <ol>
+        <li><a href="#etape2">Growing a tree in full light</a></li>
+        <li><a href="#etape3">Growing a single season</a></li>
+      </ol>
+    </li>
+    <li><a href="#hasard">4 Randomness in C</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ================================================================ INTRO -->
+<section id="intro">
+  <p>Young trees are planted and left to grow, season after season… To grow, a tree needs <strong>light</strong>; but trees cast shade on one another. A tree that catches the light grows faster and shades the other trees. Trees that grow more slowly get less light and stop growing.</p>
+  <p>A tree, in the botanical sense, is also a <strong>tree in the computer science sense</strong>: the first branch comes out of the ground, then new branches grow from its tip, and so on.</p>
+  <p class="goal">The goal of this project is to <strong>simulate</strong> the growth of whole forests, to represent each tree by a tree structure in C, to <strong>measure</strong> its characteristics and to <strong>visualise</strong> them.</p>
+  <p>The tools and results you produce will then be used in the mathematics project.</p>
+  <p class="note"><u>This document only presents the notions needed for the computer science part.</u></p>
+
+  <h3 class="caption-title">Project organisation</h3>
+  <ol class="parts">
+    <li class="is-current"><b>Part 1</b> Grow a single tree at random, in full light, measure it and save it to a file;</li>
+    <li><b>Part 2</b> Grow a whole forest, in which trees shade one another;</li>
+    <li><b>Part 3</b> Simulate thousands of forests, analyse and visualise the results.</li>
+  </ol>
+</section>
+
+<!-- ================================================================ ARBRE -->
+<section id="arbre">
+  <h2><span class="num">1</span>What is a tree?</h2>
+
+  <h3>Two kinds of trees must be clearly distinguished in this project</h3>
+  <ul>
+    <li>the trees that “grow” in the simulation: the <strong>branching trees</strong>;</li>
+    <li>the 3-ary trees that represent them: the <strong>tree data structures</strong>.</li>
+  </ul>
+
+  <h3>The branches of a branching tree</h3>
+  <p>A branching tree is made of… <strong>branches!</strong> Each branch is a short segment that starts from the tip of its <strong>parent</strong> branch. The first branch, called the <strong>trunk</strong>, starts from the ground.</p>
+  <p>A branching tree is seen <strong>in 2D</strong>: the \(x\) axis gives the horizontal direction (from left to right – we will need it in the next parts), and the \(y\) axis measures the altitude above the ground.</p>
+  <p>For each <strong>branch</strong>, we store:</p>
+  <ul>
+    <li>the <strong>position of its tip</strong>: \(x\) and \(y\);</li>
+    <li>its <strong>length</strong>: a real number between 0.7 and 1.3;</li>
+    <li>its <strong>direction</strong>: an angle in degrees, 0 for a vertical branch, positive if it leans to the right, negative if it leans to the left;</li>
+    <li>the <strong>season</strong> in which it appeared (0 for the trunk);</li>
+    <li>its <strong>state</strong>:
+      <ul>
+        <li><span class="tag tag-bud">bud</span> its tip carries a bud, which may still give birth to new branches;</li>
+        <li><span class="tag tag-wood">wood</span> new branches have already grown from its tip.</li>
+      </ul>
+    </li>
+    <li>the computation of the \((x,y)\) positions of the branches is provided (function <code>growBranch</code>): the tip of a branch is computed from the tip of its parent, its direction and its length (see the example below).</li>
+  </ul>
+
+  <h3>The tree data structure</h3>
+  <ul>
+    <li>the trunk is the <strong>root</strong> of the tree;</li>
+    <li>the <strong>children</strong> of a branch are the branches that grew from its tip; a branch has <strong>at most 3 children</strong>;</li>
+    <li>the <strong>leaves</strong> of the tree (the nodes without children) are exactly the branches that carry a <strong>bud</strong>.</li>
+  </ul>
+  <div class="callout">
+    <p>The <strong>generation</strong> of a node (branch) is its <strong>distance = depth</strong> from the trunk in the tree: the trunk is generation 0, its children generation 1, their children generation 2, and so on.</p>
+    <p>The <strong>height</strong> of the tree data structure is the largest generation of its branches. Do not confuse it with the <strong>altitude</strong> of the branches, which is measured in units of length.</p>
+  </div>
+
+  <h3 class="caption-title">Example</h3>
+  <p>Here is a tree of 10 branches that has grown for 4 seasons. The tip of the trunk is at (\(x\) = 4.5, \(y\) = 1.0). Branches are numbered in the order in which they appeared:</p>
+  <div class="table-wrap">
+  <table id="tabExemple" class="data">
+    <thead><tr><th>Branch</th><th>Season</th><th>Parent</th><th>Direction</th><th>Length</th><th>Tip (x, y)</th><th>Generation</th><th>State</th></tr></thead>
+    <tbody>
+      <tr data-r="0"><td>0</td><td>0</td><td>–</td><td>0</td><td>–</td><td>(4.50, 1.00)</td><td>0</td><td>wood</td></tr>
+      <tr data-r="1"><td>1</td><td>1</td><td>0</td><td>0</td><td>1.0</td><td>(4.50, 2.00)</td><td>1</td><td>wood</td></tr>
+      <tr data-r="2"><td>2</td><td>1</td><td>0</td><td>−45</td><td>0.8</td><td>(3.93, 1.57)</td><td>1</td><td>wood</td></tr>
+      <tr data-r="3"><td>3</td><td>2</td><td>1</td><td>5</td><td>1.0</td><td>(4.59, 3.00)</td><td>2</td><td>wood</td></tr>
+      <tr data-r="4"><td>4</td><td>2</td><td>1</td><td>50</td><td>0.8</td><td>(5.11, 2.51)</td><td>2</td><td>bud</td></tr>
+      <tr data-r="5"><td>5</td><td>2</td><td>1</td><td>−40</td><td>0.7</td><td>(4.05, 2.54)</td><td>2</td><td>bud</td></tr>
+      <tr data-r="6"><td>6</td><td>3</td><td>3</td><td>0</td><td>1.0</td><td>(4.59, 4.00)</td><td>3</td><td>wood</td></tr>
+      <tr data-r="7"><td>7</td><td>3</td><td>2</td><td>−50</td><td>0.6</td><td>(3.47, 1.95)</td><td>2</td><td>bud</td></tr>
+      <tr data-r="8"><td>8</td><td>4</td><td>6</td><td>−5</td><td>0.9</td><td>(4.51, 4.89)</td><td>4</td><td>bud</td></tr>
+      <tr data-r="9"><td>9</td><td>4</td><td>6</td><td>45</td><td>0.7</td><td>(5.08, 4.49)</td><td>4</td><td>bud</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>For example, branch 2 starts from the tip of branch 0, with a direction of −45° and a length of 0.8: \(x = 4.5 + 0.8 \times \sin(-45^\circ) \approx 3.93\) and \(y = 1.0 + 0.8 \times \cos(-45^\circ) \approx 1.57\).</p>
+
+  <figure class="fig anim">
+    <img src="img/exemple1_animation.svg" width="240" height="434" style="width:240px" alt="Animation of the growth of the example tree, season by season, from season 0 to season 4">
+    <figcaption>Growth of the example tree (one season = 0.6 seconds) <button type="button" class="replay">Replay</button></figcaption>
+  </figure>
+
+  <p><u>Another example:</u></p>
+  <figure class="fig anim">
+    <img src="img/animation_hauteur23.svg" width="1157" height="900" loading="lazy" alt="Animation of the growth of a tree of 290 branches and height 23, season by season, from season 0 to season 23">
+    <figcaption>Growth of a tree of height 23 (290 branches, 23 seasons, one season = 0.4 seconds) <button type="button" class="replay">Replay</button></figcaption>
+  </figure>
+
+  <h3>Link between the tree data structure and the tree that grows</h3>
+  <p>Each <strong>node</strong> of the tree data structure is a <strong>branch</strong>; a <strong>link</strong> of the tree data structure is not a branch, it only shows that one branch grew from the tip of another. Hover over a node or a branch to see its characteristics.</p>
+  <!-- BLOC trees.html (début) -->
+  <div id="arbres-lies" class="al" aria-label="The same tree seen in three ways: tree data structure (root at the top), tree data structure (root at the bottom), branching tree">
+  <style>
+  /* Bloc autonome : tous les sélecteurs sont préfixés par .al pour ne pas toucher au reste de la page */
+  .al{--al-wood:#7A4E2D;--al-wood-soft:#EBDDD0;--al-bud:#2F9A3E;--al-bud-soft:#DAF0DC;--al-hl:#E08A00;--al-hl-soft:#FFE7BF;
+    --al-ink:#1E2420;--al-muted:#7C847C;--al-grid:#E6E2D8;--al-edge:#9AA09A;
+    position:relative;margin:16px 0 20px;padding:14px 14px 10px;border-radius:12px;background:#fff;border:1px solid #DCD8CD;
+    color:var(--al-ink);font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;line-height:1.4}
+  .al *{box-sizing:border-box}
+  .al-panels{display:flex;flex-wrap:wrap;gap:8px 0}
+  .al-panel{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;padding:0 10px}
+  .al-panel+.al-panel{border-left:1px solid #E8E5DD}
+  @media (max-width:760px){.al-panel+.al-panel{border-left:0;border-top:1px solid #E8E5DD;padding-top:10px}}
+  .al-panel h4{margin:0 0 2px;font-size:15px;font-weight:700}
+  .al-panel p{margin:0 0 6px;font-size:12.5px;color:var(--al-muted)}
+  .al svg{width:100%;height:auto;display:block;overflow:visible}
+  .al .al-axis{fill:var(--al-muted);font-size:11px}
+  .al .al-grid line{stroke:var(--al-grid);stroke-width:1}
+  .al .al-sol{stroke:var(--al-edge);stroke-width:2}
+  /* arbre informatique : les liens sont fins et gris — ce ne sont PAS des rameaux */
+  .al .al-lien{stroke:var(--al-edge);stroke-width:1.3;stroke-dasharray:4 3}
+  .al .al-noeud{cursor:pointer;outline:none}
+  .al .al-noeud circle{stroke-width:2.5;transition:stroke .15s,fill .15s,r .15s}
+  .al .al-noeud.bois circle{fill:var(--al-wood-soft);stroke:var(--al-wood)}
+  .al .al-noeud.bourgeon circle{fill:var(--al-bud-soft);stroke:var(--al-bud)}
+  .al .al-noeud text{font-size:14px;font-weight:700;fill:var(--al-ink);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+  /* arbre de rameaux : chaque segment est un rameau */
+  .al .al-rameau{cursor:pointer}
+  .al .al-rameau .al-seg{stroke:var(--al-wood);stroke-width:4;stroke-linecap:round;transition:stroke .15s,stroke-width .15s,opacity .15s}
+  .al .al-rameau .al-zone{stroke:transparent;stroke-width:16;stroke-linecap:round}
+  .al .al-rameau .al-bout{transition:fill .15s,opacity .15s}
+  .al .al-rameau.bois .al-bout{fill:var(--al-wood)}
+  .al .al-rameau.bourgeon .al-bout{fill:var(--al-bud)}
+  .al .al-rameau text{font-size:12.5px;font-weight:700;fill:var(--al-ink);pointer-events:none;transition:opacity .15s}
+  .al .al-depart{fill:none;stroke:var(--al-hl);stroke-width:2;stroke-dasharray:3 2;opacity:0;transition:opacity .15s}
+  /* état « survol » */
+  .al.actif .al-rameau:not(.hl) .al-seg,.al.actif .al-rameau:not(.hl) .al-bout{opacity:.25}
+  .al.actif .al-rameau:not(.hl) text{opacity:.35}
+  .al .al-rameau.hl .al-seg{stroke:var(--al-hl);stroke-width:7}
+  .al .al-rameau.hl .al-bout{fill:var(--al-hl)}
+  .al .al-rameau.hl text{font-size:15px}
+  .al.actif .al-depart{opacity:1}
+  .al .al-noeud.hl circle{fill:var(--al-hl-soft);stroke:var(--al-hl);r:24}
+  .al-legende{display:flex;flex-wrap:wrap;gap:4px 18px;margin:8px 10px 0;font-size:12.5px;color:var(--al-muted)}
+  .al-legende span{display:inline-flex;align-items:center;gap:6px}
+  .al-legende i{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid}
+  .al-legende .l-bois{background:var(--al-wood-soft);border-color:var(--al-wood)}
+  .al-legende .l-bud{background:var(--al-bud-soft);border-color:var(--al-bud)}
+  .al-legende .l-lien{width:22px;height:0;border-radius:0;border:0;border-top:1.5px dashed var(--al-edge)}
+  .al-legende .l-seg{width:22px;height:4px;border-radius:2px;border:0;background:var(--al-wood)}
+  /* fenêtre d'information */
+  .al-pop{position:absolute;z-index:5;min-width:190px;padding:10px 12px;border-radius:10px;background:#1F2620;color:#E6EDE6;
+    font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.18);pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s}
+  .al-pop.on{opacity:1;transform:none}
+  .al-pop b{display:block;margin-bottom:6px;font-size:14px}
+  .al-pop b em{font-style:normal;font-weight:600;font-size:11.5px;margin-left:8px;padding:1px 8px;border-radius:999px}
+  .al-pop b em.bois{background:var(--al-wood-soft);color:var(--al-wood)}
+  .al-pop b em.bourgeon{background:var(--al-bud-soft);color:var(--al-bud)}
+  .al-pop dl{display:grid;grid-template-columns:auto auto;gap:2px 14px;margin:0}
+  .al-pop dt{color:#9FAA9F}
+  .al-pop dd{margin:0;font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:12.5px}
+  @media (prefers-reduced-motion: reduce){.al *,.al-pop{transition:none!important}}
+  </style>
+
+    <div class="al-panels">
+      <div class="al-panel">
+        <h4>Tree data structure</h4>
+        <p>root (the trunk) at the top</p>
+        <svg class="al-haut" viewBox="0 0 340 400" role="img" aria-label="Tree data structure, root at the top"></svg>
+      </div>
+      <div class="al-panel">
+        <h4>Tree data structure</h4>
+        <p>root (the trunk) at the bottom</p>
+        <svg class="al-bas" viewBox="0 0 340 400" role="img" aria-label="Tree data structure, root at the bottom"></svg>
+      </div>
+      <div class="al-panel">
+        <h4>Branching tree</h4>
+        <p>side view, trunk at the bottom</p>
+        <svg class="al-profil" viewBox="0 0 340 400" role="img" aria-label="Branching tree, side view"></svg>
+      </div>
+    </div>
+    <div class="al-legende">
+      <span><i class="l-bois"></i>node = wood branch</span>
+      <span><i class="l-bud"></i>node = branch carrying a bud</span>
+      <span><i class="l-lien"></i>link “grew from the tip of”</span>
+      <span><i class="l-seg"></i>a branch</span>
+    </div>
+    <div class="al-pop" role="status" aria-live="polite"></div>
+
+  <script>
+  (function () {
+    const racine = document.currentScript.parentElement;
+    const NS = 'http://www.w3.org/2000/svg';
+    const el = (tag, attrs, parent) => {
+      const e = document.createElementNS(NS, tag);
+      for (const k in attrs) e.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(e);
+      return e;
+    };
+    const fr = (v, d = 2) => v.toFixed(d);
+    const ETAT = { bois: 'wood', bourgeon: 'bud' };   // libellés affichés (les classes CSS restent bois / bourgeon)
+
+    /* L'arbre de l'exemple : contenu de exemple1.txt (numero, saison, parent, direction, longueur, generation, etat) */
+    const PIED = { x: 4.50, y: 1.00 };
+    const LIGNES = [[1,1,0,0.00,1.00,1,1],[2,1,0,-45.00,0.80,1,1],[3,2,1,5.00,1.00,2,1],
+                    [4,2,1,50.00,0.80,2,0],[5,2,1,-40.00,0.70,2,0],[7,3,2,-50.00,0.60,2,0],
+                    [6,3,3,0.00,1.00,3,1],[8,4,6,-5.00,0.90,4,0],[9,4,6,45.00,0.70,4,0]];
+
+    // équivalent de readTree / growBranch : R[num] est le rameau de numéro num
+    const R = [{ num: 0, x: PIED.x, y: PIED.y, dir: 0, lg: PIED.y, saison: 0, gen: 0, parent: -1, fils: [] }];
+    for (const [num, saison, p, dir, lg, gen, etat] of LIGNES) {
+      const par = R[p], t = dir * Math.PI / 180;
+      R[num] = { num, x: par.x + lg * Math.sin(t), y: par.y + lg * Math.cos(t), dir, lg, saison, gen, parent: p, fils: [],
+                 etat: etat === 1 ? 'bois' : 'bourgeon' };
+      par.fils.push(num);
+    }
+    R[0].etat = R[0].fils.length ? 'bois' : 'bourgeon';
+    const H = Math.max(...R.map(r => r.gen));
+
+    // disposition : feuilles côte à côte (parcours en profondeur), nœud interne au milieu de ses fils
+    let nf = 0;
+    (function place(i) {
+      const r = R[i];
+      if (!r.fils.length) { r.col = nf++; return; }
+      r.fils.forEach(place);
+      r.col = r.fils.reduce((s, f) => s + R[f].col, 0) / r.fils.length;
+    })(0);
+
+    const vues = { noeuds: [], rameaux: [] };
+
+    /* ---------- Arbres informatiques (racine en haut / en bas) ---------- */
+    function arbreInfo(svg, enBas) {
+      const X0 = 40, X1 = 250, Y0 = 32, Y1 = 368;
+      const tx = c => X0 + c / (nf - 1) * (X1 - X0);
+      const ty = g => { const f = g / H; return enBas ? Y1 - f * (Y1 - Y0) : Y0 + f * (Y1 - Y0); };
+      for (let g = 0; g <= H; g++) el('text', { x: 290, y: ty(g) + 4, class: 'al-axis', 'text-anchor': 'middle' }, svg).textContent = `gen. ${g}`;
+      const liens = el('g', {}, svg);
+      R.forEach(r => { if (r.parent >= 0) el('line', { x1: tx(R[r.parent].col), y1: ty(R[r.parent].gen), x2: tx(r.col), y2: ty(r.gen), class: 'al-lien' }, liens); });
+      R.forEach(r => {
+        const g = el('g', { class: `al-noeud ${r.etat}`, 'data-r': r.num, tabindex: 0, role: 'button', 'aria-label': `Branch ${r.num}` }, svg);
+        el('circle', { cx: tx(r.col), cy: ty(r.gen), r: 19 }, g);
+        el('text', { x: tx(r.col), y: ty(r.gen) }, g).textContent = r.num;
+        (vues.noeuds[r.num] ||= []).push(g);
+      });
+    }
+    arbreInfo(racine.querySelector('.al-haut'), false);
+    arbreInfo(racine.querySelector('.al-bas'), true);
+
+    /* ---------- Arbre de rameaux, de profil ---------- */
+    const sp = racine.querySelector('.al-profil');
+    const XA = 3, XB = 6, YB = 5.3, L = 44, RR = 330, T = 22, B = 362;
+    const px = x => L + (x - XA) / (XB - XA) * (RR - L);
+    const py = y => B - y / YB * (B - T);
+    const grille = el('g', { class: 'al-grid' }, sp);
+    for (let y = 0; y <= 5; y++) {
+      el('line', { x1: L, x2: RR, y1: py(y), y2: py(y) }, grille);
+      el('text', { x: L - 8, y: py(y) + 4, class: 'al-axis', 'text-anchor': 'end' }, sp).textContent = `y = ${y}`;
+    }
+    for (let x = XA; x <= XB; x++) el('line', { x1: px(x), x2: px(x), y1: T, y2: B }, grille);
+    for (let c = XA; c < XB; c++) el('text', { x: px(c + .5), y: B + 20, class: 'al-axis', 'text-anchor': 'middle' }, sp).textContent = `column ${c}`;
+    el('line', { x1: L, x2: RR, y1: B, y2: B, class: 'al-sol' }, sp);
+
+    const depart = el('circle', { r: 9, class: 'al-depart' });  // cercle sur le point de départ du rameau survolé
+    const segs = el('g', {}, sp), bouts = el('g', {}, sp);
+    R.forEach(r => {
+      const base = r.parent < 0 ? { x: r.x, y: 0 } : R[r.parent];   // le pied part du sol
+      const g = el('g', { class: `al-rameau ${r.etat}`, 'data-r': r.num }, segs);
+      el('line', { x1: px(base.x), y1: py(base.y), x2: px(r.x), y2: py(r.y), class: 'al-seg' }, g);
+      el('line', { x1: px(base.x), y1: py(base.y), x2: px(r.x), y2: py(r.y), class: 'al-zone' }, g);
+      // extrémité + numéro, dessinés au-dessus de tous les segments
+      const b = el('g', { class: `al-rameau ${r.etat}`, 'data-r': r.num }, bouts);
+      el('circle', { cx: px(r.x), cy: py(r.y), r: r.etat === 'bourgeon' ? 7 : 3.5, class: 'al-bout' }, b);
+      const dx = r.dir < -20 || (r.etat === 'bourgeon' && r.dir < 0) ? -20 : 10;
+      el('text', { x: px(r.x) + dx, y: py(r.y) + 4 }, b).textContent = r.num;
+      vues.rameaux[r.num] = [g, b];
+      r.base = base;
+    });
+    sp.appendChild(depart);
+
+    /* ---------- Survol : nœud <-> rameau, fenêtre d'information ---------- */
+    const pop = racine.querySelector('.al-pop');
+    let courant = null;
+    const ligneTableau = n => document.querySelector(`#tabExemple tbody tr[data-r="${n}"]`);
+
+    function montrer(n, ancre) {
+      if (courant === n) return;
+      cacher();
+      courant = n;
+      const r = R[n];
+      racine.classList.add('actif');
+      vues.noeuds[n].forEach(e => e.classList.add('hl'));
+      vues.rameaux[n].forEach(e => { e.classList.add('hl'); e.parentNode.appendChild(e); });
+      ligneTableau(n)?.classList.add('hl');   // ligne du tableau de l'exemple, si la page en contient un
+      depart.setAttribute('cx', px(r.base.x)); depart.setAttribute('cy', py(r.base.y));
+
+      const fils = r.fils.length ? r.fils.join(', ') : 'none';
+      pop.innerHTML =
+        `<b>Branch ${r.num}<em class="${r.etat}">${ETAT[r.etat]}</em></b><dl>` +
+        `<dt>parent</dt><dd>${r.parent < 0 ? '– (this is the trunk)' : r.parent}</dd>` +
+        `<dt>children</dt><dd>${fils}</dd>` +
+        `<dt>season</dt><dd>${r.saison}</dd>` +
+        `<dt>generation</dt><dd>${r.gen}</dd>` +
+        `<dt>direction</dt><dd>${r.dir}°</dd>` +
+        `<dt>length</dt><dd>${r.parent < 0 ? '–' : fr(r.lg)}</dd>` +
+        `<dt>tip</dt><dd>(${fr(r.x)}, ${fr(r.y)})</dd></dl>`;
+
+      // place la fenêtre à côté de l'élément survolé, sans sortir du bloc
+      const bc = racine.getBoundingClientRect(), ba = ancre.getBoundingClientRect();
+      pop.classList.add('on');
+      const w = pop.offsetWidth, h = pop.offsetHeight;
+      let x = ba.right - bc.left + 10, y = ba.top - bc.top + ba.height / 2 - h / 2;
+      if (x + w > bc.width - 6) x = ba.left - bc.left - w - 10;
+      x = Math.max(6, Math.min(x, bc.width - w - 6));
+      y = Math.max(6, Math.min(y, bc.height - h - 6));
+      pop.style.left = x + 'px'; pop.style.top = y + 'px';
+    }
+    function cacher() {
+      if (courant === null) return;
+      vues.noeuds[courant].forEach(e => e.classList.remove('hl'));
+      vues.rameaux[courant].forEach(e => e.classList.remove('hl'));
+      ligneTableau(courant)?.classList.remove('hl');
+      // remet les rameaux dans l'ordre des numéros
+      for (const [g, b] of vues.rameaux) { segs.appendChild(g); bouts.appendChild(b); }
+      racine.classList.remove('actif');
+      pop.classList.remove('on');
+      courant = null;
+    }
+
+    const cible = e => e.target.closest && e.target.closest('.al-noeud, .al-rameau');
+    racine.addEventListener('pointerover', e => {
+      const t = cible(e);
+      if (t) montrer(+t.dataset.r, t.matches('.al-rameau') ? vues.rameaux[t.dataset.r][1] : t);
+    });
+    racine.addEventListener('pointerout', e => {
+      const t = cible(e);
+      if (t && !(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest(`[data-r="${t.dataset.r}"]`))) cacher();
+    });
+    racine.addEventListener('focusin', e => { const t = cible(e); if (t) montrer(+t.dataset.r, t); });
+    racine.addEventListener('focusout', cacher);
+  })();
+  </script>
+  </div>
+  <!-- BLOC trees.html (fin) -->
+</section>
+
+<!-- ================================================================ ENVIRONNEMENT -->
+<section id="environnement">
+  <h2><span class="num">2</span>The environment</h2>
+  <p>You will be given a code base through a GITHUB repository, whose URL will be given to you during the first project session.</p>
+
+  <div class="callout">
+    <h4>The provided code uses French names</h4>
+    <p>The names of the types, fields, files and some parameters in the provided code are in French. You will keep them as they are. The main words:</p>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>French</th><th>English</th><th>French</th><th>English</th></tr></thead>
+        <tbody>
+          <tr><td><code>arbre</code></td><td>tree</td><td><code>saison</code></td><td>season</td></tr>
+          <tr><td><code>rameau</code>, <code>rameaux</code></td><td>branch, branches</td><td><code>graine</code></td><td>seed</td></tr>
+          <tr><td><code>pied</code></td><td>trunk (the root)</td><td><code>longueur</code></td><td>length</td></tr>
+          <tr><td><code>bourgeon</code>, <code>BOURGEON</code></td><td>bud</td><td><code>etat</code></td><td>state</td></tr>
+          <tr><td><code>bois</code>, <code>BOIS</code></td><td>wood</td><td><code>gen</code>, <code>generation</code></td><td>generation</td></tr>
+          <tr><td><code>fils</code>, <code>p_fils</code>, <code>nb_fils</code></td><td>children, array of children, number of children</td><td><code>nb_rameaux</code></td><td>number of branches</td></tr>
+          <tr><td><code>croissance</code></td><td>growth</td><td><code>dessin</code></td><td>drawing</td></tr>
+          <tr><td><code>alea</code></td><td>random</td><td><code>etape</code></td><td>step</td></tr>
+          <tr><td><code>nom_fichier</code></td><td>file name</td><td><code>duree_saison</code></td><td>duration of a season</td></tr>
+          <tr><td><code>exemple</code></td><td>example</td><td><code>petit</code>, <code>moyen</code>, <code>grand</code></td><td>small, medium, large</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <article id="etape1" class="step">
+    <h3><span class="step-n">Step 1</span>Getting started with the provided code</h3>
+
+    <h4>Goal</h4>
+    <p>Use functions that are <strong>already written</strong>, without modifying them: read a tree described in a file, display it, draw it and animate its growth. The program for this step is <code>src/main_etape1.c</code> (CMake target <code>etape_1</code>): read it, it shows you how these functions are called.</p>
+
+    <h4>Available functions</h4>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Function</th><th>Declared in</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><code>t_arbre readTree(const char *nom_fichier)</code></td><td><code>arbres_utils.h</code></td><td>builds the tree described in a text file</td></tr>
+          <tr><td><code>void displayTree(t_arbre a)</code></td><td><code>arbres_utils.h</code></td><td>prints all the branches of the tree in the console, by number</td></tr>
+          <tr><td><code>void drawSvg(t_rameau *pied, const char *nom_fichier)</code></td><td><code>dessin.h</code></td><td>writes a side view of the tree to an SVG file</td></tr>
+          <tr><td><code>void animateSvg(t_rameau *pied, const char *nom_fichier, double duree_saison)</code></td><td><code>dessin.h</code></td><td>writes an animation of the growth of the tree, season by season, to an SVG file</td></tr>
+          <tr><td><code>void drawHtml(t_rameau *pied, const char *nom_fichier)</code></td><td><code>dessin.h</code></td><td>writes an HTML page showing the tree in three ways: tree data structure with the root at the top, tree data structure with the root at the bottom, branching tree. Hovering over a branch displays its information. Only the first 15 seasons are drawn.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <h4>To do</h4>
+      <ul>
+        <li>Run the <code>etape_1</code> target.</li>
+        <li>In <code>main_etape1.c</code>, choose a file <code>data/xxxx.txt</code> among <code>exemple1.txt</code>, <code>arbre_petit.txt</code>, <code>arbre_moyen.txt</code> and <code>arbre_grand.txt</code>, then run again.</li>
+        <li>Look at the files produced in the <code>output</code> directory by opening them in a web browser: the <code>.svg</code> drawing, the <code>.svg</code> animation (reload the page, F5, to watch it again) and the three <code>.html</code> views.</li>
+      </ul>
+    </div>
+
+    <div class="check">
+      <h4>Step 1 validation</h4>
+      <p>With <code>exemple1.txt</code>, the program prints (the output of the provided code is in French: <em>rameau</em> = branch, <em>fils</em> = children):</p>
+      <pre class="code console"><code>Arbre : 10 rameaux
+Rameau 0 (saison 0, generation 0, bois) (4.50 ; 1.00) fils -&gt; 1 -&gt; 2
+Rameau 1 (saison 1, generation 1, bois) (4.50 ; 2.00) fils -&gt; 3 -&gt; 4 -&gt; 5
+Rameau 2 (saison 1, generation 1, bois) (3.93 ; 1.57) fils -&gt; 7
+Rameau 3 (saison 2, generation 2, bois) (4.59 ; 3.00) fils -&gt; 6
+Rameau 4 (saison 2, generation 2, bourgeon) (5.11 ; 2.51)
+Rameau 5 (saison 2, generation 2, bourgeon) (4.05 ; 2.54)
+Rameau 6 (saison 3, generation 3, bois) (4.59 ; 4.00) fils -&gt; 8 -&gt; 9
+Rameau 7 (saison 3, generation 2, bourgeon) (3.47 ; 1.95)
+Rameau 8 (saison 4, generation 4, bourgeon) (4.51 ; 4.89)
+Rameau 9 (saison 4, generation 4, bourgeon) (5.08 ; 4.49)</code></pre>
+    </div>
+  </article>
+</section>
+
+<!-- ================================================================ POUSSE -->
+<section id="pousse">
+  <h2><span class="num">3</span>Growing in full light</h2>
+
+  <h3>The data structures</h3>
+  <p>These structures, declared in <code>arbre.h</code>, will be reused as they are in parts 2 and 3.</p>
+  <h4>The branch</h4>
+  <p>Each branch is a <strong>node</strong> of the tree. Since a branch has at most 3 children (<code>NB_FILS_MAX</code>), its children are stored in a <strong>dynamic array of pointers</strong>, <code>p_fils</code>, allocated to the exact size of its number of children (<code>p_fils</code> is <code>NULL</code> for a branch without children).</p>
+<pre class="code"><code>typedef enum e_type {
+    BOURGEON = 0,   // bud: branch without children, which can still grow
+    BOIS = 1        // wood: branch that has produced at least one child
+} t_type;
+
+#define NB_FILS_MAX 3
+
+typedef struct s_rameau {
+    int num;                    // branch number (order of appearance, 0 for the trunk)
+    float longueur;             // length of the branch
+    float x;                    // tip of the branch: horizontal position
+    float y;                    // tip of the branch: altitude
+    float dir;                  // direction in degrees (0 = vertical, positive to the right)
+    int saison;                 // season of appearance
+    int gen;                    // generation (depth in the tree, 0 for the trunk)
+    t_type etat;                // state: BOURGEON or BOIS
+    unsigned char nb_fils;      // number of children, from 0 to NB_FILS_MAX
+    struct s_rameau **p_fils;   // branches grown from its tip: dynamic array of nb_fils cells
+} t_rameau;</code></pre>
+  <h4>The tree</h4>
+  <p>A tree is simply designated by its trunk; we also store its number of branches and its seed, which determines the random draws of its growth.</p>
+<pre class="code"><code>typedef struct {
+    t_rameau *pied;    // trunk: first branch, the root of the tree
+    int nb_rameaux;    // number of branches of the tree
+    int seed;          // random seed of the tree
+} t_arbre;</code></pre>
+
+  <h3>The <code>arbre.h</code> / <code>arbre.c</code> module</h3>
+  <p>This module is entirely <strong>provided</strong>: you have no function to write in it, but you will use its functions.</p>
+  <h4>Provided functions</h4>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Function</th><th>Declared in</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td><code>t_rameau *createBranch(float x, float y, float dir, float longueur, int saison, int gen, int num)</code></td><td><code>arbre.h</code></td><td>creates with <code>malloc</code> a branch with tip (x, y), direction <code>dir</code>, length <code>longueur</code>, appeared in season <code>saison</code>, of generation <code>gen</code> and number <code>num</code>. The branch is a bud, without children (<code>p_fils</code> is <code>NULL</code>). The program stops if the allocation fails.</td></tr>
+        <tr><td><code>t_arbre createTree(float x, float y, int seed)</code></td><td><code>arbre.h</code></td><td>creates a tree containing only its trunk: a vertical bud with number 0, generation 0, appeared in season 0, with tip (x, y). The trunk starts from the ground, at point (x, 0): its length is therefore y. The tree has 1 branch. The seed <code>seed</code> is stored in the tree, and the random number generator is initialised with it (<code>randomInit(seed)</code>).</td></tr>
+        <tr><td><code>t_rameau *growBranch(t_arbre *a, t_rameau *parent, int saison, float dir, float longueur)</code></td><td><code>arbre.h</code></td><td>creates a new branch that grows from the tip of <code>parent</code>, with direction <code>dir</code> and length <code>longueur</code>, appeared in season <code>saison</code>. It computes its tip, its generation (<code>parent-&gt;gen + 1</code>) and its number (<code>a-&gt;nb_rameaux</code>, which increases by 1), and sets <code>parent</code> to the <code>BOIS</code> (wood) state.</td></tr>
+      </tbody>
+    </table>
+  </div>
+    <p><strong>Note</strong>: growBranch calls createBranch</p>
+  <p><strong>Warning</strong>: <code>growBranch</code> does <strong>not</strong> store the new branch in the <code>p_fils</code> array of the parent. It is up to the calling function to allocate this array (it knows the number of children), to put the branch in it and to update <code>parent-&gt;nb_fils</code>.</p>
+
+  <h3>The growth rules</h3>
+  <p>In this part, the tree grows <strong>alone</strong>, with nothing to shade it.</p>
+  <p>In each season, <strong>each bud</strong> of the branching tree (= leaf of the tree data structure) may grow, according to the following rules:</p>
+  <ul class="rules">
+    <li>it <strong>grows in 95% of cases</strong>; otherwise, it remains a bud and may grow in the next season;</li>
+    <li>if it grows, it produces <strong>1 new branch</strong> in 70% of cases, <strong>2</strong> in 25% of cases and <strong>3</strong> in 5% of cases;</li>
+    <li>its branch then becomes <strong>wood</strong>, and each new branch carries a <strong>bud</strong> and becomes a <strong>child</strong> of the branch that produced it;</li>
+    <li>if <strong>one</strong> branch grows: this new branch extends its parent: its direction is the parent's direction, changed by an angle drawn at random between −10° and +10°;</li>
+    <li>if <strong>two</strong> branches grow:
+      <ul>
+        <li>the <strong>first</strong> branch extends its parent: its direction is the parent's direction, changed by an angle drawn at random between −10° and +10°;</li>
+        <li>the <strong>second</strong> one grows to the left or to the right (one chance in two), turning by an angle drawn at random between 30° and 60°;</li>
+      </ul>
+    </li>
+    <li>if <strong>three</strong> branches grow:
+      <ul>
+        <li>the <strong>first</strong> branch extends its parent: its direction is the parent's direction, changed by an angle drawn at random between −10° and +10°;</li>
+        <li>the <strong>second</strong> one grows to the left or to the right (one chance in two), turning by an angle drawn at random between 30° and 60°;</li>
+        <li>the <strong>third</strong> one grows to the left or to the right (one chance in two), turning by an angle drawn at random between 30° and 60°;</li>
+      </ul>
+    </li>
+    <li>a direction <strong>is always brought back between −80° and +80°</strong> (a direction of 95° becomes 80°);</li>
+    <li>each new branch has a length drawn at random between 0.7 and 1.3.</li>
+  </ul>
+
+  <p>The branching tree is planted with a single branch: its trunk (the <em>root</em>), vertical, with tip \((0, 1)\), which is a bud in season 0. It then grows for \(S\) seasons, numbered from 1 to \(S\).</p>
+
+  <article id="etape2" class="step">
+    <h3><span class="step-n">Step 2</span>Growing a tree in full light</h3>
+
+    <h4>Goal</h4>
+    <p>Grow a tree <strong>at random</strong>, following the rules above. The buds that may grow during a season are stored in a <strong>queue</strong> of branches. The random draws use the <code>alea</code> module, presented in the next part (<a href="#hasard">Randomness in C</a>).</p>
+
+    <h4>The growth principle</h4>
+    <p>We only want to grow the <strong>buds</strong>: there is therefore no need to traverse the whole tree, season after season. The growth principle is the following:</p>
+    <ul>
+      <li>we use a <strong>queue</strong> \(F\) of the buds that will try to grow in a given season (at the start, \(F\) only contains the trunk);</li>
+      <li>at the beginning of the season, we create an empty queue \(G\);</li>
+      <li>we process all the elements of \(F\), one by one, and store the result in queue \(G\): a bud that does not grow is put back into \(G\), and a bud that grows puts its new branches into it;</li>
+      <li>at the end of the season, \(F\) is empty: we copy \(G\) into \(F\), and move on to the next season.</li>
+    </ul>
+    <p>The new branches are stored in \(G\): they therefore do not grow during the season in which they were born.</p>
+
+    <h4>Provided functions</h4>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Function</th><th>Declared in</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><code>float clampDirection(float dir)</code></td><td>defined in <code>croissance.c</code></td><td>brings a direction back between −80° and 80°: returns −80 if <code>dir</code> &lt; −80, 80 if <code>dir</code> &gt; 80, and <code>dir</code> otherwise</td></tr>
+          <tr><td><code>int canGrow(float probabilite)</code></td><td><code>croissance.h</code></td><td>draws at random whether a bud grows: returns 1 with probability <code>probabilite</code> (in %, for example 95), 0 otherwise</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Their code is in <code>croissance.c</code>.</p>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Function</th><th>Declared in</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><code>t_queue createEmptyQueue(void)</code></td><td><code>queue.h</code></td><td>creates an empty queue (<code>head</code> and <code>tail</code> are <code>NULL</code>)</td></tr>
+          <tr><td><code>int isEmptyQueue(t_queue q)</code></td><td><code>queue.h</code></td><td>returns 1 if queue <code>q</code> is empty, 0 otherwise</td></tr>
+          <tr><td><code>void enqueue(t_queue *p_q, t_rameau *p_r)</code></td><td><code>queue.h</code></td><td>adds branch <code>p_r</code> on the <code>tail</code> side</td></tr>
+          <tr><td><code>t_rameau *dequeue(t_queue *p_q)</code></td><td><code>queue.h</code></td><td>removes the branch on the <code>head</code> side and returns its address, or <code>NULL</code> if the queue is empty</td></tr>
+          <tr><td><code>void displayQueue(t_queue q)</code></td><td><code>queue.h</code></td><td>prints the numbers of the branches, from the exit to the entrance</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Their code is in <code>queue.c</code>.</p>
+
+    <div class="callout">
+      <h4>To do</h4>
+      <p>Write the following functions, <strong>in this order</strong>, and test each of them from <code>src/main_etape2.c</code> (CMake target <code>etape_2</code>) before moving on to the next one.</p>
+      <p class="warn">⚠️ The random number generator is initialised by <code>createTree</code>, with the seed of the tree: you should <strong>NEVER</strong> call the <code>randomInit</code> function yourself!</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>int howManyBranches(float p1, float p2)</code></h4>
+      <p><strong>Role</strong>: draws at random the number of new branches of a bud that grows. It returns 1 with probability <code>p1</code> (in %), 2 with probability <code>p2</code> (in %), and 3 otherwise.</p>
+      <p><strong>Hints</strong>:</p>
+      <ul>
+        <li>Draw <strong>a single</strong> number \(u\) = <code>randomReal()</code>: see “Drawing from a table” in the <a href="#hasard">Randomness in C</a> part;</li>
+        <li>A second draw would shift the whole sequence of random numbers: you would no longer obtain the provided trees.</li>
+      </ul>
+      <p><strong>→ Write its prototype in <code>croissance.h</code> and its definition in <code>croissance.c</code>.</strong></p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void growBud(t_arbre *a, t_rameau *b, int n, int saison)</code></h4>
+      <p><strong>Role</strong>: makes <code>n</code> new branches (1, 2 or 3) appear in season <code>saison</code>, at the tip of bud <code>b</code> of tree <code>a</code>. At the end, <code>b</code> is wood, its <code>n</code> children are stored in its <code>p_fils</code> array, and <code>b-&gt;nb_fils</code> equals <code>n</code>.</p>
+      <p><strong>Hints</strong>:</p>
+      <ul>
+        <li>allocate the array of children with <code>malloc(n * sizeof(t_rameau *))</code>;</li>
+        <li>to obtain the provided trees, make the draws <strong>in this order</strong>, branch by branch (from branch 0 to branch <code>n - 1</code>):
+          <ul>
+            <li>first branch: its direction, <code>b-&gt;dir + randomBetween(-10, 10)</code>, then its length, <code>randomBetween(0.7, 1.3)</code>;</li>
+            <li>next branches: the side, <code>randomInt(2)</code> (0: to the left, the direction decreases; 1: to the right, it increases), then the angle, <code>randomBetween(30, 60)</code>, then the length, <code>randomBetween(0.7, 1.3)</code>;</li>
+          </ul>
+        </li>
+        <li>bring each direction back between −80° and +80° with <code>clampDirection</code>, just before calling <code>growBranch</code>.</li>
+      </ul>
+      <p><strong>→ Write its prototype in <code>croissance.h</code> and its definition in <code>croissance.c</code>.</strong></p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void growTree(t_arbre *a, int nbSaisons)</code></h4>
+      <p><strong>Role</strong>: grows tree <code>a</code> during seasons 1 to <code>nbSaisons</code>, following the growth principle described above. The random generator has already been initialised by <code>createTree</code>, with the seed of the tree.</p>
+      <p><strong>Hints</strong>:</p>
+      <ul>
+        <li>use two queues: \(F\), the buds of the current season, and \(G\), those of the next season.</li>
+        <li>After the last season, empty \(F\) with <code>dequeue</code>.</li>
+      </ul>
+      <p><strong>→ Write its prototype in <code>croissance.h</code> and its definition in <code>croissance.c</code>.</strong></p>
+    </div>
+    <div class="check">
+      <h4>Step 2 validation</h4>
+      <ul>
+        <li>Call <code>howManyBranches(70, 25)</code> 1,000,000 times and count the results: you should obtain numbers close (within about 2,000) to 700,000 times 1, 250,000 times 2 and 50,000 times 3. With <code>canGrow(95)</code>, a bud therefore produces 1 branch in \(0.95 \times 0.70 = 66.5\,\%\) of the seasons.</li>
+        <li>Two simulations with the <strong>same seed</strong> give exactly the same tree; two different seeds give (almost always) different trees.</li>
+        <li>With seed 5 and \(S = 3\), you must obtain the same tree as the one in the provided file <code>arbre_petit.txt</code>: same numbers, seasons, generations, states and children (compare them with <code>displayTree</code>). Only the tips may differ by a few hundredths, because the file rounds directions and lengths to 2 decimal places. Likewise, with seed 3 and \(S = 8\), you must obtain <code>arbre_moyen.txt</code>, and with seed 4 and \(S = 30\), <code>arbre_grand.txt</code> (5,518 branches).</li>
+        <li>Draw the trees obtained with <code>drawSvg</code>, and animate their growth with <code>animateSvg</code>. With seed 3, you must obtain the provided animations <code>animation_8_saisons.svg</code> (\(S = 8\)) and <code>animation_15_saisons.svg</code> (\(S = 15\)). The first 8 seasons of both animations are identical: explain why in your report.</li>
+      </ul>
+    </div>
+  </article>
+  <article id="etape3" class="step">
+    <h3><span class="step-n">Step 3</span>Growing a single season</h3>
+    <div class="todo">
+      <h4>One season at a time: <code>croissance_step.h</code> / <code>croissance_step.c</code></h4>
+      <p><strong>Role</strong>: in part 2, all the trees of a forest will grow <strong>together</strong>, season by season. We must therefore be able to grow a tree <strong>one season at a time</strong>. The tree must then keep its queue of buds from one season to the next:</p>
+<pre class="code"><code>typedef struct s_arbre_step {
+    t_arbre arbre;        // the tree itself (trunk, number of branches, seed)
+    t_queue bourgeons;    // buds that may grow in the next season
+    int saison;           // number of seasons already elapsed
+} t_arbre_step;</code></pre>
+    </div>
+    <div class="callout">
+      <h4>To do</h4>
+      <p>→ Edit the files <code>croissance_step.h</code> and
+      <code>croissance_step.c</code>: write the structure and the prototypes of the functions in <code>croissance_step.h</code>, and the definitions of the functions in <code>croissance_step.c</code>.</p>
+    </div>
+
+    <div class="todo">
+      <h4>function: <code>createTreeStep</code></h4>
+      <p><strong>Role</strong>: creates a tree reduced to its trunk, whose queue of buds only contains the trunk, in season 0.</p>
+      <p><strong>Hints</strong>:</p>
+      <ul>
+        <li>😉 <code>createTreeStep</code> will call <code>createTree</code>, unless you want to redo everything from scratch…</li>
+      </ul>
+      <p><strong>→ 🤔 It is up to you to determine its prototype: write it in <code>croissance_step.h</code>, and its definition in <code>croissance_step.c</code>.</strong></p>
+    </div>
+
+    <div class="todo">
+      <h4>function: <code>growTreeStep</code></h4>
+      <p><strong>Role</strong>: grows the tree during a single season; do not forget to update the season.</p>
+      <p><strong>→ 🤔 It is up to you to determine its prototype: write it in <code>croissance_step.h</code>, and its definition in <code>croissance_step.c</code>.</strong></p>
+    </div>
+
+    <div class="todo">
+      <h4>function: <code>clearBuds</code></h4>
+      <p><strong>Role</strong>: empties the queue of buds: the tree can no longer grow afterwards.</p>
+      <p><strong>→ 🤔 It is up to you to determine its prototype: write it in <code>croissance_step.h</code>, and its definition in <code>croissance_step.c</code>.</strong></p>
+    </div>
+
+    <div class="check">
+      <h4>Step 3 validation</h4>
+      <ul>
+        <li>With the same seed and 8 seasons, <code>growTree</code> and 8 calls to <code>growTreeStep</code> give exactly the same tree.</li>
+      </ul>
+    </div>
+
+  </article>
+</section>
+
+<!-- ================================================================ HASARD -->
+<section id="hasard">
+  <h2><span class="num">4</span>Randomness in C</h2>
+  <p class="warn">The <code>rand()</code> function of the standard library is not suitable for this project.</p>
+  <p>You are given a <strong>provided</strong> module, <code>alea.h</code> / <code>alea.c</code>, to be used as it is:</p>
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr><th>Function</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td><code>void randomInit(uint64_t graine)</code></td><td>initialises the random number generator with a <strong>seed</strong></td></tr>
+      <tr><td><code>double randomReal(void)</code></td><td>returns a random real number between 0 (included) and 1 (excluded)</td></tr>
+      <tr><td><code>double randomBetween(double a, double b)</code></td><td>returns a random real number between a (included) and b (excluded)</td></tr>
+      <tr><td><code>int randomInt(int n)</code></td><td>returns a random integer between 0 and \(n - 1\), each value having the same chance of being chosen</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <p><strong>The seed.</strong> A computer does not really produce randomness: it computes a sequence of numbers that <em>look</em> random. This sequence is entirely determined by the seed: <strong>with the same seed, you get exactly the same simulation</strong>. This is very useful to track down a bug, or so that someone else can repeat the same experiment.</p>
+    <p>Your program must therefore always allow the seed to be chosen.</p>
+  </div>
+
+  <h3 class="caption-title">Drawing from a table</h3>
+  <p>To choose 1, 2 or 3 new branches in 70%, 25% and 5% of cases, we draw a number \(u\) = <code>randomReal()</code>, then return 1 if \(u &lt; 0.70\); otherwise 2 if \(u &lt; 0.70 + 0.25 = 0.95\); otherwise 3. Each result corresponds to a “slice” of the interval between 0 and 1, whose width is the desired percentage.</p>
+
+</section>
+
+<!-- ================================================================ CAHIER -->
+
+<footer class="foot">
+  <p class="credit"><svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - AI Claude Code</p>
+</footer>
+
+</main>
+</div>
+</body>
+</html>
