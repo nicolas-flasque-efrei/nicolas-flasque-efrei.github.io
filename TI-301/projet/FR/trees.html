@@ -98,19 +98,21 @@
   };
   const fr = (v, d = 2) => v.toFixed(d).replace('.', ',');
 
-  /* L'arbre de l'exemple : contenu de exemple1.txt (saison, parent, direction, longueur) */
-  const PIED = { x: 4.5, y: 1.0 };
-  const LIGNES = [[1,0,0,1.0],[1,0,-45,0.8],[2,1,5,1.0],[2,1,50,0.8],[2,1,-40,0.7],
-                  [3,3,0,1.0],[3,2,-50,0.6],[4,6,-5,0.9],[4,6,45,0.7]];
+  /* L'arbre de l'exemple : contenu de exemple1.txt (numero, saison, parent, direction, longueur, generation, etat) */
+  const PIED = { x: 4.50, y: 1.00 };
+  const LIGNES = [[1,1,0,0.00,1.00,1,1],[2,1,0,-45.00,0.80,1,1],[3,2,1,5.00,1.00,2,1],
+                  [4,2,1,50.00,0.80,2,0],[5,2,1,-40.00,0.70,2,0],[7,3,2,-50.00,0.60,2,0],
+                  [6,3,3,0.00,1.00,3,1],[8,4,6,-5.00,0.90,4,0],[9,4,6,45.00,0.70,4,0]];
 
-  // équivalent de lire_arbre / pousser_rameau
+  // équivalent de readTree / growBranch : R[num] est le rameau de numéro num
   const R = [{ num: 0, x: PIED.x, y: PIED.y, dir: 0, lg: PIED.y, saison: 0, gen: 0, parent: -1, fils: [] }];
-  for (const [saison, p, dir, lg] of LIGNES) {
+  for (const [num, saison, p, dir, lg, gen, etat] of LIGNES) {
     const par = R[p], t = dir * Math.PI / 180;
-    const r = { num: R.length, x: par.x + lg * Math.sin(t), y: par.y + lg * Math.cos(t), dir, lg, saison, gen: par.gen + 1, parent: p, fils: [] };
-    par.fils.push(r.num); R.push(r);
+    R[num] = { num, x: par.x + lg * Math.sin(t), y: par.y + lg * Math.cos(t), dir, lg, saison, gen, parent: p, fils: [],
+               etat: etat === 1 ? 'bois' : 'bourgeon' };
+    par.fils.push(num);
   }
-  R.forEach(r => (r.etat = r.fils.length ? 'bois' : 'bourgeon'));
+  R[0].etat = R[0].fils.length ? 'bois' : 'bourgeon';
   const H = Math.max(...R.map(r => r.gen));
 
   // disposition : feuilles côte à côte (parcours en profondeur), nœud interne au milieu de ses fils
@@ -197,7 +199,7 @@
       `<dt>saison</dt><dd>${r.saison}</dd>` +
       `<dt>génération</dt><dd>${r.gen}</dd>` +
       `<dt>direction</dt><dd>${r.dir}°</dd>` +
-      `<dt>longueur</dt><dd>${r.parent < 0 ? '–' : fr(r.lg, 1)}</dd>` +
+      `<dt>longueur</dt><dd>${r.parent < 0 ? '–' : fr(r.lg)}</dd>` +
       `<dt>extrémité</dt><dd>(${fr(r.x)} ; ${fr(r.y)})</dd></dl>`;
 
     // place la fenêtre à côté de l'élément survolé, sans sortir du bloc
