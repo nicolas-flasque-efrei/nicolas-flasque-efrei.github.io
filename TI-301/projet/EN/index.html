@@ -597,6 +597,7 @@ typedef struct s_rameau {
     <div class="callout">
       <h4>To do</h4>
       <p>Write the following functions, <strong>in this order</strong>, and test each of them from <code>src/main_etape2.c</code> (CMake target <code>etape_2</code>) before moving on to the next one.</p>
+      <p>So that the program compiles from the first function on, first write the prototypes of the three functions in <code>croissance.h</code> and an <strong>empty</strong> version of each in <code>croissance.c</code> (<code>howManyBranches</code> returns 1, <code>growBud</code> and <code>growTree</code> do nothing), then replace them one by one. As long as <code>growBud</code> and <code>growTree</code> are empty, the next tests display a tree reduced to its trunk: this is normal.</p>
       <p class="warn">⚠️ The random number generator is initialised by <code>createTree</code>, with the seed of the tree: you should <strong>NEVER</strong> call the <code>randomInit</code> function yourself!</p>
     </div>
 

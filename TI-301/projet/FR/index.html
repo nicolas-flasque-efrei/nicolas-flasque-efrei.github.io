@@ -574,6 +574,7 @@ typedef struct s_rameau {
     <div class="callout">
       <h4>À faire</h4>
       <p>Écrivez les fonctions suivantes, <strong>dans cet ordre</strong>, et testez chacune d'elles depuis <code>src/main_etape2.c</code> (cible CMake <code>etape_2</code>) avant de passer à la suivante.</p>
+      <p>Pour que le programme compile dès la première fonction, écrivez d'abord les prototypes des trois fonctions dans <code>croissance.h</code> et une version <strong>vide</strong> de chacune dans <code>croissance.c</code> (<code>howManyBranches</code> renvoie 1, <code>growBud</code> et <code>growTree</code> ne font rien), puis remplacez-les une par une. Tant que <code>growBud</code> et <code>growTree</code> sont vides, les tests suivants affichent un arbre réduit à son pied : c'est normal.</p>
       <p class="warn">⚠️ Le générateur aléatoire est initialisé par <code>createTree</code>, avec la graine de l'arbre : vous ne devriez <strong>JAMAIS</strong> appeler la fonction <code>randomInit</code> vous-même !</p>
     </div>
 
