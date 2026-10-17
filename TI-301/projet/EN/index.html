@@ -454,6 +454,7 @@
         <li>In <code>main_etape1.c</code>, choose a file <code>data/xxxx.txt</code> among <code>exemple1.txt</code>, <code>arbre_petit.txt</code>, <code>arbre_moyen.txt</code> and <code>arbre_grand.txt</code>, then run again.</li>
         <li>Look at the files produced in the <code>output</code> directory by opening them in a web browser: the <code>.svg</code> drawing, the <code>.svg</code> animation (reload the page, F5, to watch it again) and the three <code>.html</code> views.</li>
       </ul>
+      <p class="warn">⚠️ The programs read from <code>data/</code> and write to <code>output/</code>: these paths are relative to the <strong>working directory</strong> of the program, which must be the project folder. The provided run configurations (<code>.run</code> folder) set it for you. If the program displays “Impossible d'ouvrir le fichier” or “Impossible de creer le fichier”, check in CLion: <em>Run › Edit Configurations… › Working directory</em> must be <code>$ProjectFileDir$</code>.</p>
     </div>
 
     <div class="check">
