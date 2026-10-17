@@ -740,9 +740,9 @@ fprintf(f, "%d %d %d %.2f %.2f %d %d\n", ...);       // une ligne par rameau aut
     <div class="check">
       <h4>Validation de l'étape 4</h4>
       <ul>
-        <li>Avec la graine 5 et \(S = 3\), le fichier écrit par <code>saveTree</code> doit être identique, caractère pour caractère, au fichier fourni <code>arbre_petit.txt</code> ; de même, avec la graine 3 et \(S = 8\), à <code>arbre_moyen.txt</code>, et avec la graine 4 et \(S = 30\), à <code>arbre_grand.txt</code>. Le programme <code>main_etape4.c</code> fait ces comparaisons pour vous.</li>
-        <li><code>readTree</code> doit relire le fichier écrit, et <code>displayTree</code> afficher le même arbre que l'arbre sauvé.</li>
-        <li>Si <code>readTree</code> s'arrête avec le message « fichier pas en BFS ? », vos rameaux ne sont pas écrits dans l'ordre d'un parcours en largeur.</li>
+        <li>Avec la graine 5 et \(S = 3\), le fichier écrit par <code>saveTree</code> doit avoir le même contenu, aux fins de ligne près, que le fichier fourni <code>arbre_petit.txt</code> ; de même, avec la graine 3 et \(S = 8\), à <code>arbre_moyen.txt</code>, et avec la graine 4 et \(S = 30\), à <code>arbre_grand.txt</code>. Le programme <code>main_etape4.c</code> fait ces comparaisons pour vous.</li>
+        <li><code>readTree</code> doit relire le fichier écrit, et <code>displayTree</code> afficher le même arbre que l'arbre sauvé : mêmes numéros, saisons, générations, états et fils. Seules les extrémités peuvent différer d'un ou deux centièmes, comme à l'étape 2, car le fichier arrondit les directions et les longueurs à 2 chiffres après la virgule.</li>
+        <li>Si <code>readTree</code> s'arrête avec le message « fichier pas en BFS ? », vos rameaux ne sont pas écrits dans l'ordre d'un parcours en largeur. Ce message apparaît aussi si le fichier contient une ligne en trop, par exemple une ligne pour le pied.</li>
       </ul>
     </div>
   </article>
