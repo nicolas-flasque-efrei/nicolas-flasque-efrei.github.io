@@ -732,7 +732,8 @@ typedef struct s_rameau {
 fprintf(f, "%d %d %d %.2f %.2f %d %d\n", ...);       // une ligne par rameau autre que le pied</code></pre>
       <ul>
         <li>la sauvegarde <strong>doit</strong> être effectuée par un parcours en largeur : une file de rameaux (<code>queue.h</code>) contient d'abord le pied ; tant qu'elle n'est pas vide, on en retire un rameau et on y fait entrer ses fils ;</li>
-        <li>un rameau ne connaît pas son père : écrivez la ligne de chaque fils au moment où vous traitez son père.</li>
+        <li>un rameau ne connaît pas son père : écrivez la ligne de chaque fils au moment où vous traitez son père ;</li>
+        <li><code>saveTree</code> ne modifie pas l'arbre et ne le libère pas : il sert encore après la sauvegarde. À la fin du parcours, la file est vide et <code>dequeue</code> a déjà libéré ses cellules : il n'y a rien d'autre à libérer.</li>
       </ul>
       <p><strong>→ Écrivez sa définition dans <code>sauver_arbre.c</code>.</strong></p>
     </div>

@@ -755,7 +755,8 @@ typedef struct s_rameau {
 fprintf(f, "%d %d %d %.2f %.2f %d %d\n", ...);       // one line per branch other than the trunk</code></pre>
       <ul>
         <li>the save <strong>must</strong> be performed by a breadth-first traversal: a queue of branches (<code>queue.h</code>) first contains the trunk; as long as it is not empty, take a branch out of it and put its children in;</li>
-        <li>a branch does not know its parent: write the line of each child when you process its parent.</li>
+        <li>a branch does not know its parent: write the line of each child when you process its parent;</li>
+        <li><code>saveTree</code> neither modifies nor frees the tree: it is still used after the save. At the end of the traversal, the queue is empty and <code>dequeue</code> has already freed its cells: there is nothing else to free.</li>
       </ul>
       <p><strong>→ Write its definition in <code>sauver_arbre.c</code>.</strong></p>
     </div>
