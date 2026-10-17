@@ -55,7 +55,12 @@
         <li><a href="#etape3">Faire pousser une seule saison</a></li>
       </ol>
     </li>
-    <li><a href="#hasard">4 Le hasard en C</a></li>
+    <li><a href="#sauvegarde">4 Sauvez les arbres !</a>
+      <ol>
+        <li><a href="#etape4">Écrire un arbre dans un fichier</a></li>
+      </ol>
+    </li>
+    <li><a href="#hasard">5 Le hasard en C</a></li>
   </ol>
 </nav>
 
@@ -528,7 +533,7 @@ typedef struct s_rameau {
     <h3><span class="step-n">Étape 2</span>Faire pousser un arbre en pleine lumière</h3>
 
     <h4>Objectif</h4>
-    <p>Faire pousser un arbre <strong>au hasard</strong>, en suivant les règles ci-dessus. Les bourgeons qui peuvent pousser pendant une saison sont rangés dans une <strong>file</strong> de rameaux. Les tirages au hasard utilisent le module <code>alea</code>, présenté dans la partie suivante (<a href="#hasard">Le hasard en C</a>).</p>
+    <p>Faire pousser un arbre <strong>au hasard</strong>, en suivant les règles ci-dessus. Les bourgeons qui peuvent pousser pendant une saison sont rangés dans une <strong>file</strong> de rameaux. Les tirages au hasard utilisent le module <code>alea</code>, présenté dans la partie <a href="#hasard">Le hasard en C</a>.</p>
 
     <h4>Le principe de la pousse</h4>
     <p>On ne veut faire pousser que les <strong>bourgeons</strong> : il est donc inutile de parcourir tout l'arbre, de saison en saison. Le principe de la pousse est le suivant :</p>
@@ -668,9 +673,84 @@ typedef struct s_rameau {
   </article>
 </section>
 
+<!-- ================================================================ SAUVEGARDE -->
+<section id="sauvegarde">
+  <h2><span class="num">4</span>Sauvez les arbres !</h2>
+  <p>Un arbre qui a poussé n'existe que dans la mémoire du programme : il disparaît quand le programme s'arrête. Pour le garder, le relire plus tard ou le comparer avec un autre, on l'écrit dans un fichier texte, que <code>readTree</code> sait relire.</p>
+
+  <h3>Le format du fichier</h3>
+  <ul>
+    <li>la <strong>première ligne</strong> contient l'extrémité du pied, \(x\) puis \(y\), avec 2 chiffres après la virgule ;</li>
+    <li>chaque <strong>ligne suivante</strong> décrit un rameau autre que le pied, par 7 nombres séparés par des espaces :</li>
+  </ul>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Position</th><th>Contenu</th><th>Format</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>numéro du rameau</td><td>entier</td></tr>
+        <tr><td>2</td><td>saison d'apparition</td><td>entier</td></tr>
+        <tr><td>3</td><td>numéro de son <strong>père</strong></td><td>entier</td></tr>
+        <tr><td>4</td><td>direction</td><td>2 chiffres après la virgule</td></tr>
+        <tr><td>5</td><td>longueur</td><td>2 chiffres après la virgule</td></tr>
+        <tr><td>6</td><td>génération</td><td>entier</td></tr>
+        <tr><td>7</td><td>état : 0 pour un bourgeon, 1 pour du bois</td><td>entier</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Les rameaux sont écrits dans l'ordre d'un <strong>parcours en largeur</strong> de l'arbre informatique, en partant du pied : d'abord les fils du pied, puis les fils de ses fils, et ainsi de suite. Les fils d'un même rameau sont donc sur des lignes consécutives, dans l'ordre de son tableau <code>p_fils</code>. <code>readTree</code> a besoin de cet ordre pour relire le fichier. Voici le fichier fourni <code>arbre_petit.txt</code> :</p>
+<pre class="code"><code>0.00 1.00
+1 1 0 -5.35 0.76 1 1
+2 1 0 41.42 1.29 1 1
+3 2 1 -3.28 0.97 2 1
+4 2 2 40.47 1.27 2 1
+5 2 2 -13.51 0.98 2 1
+6 3 3 -10.98 1.29 3 0
+7 3 4 33.59 1.13 3 0
+8 3 4 6.81 0.98 3 0
+9 3 5 -19.63 1.29 3 0</code></pre>
+
+  <article id="etape4" class="step">
+    <h3><span class="step-n">Étape 4</span>Écrire un arbre dans un fichier</h3>
+
+    <h4>Objectif</h4>
+    <p>Écrire la fonction de sauvegarde d'un arbre, au format ci-dessus, par un <strong>parcours en largeur</strong> qui utilise la file de rameaux de l'étape 2. Le programme de cette étape est <code>src/main_etape4.c</code> (cible CMake <code>etape_4</code>).</p>
+
+    <div class="callout">
+      <h4>À faire</h4>
+      <p>Complétez la fonction <code>saveTree</code> dans <code>src/sauver_arbre.c</code> : son prototype est déjà écrit dans <code>include/sauver_arbre.h</code>, et l'ouverture et la fermeture du fichier sont fournies.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void saveTree(t_arbre a, char *nom_fichier)</code></h4>
+      <p><strong>Rôle</strong> : écrit l'arbre <code>a</code> dans le fichier texte <code>nom_fichier</code>, au format décrit ci-dessus. Le fichier est créé s'il n'existe pas, et remplacé s'il existe.</p>
+      <p><strong>Indices</strong> :</p>
+      <ul>
+        <li>le code fourni ouvre le fichier en écriture, en mode texte, et le referme à la fin : écrivez votre code entre les deux ;</li>
+        <li>écrivez les lignes avec <code>fprintf</code> et ces chaînes de format :</li>
+      </ul>
+<pre class="code"><code>fprintf(f, "%.2f %.2f\n", ..., ...);                  // première ligne : x et y du pied
+fprintf(f, "%d %d %d %.2f %.2f %d %d\n", ...);       // une ligne par rameau autre que le pied</code></pre>
+      <ul>
+        <li>la sauvegarde <strong>doit</strong> être effectuée par un parcours en largeur : une file de rameaux (<code>queue.h</code>) contient d'abord le pied ; tant qu'elle n'est pas vide, on en retire un rameau et on y fait entrer ses fils ;</li>
+        <li>un rameau ne connaît pas son père : écrivez la ligne de chaque fils au moment où vous traitez son père.</li>
+      </ul>
+      <p><strong>→ Écrivez sa définition dans <code>sauver_arbre.c</code>.</strong></p>
+    </div>
+
+    <div class="check">
+      <h4>Validation de l'étape 4</h4>
+      <ul>
+        <li>Avec la graine 5 et \(S = 3\), le fichier écrit par <code>saveTree</code> doit être identique, caractère pour caractère, au fichier fourni <code>arbre_petit.txt</code> ; de même, avec la graine 3 et \(S = 8\), à <code>arbre_moyen.txt</code>, et avec la graine 4 et \(S = 30\), à <code>arbre_grand.txt</code>. Le programme <code>main_etape4.c</code> fait ces comparaisons pour vous.</li>
+        <li><code>readTree</code> doit relire le fichier écrit, et <code>displayTree</code> afficher le même arbre que l'arbre sauvé.</li>
+        <li>Si <code>readTree</code> s'arrête avec le message « fichier pas en BFS ? », vos rameaux ne sont pas écrits dans l'ordre d'un parcours en largeur.</li>
+      </ul>
+    </div>
+  </article>
+</section>
+
 <!-- ================================================================ HASARD -->
 <section id="hasard">
-  <h2><span class="num">4</span>Le hasard en C</h2>
+  <h2><span class="num">5</span>Le hasard en C</h2>
   <p class="warn">La fonction <code>rand()</code> de la bibliothèque standard ne convient pas à ce projet.</p>
   <p>Vous disposez d'un module <strong>fourni</strong>, <code>alea.h</code> / <code>alea.c</code>, à utiliser tel quel :</p>
   <div class="table-wrap">

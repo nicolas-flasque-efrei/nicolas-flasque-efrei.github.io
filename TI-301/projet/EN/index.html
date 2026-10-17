@@ -55,7 +55,12 @@
         <li><a href="#etape3">Growing a single season</a></li>
       </ol>
     </li>
-    <li><a href="#hasard">4 Randomness in C</a></li>
+    <li><a href="#sauvegarde">4 Save the trees!</a>
+      <ol>
+        <li><a href="#etape4">Writing a tree to a file</a></li>
+      </ol>
+    </li>
+    <li><a href="#hasard">5 Randomness in C</a></li>
   </ol>
 </nav>
 
@@ -551,7 +556,7 @@ typedef struct s_rameau {
     <h3><span class="step-n">Step 2</span>Growing a tree in full light</h3>
 
     <h4>Goal</h4>
-    <p>Grow a tree <strong>at random</strong>, following the rules above. The buds that may grow during a season are stored in a <strong>queue</strong> of branches. The random draws use the <code>alea</code> module, presented in the next part (<a href="#hasard">Randomness in C</a>).</p>
+    <p>Grow a tree <strong>at random</strong>, following the rules above. The buds that may grow during a season are stored in a <strong>queue</strong> of branches. The random draws use the <code>alea</code> module, presented in the <a href="#hasard">Randomness in C</a> part.</p>
 
     <h4>The growth principle</h4>
     <p>We only want to grow the <strong>buds</strong>: there is therefore no need to traverse the whole tree, season after season. The growth principle is the following:</p>
@@ -691,9 +696,84 @@ typedef struct s_rameau {
   </article>
 </section>
 
+<!-- ================================================================ SAUVEGARDE -->
+<section id="sauvegarde">
+  <h2><span class="num">4</span>Save the trees!</h2>
+  <p>A tree that has grown only exists in the memory of the program: it disappears when the program stops. To keep it, read it again later or compare it with another one, we write it to a text file, which <code>readTree</code> can read back.</p>
+
+  <h3>The file format</h3>
+  <ul>
+    <li>the <strong>first line</strong> contains the tip of the trunk, \(x\) then \(y\), with 2 digits after the decimal point;</li>
+    <li>each <strong>following line</strong> describes a branch other than the trunk, with 7 numbers separated by spaces:</li>
+  </ul>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Position</th><th>Content</th><th>Format</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>number of the branch</td><td>integer</td></tr>
+        <tr><td>2</td><td>season of appearance</td><td>integer</td></tr>
+        <tr><td>3</td><td>number of its <strong>parent</strong></td><td>integer</td></tr>
+        <tr><td>4</td><td>direction</td><td>2 digits after the decimal point</td></tr>
+        <tr><td>5</td><td>length</td><td>2 digits after the decimal point</td></tr>
+        <tr><td>6</td><td>generation</td><td>integer</td></tr>
+        <tr><td>7</td><td>state: 0 for a bud, 1 for wood</td><td>integer</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>The branches are written in the order of a <strong>breadth-first traversal</strong> of the tree data structure, starting from the trunk: first the children of the trunk, then the children of its children, and so on. The children of the same branch are therefore on consecutive lines, in the order of its <code>p_fils</code> array. <code>readTree</code> needs this order to read the file back. Here is the provided file <code>arbre_petit.txt</code>:</p>
+<pre class="code"><code>0.00 1.00
+1 1 0 -5.35 0.76 1 1
+2 1 0 41.42 1.29 1 1
+3 2 1 -3.28 0.97 2 1
+4 2 2 40.47 1.27 2 1
+5 2 2 -13.51 0.98 2 1
+6 3 3 -10.98 1.29 3 0
+7 3 4 33.59 1.13 3 0
+8 3 4 6.81 0.98 3 0
+9 3 5 -19.63 1.29 3 0</code></pre>
+
+  <article id="etape4" class="step">
+    <h3><span class="step-n">Step 4</span>Writing a tree to a file</h3>
+
+    <h4>Goal</h4>
+    <p>Write the function that saves a tree, in the format above, by a <strong>breadth-first traversal</strong> that uses the queue of branches of step 2. The program of this step is <code>src/main_etape4.c</code> (CMake target <code>etape_4</code>).</p>
+
+    <div class="callout">
+      <h4>To do</h4>
+      <p>Complete the function <code>saveTree</code> in <code>src/sauver_arbre.c</code>: its prototype is already written in <code>include/sauver_arbre.h</code>, and the opening and closing of the file are provided.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void saveTree(t_arbre a, char *nom_fichier)</code></h4>
+      <p><strong>Role</strong>: writes tree <code>a</code> to the text file <code>nom_fichier</code>, in the format described above. The file is created if it does not exist, and replaced if it does.</p>
+      <p><strong>Hints</strong>:</p>
+      <ul>
+        <li>the provided code opens the file for writing, in text mode, and closes it at the end: write your code between the two;</li>
+        <li>write the lines with <code>fprintf</code> and these format strings:</li>
+      </ul>
+<pre class="code"><code>fprintf(f, "%.2f %.2f\n", ..., ...);                  // first line: x and y of the trunk
+fprintf(f, "%d %d %d %.2f %.2f %d %d\n", ...);       // one line per branch other than the trunk</code></pre>
+      <ul>
+        <li>the save <strong>must</strong> be performed by a breadth-first traversal: a queue of branches (<code>queue.h</code>) first contains the trunk; as long as it is not empty, take a branch out of it and put its children in;</li>
+        <li>a branch does not know its parent: write the line of each child when you process its parent.</li>
+      </ul>
+      <p><strong>→ Write its definition in <code>sauver_arbre.c</code>.</strong></p>
+    </div>
+
+    <div class="check">
+      <h4>Step 4 validation</h4>
+      <ul>
+        <li>With seed 5 and \(S = 3\), the file written by <code>saveTree</code> must be identical, character for character, to the provided file <code>arbre_petit.txt</code>; likewise, with seed 3 and \(S = 8\), to <code>arbre_moyen.txt</code>, and with seed 4 and \(S = 30\), to <code>arbre_grand.txt</code>. The program <code>main_etape4.c</code> makes these comparisons for you.</li>
+        <li><code>readTree</code> must read the written file back, and <code>displayTree</code> must display the same tree as the saved one.</li>
+        <li>If <code>readTree</code> stops with the message “fichier pas en BFS ?”, your branches are not written in the order of a breadth-first traversal.</li>
+      </ul>
+    </div>
+  </article>
+</section>
+
 <!-- ================================================================ HASARD -->
 <section id="hasard">
-  <h2><span class="num">4</span>Randomness in C</h2>
+  <h2><span class="num">5</span>Randomness in C</h2>
   <p class="warn">The <code>rand()</code> function of the standard library is not suitable for this project.</p>
   <p>You are given a <strong>provided</strong> module, <code>alea.h</code> / <code>alea.c</code>, to be used as it is:</p>
   <div class="table-wrap">
