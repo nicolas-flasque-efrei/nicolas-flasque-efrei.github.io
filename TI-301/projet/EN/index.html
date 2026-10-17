@@ -76,7 +76,7 @@
 
   <h3 class="caption-title">Project organisation</h3>
   <ol class="parts">
-    <li class="is-current"><b>Part 1</b> Grow a single tree at random, in full light, measure it and save it to a file;</li>
+    <li class="is-current"><b>Part 1</b> Grow a single tree at random, in full light, and save it to a file;</li>
     <li><b>Part 2</b> Grow a whole forest, in which trees shade one another;</li>
     <li><b>Part 3</b> Simulate thousands of forests, analyse and visualise the results.</li>
   </ol>
@@ -768,6 +768,7 @@ fprintf(f, "%d %d %d %.2f %.2f %d %d\n", ...);       // one line per branch othe
         <li>With seed 5 and \(S = 3\), the file written by <code>saveTree</code> must have the same content, up to line endings, as the provided file <code>arbre_petit.txt</code>; likewise, with seed 3 and \(S = 8\), to <code>arbre_moyen.txt</code>, and with seed 4 and \(S = 30\), to <code>arbre_grand.txt</code>. The program <code>main_etape4.c</code> makes these comparisons for you.</li>
         <li><code>readTree</code> must read the written file back, and <code>displayTree</code> must display the same tree as the saved one: same numbers, seasons, generations, states and children. Only the tips may differ by one or two hundredths, as in step 2, because the file rounds the directions and lengths to 2 digits after the decimal point.</li>
         <li>If <code>readTree</code> stops with the message “fichier pas en BFS ?”, your branches are not written in the order of a breadth-first traversal. This message also appears if the file contains an extra line, for example a line for the trunk.</li>
+        <li>If <code>readTree</code> stops with the message “Impossible de lire la position du pied”, the written file is empty, or its first line is missing: this is what happens as long as <code>saveTree</code> writes nothing.</li>
       </ul>
     </div>
   </article>
