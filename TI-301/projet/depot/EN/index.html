@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create your team repository</title>
+<meta name="description" content="TI301 – Project “The Forest and the Light”: create your team's Git repository from the template repository.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="alternate" hreflang="fr" href="../FR/index.html">
+<link rel="stylesheet" href="../style.css?v=1">
+<script src="../script.js?v=1" defer></script>
+</head>
+<body>
+
+<div class="layout">
+
+<nav class="side" aria-label="Contents">
+  <label class="theme">Theme
+    <select id="optTheme">
+      <option value="auto">Automatic</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="neon">Neon</option>
+      <option value="klear">Klear (accessibility)</option>
+    </select>
+  </label>
+  <p class="lang" aria-label="Language"><a href="../FR/index.html" lang="fr" hreflang="fr"><svg class="flag" viewBox="0 0 3 2" aria-hidden="true"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#FFFFFF"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>FR</a><a href="../EN/index.html" lang="en" aria-current="page"><svg class="flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="flag-uk"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#FFFFFF" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#flag-uk)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#FFFFFF" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>EN</a></p>
+  <p class="toc-title">Contents</p>
+  <ol class="toc">
+    <li><a href="#prerequisites">Prerequisites</a></li>
+    <li><a href="#create">A · Create the repository</a></li>
+    <li><a href="#invite">B · Invite</a></li>
+    <li><a href="#clone">C · Get it into CLion</a></li>
+    <li><a href="#check">D · Check</a></li>
+    <li><a href="#session">E · At every session</a></li>
+    <li><a href="#dont">Do not</a></li>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+  </ol>
+</nav>
+
+<div class="content">
+
+<header>
+  <div class="wrap">
+    <p class="kicker">TI301 – Algorithms and Data Structures 2 · Project “The Forest and the Light”</p>
+    <h1>Create your team's Git repository</h1>
+    <p>Your teacher has given you the link to the project's <strong>template repository</strong>:</p>
+    <div class="link-box">
+      <a href="https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627">https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627</a>
+      <button class="copy" type="button" data-copy="https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627">Copy</button>
+    </div>
+    <p>You will <strong>not</strong> work in this template repository: you will create a <strong>private copy</strong> of it, owned by your team (three students, or four depending on your group). Follow the steps in order.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="prerequisites">
+    <h2><span class="h">Prerequisites</span> <span class="who">every member, once</span></h2>
+    <ol class="steps">
+      <li data-p="P"><strong>Create a GitHub account</strong> if you don't have one: open <a href="https://github.com/signup">github.com/signup</a> and follow the instructions.</li>
+      <li data-p="P"><strong>Write down your GitHub username</strong> and give it to your teammates.</li>
+      <li data-p="P"><strong>Check that Git is installed</strong>: open a terminal and type <code class="nw">git --version</code>.
+        <ul>
+          <li>A version number is displayed → go to step P4.</li>
+          <li>Error message → install <em>Git for Windows</em> from <a href="https://git-scm.com/download/win">git-scm.com/download/win</a> (default options), then repeat step P3.</li>
+        </ul>
+      </li>
+      <li data-p="P"><strong>Set your Git identity</strong>, in the same terminal (use your own name):
+<pre><code>git config --global user.name "Firstname Lastname"
+git config --global user.email "lastname.firstname@efrei.net"</code></pre>
+      </li>
+      <li data-p="P"><strong>Connect CLion to your GitHub account</strong>:
+        <ol>
+          <li>open CLion;</li>
+          <li><span class="ui">File → Settings → Version Control → GitHub</span>;</li>
+          <li>click <span class="ui">+</span>, then <span class="ui">Log In via GitHub…</span>;</li>
+          <li>in the browser window that opens, click <span class="ui">Authorize</span>;</li>
+          <li>back in CLion, your account appears in the list → <span class="ui">OK</span>.</li>
+        </ol>
+      </li>
+    </ol>
+  </section>
+
+  <section id="create">
+    <h2><span class="h">A · Create the team repository</span> <span class="who one">one member only</span></h2>
+    <p class="lead">Choose <strong>one</strong> member of the team. The others wait for part C.</p>
+    <ol class="steps">
+      <li data-p="A"><strong>Follow the link you were given</strong> <a href="https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627">github.com/nicolas-flasque-efrei/TI301_PRJ_2627</a>, while signed in to GitHub.</li>
+      <li data-p="A"><strong>Create a new repository</strong>: green <span class="ui">Use this template</span> button (top right) → <span class="ui">Create a new repository</span>.</li>
+      <li data-p="A"><span class="ui">Owner</span>: select your account.</li>
+      <li data-p="A"><span class="ui">Repository name</span>: type <code>TI301_projet_&lt;group&gt;_&lt;name1&gt;_&lt;name2&gt;_&lt;name3&gt;</code>, followed by <code>_&lt;name4&gt;</code> if your team has 4 members (example: <code>TI301_projet_INT1_dupont_martin_durand</code>). Use the generator below:
+        <div class="gen" data-incomplet="choose your group and type at least 3 names">
+          <p class="gen-title">Repository name generator</p>
+          <div class="gen-champs">
+            <label>Group<select class="gen-groupe">
+              <option value="">— choose —</option>
+              <option value="INT1">INT1</option>
+              <option value="INT2">INT2</option>
+              <option value="INT3">INT3</option>
+            </select></label>
+            <label>Name 1<input type="text" class="gen-nom" autocomplete="off" spellcheck="false" placeholder="e.g. dupont"></label>
+            <label>Name 2<input type="text" class="gen-nom" autocomplete="off" spellcheck="false"></label>
+            <label>Name 3<input type="text" class="gen-nom" autocomplete="off" spellcheck="false"></label>
+            <label>Name 4 (optional)<input type="text" class="gen-nom" autocomplete="off" spellcheck="false"></label>
+          </div>
+          <p class="gen-res">Repository name to paste into <span class="ui">Repository name</span>:</p>
+          <p class="gen-out"><code class="gen-nomdepot"></code> <button class="copy" type="button" disabled>Copy</button></p>
+        </div>
+      </li>
+      <li data-p="A"><span class="ui">Visibility</span>: select <span class="ui">Private</span> (mandatory).</li>
+      <li data-p="A"><span class="ui">Include all branches</span>: leave unchecked.</li>
+      <li data-p="A">Click <span class="ui">Create repository</span>.</li>
+      <li data-p="A"><strong>Check</strong> on the page that opens:
+        <ul>
+          <li>the address starts with <code>https://github.com/&lt;your-account&gt;/</code>;</li>
+          <li>the label <span class="ui">Private</span> appears next to the repository name.</li>
+        </ul>
+      </li>
+    </ol>
+  </section>
+
+  <section id="invite">
+    <h2><span class="h">B · Invite your team and your teacher</span> <span class="who one">the same member</span></h2>
+    <ol class="steps">
+      <li data-p="B">On your repository page, click the <span class="ui">Settings</span> tab.</li>
+      <li data-p="B">Left menu: <span class="ui">Collaborators</span>.</li>
+      <li data-p="B">Click <span class="ui">Add people</span>.</li>
+      <li data-p="B">Type a teammate's GitHub username → select it → <span class="ui">Add … to this repository</span>.</li>
+      <li data-p="B">Repeat step B4 for each teammate.</li>
+      <li data-p="B">Repeat step B4 for your teacher: <code>nicolas-flasque-efrei</code>. Before confirming, check the avatar shown next to the name to make sure it is your teacher's account, and not an account with a similar name.</li>
+    </ol>
+  </section>
+
+  <section id="clone">
+    <h2><span class="h">C · Get the repository into CLion</span> <span class="who">every member</span></h2>
+    <ol class="steps">
+      <li data-p="C"><strong>Invited members only</strong>: accept the invitation, from the e-mail you received or from <a href="https://github.com/notifications">github.com/notifications</a> → <span class="ui">Accept invitation</span>.</li>
+      <li data-p="C">Open the <strong>team's</strong> repository page (not the template repository page).</li>
+      <li data-p="C">Click the green <span class="ui">Code</span> button → <span class="ui">HTTPS</span> tab → copy icon next to the address (it ends with <code>.git</code>).</li>
+      <li data-p="C">In CLion:
+        <ul>
+          <li>from the welcome screen: <span class="ui">Get from VCS</span>;</li>
+          <li>or, if a project is open: <span class="ui">File → New → Project from Version Control…</span></li>
+        </ul>
+      </li>
+      <li data-p="C"><span class="ui">URL</span>: paste the address copied in step C3.</li>
+      <li data-p="C"><span class="ui">Directory</span>: choose a folder <strong>outside OneDrive</strong> (example: <code>C:\TI301\projet</code>).</li>
+      <li data-p="C">Click <span class="ui">Clone</span>.</li>
+      <li data-p="C">If CLion asks: <span class="ui">Trust Project</span>.</li>
+      <li data-p="C">Wait until the CMake project has finished loading (progress bar at the bottom of the window).</li>
+    </ol>
+  </section>
+
+  <section id="check">
+    <h2><span class="h">D · Check that everything works</span> <span class="who">every member</span></h2>
+    <ol class="steps">
+      <li data-p="D">At the top right of CLion, open the list of run configurations: you should see <code>etape_1</code>, <code>etape_2</code>, <code>etape_4</code> and <code>foret</code>.</li>
+      <li data-p="D">Select <code>etape_1</code>.</li>
+      <li data-p="D">Click ▶ (<span class="ui">Run</span>).</li>
+      <li data-p="D">The program runs and reads the files in the <code>data/</code> folder: you are ready.
+        <ul>
+          <li>If it cannot find <code>data/…</code>: <span class="ui">Run → Edit Configurations…</span> → <span class="ui">Working directory</span> must be the project folder (see <a href="../../EN/#etape1">step 1 of the project</a>).</li>
+        </ul>
+      </li>
+    </ol>
+  </section>
+
+  <section id="session">
+    <h2><span class="h">E · At every work session</span> <span class="who">every member</span></h2>
+    <ol class="steps">
+      <li data-p="E"><strong>Before you start</strong>: <span class="ui">Git → Update Project</span> (<kbd>Ctrl</kbd>+<kbd>T</kbd>) to get your teammates' work.</li>
+      <li data-p="E"><strong>Work</strong>: avoid editing the same file as a teammate at the same time.</li>
+      <li data-p="E"><strong>As soon as a function compiles and passes its test</strong>: <span class="ui">Git → Commit</span> (<kbd>Ctrl</kbd>+<kbd>K</kbd>), tick the modified files, write a precise message (“growBud: drawing the directions”), then <span class="ui">Commit</span>.</li>
+      <li data-p="E"><strong>Before you leave</strong>: <span class="ui">Git → Push</span> (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd>) → <span class="ui">Push</span>.
+        <ul>
+          <li>If the push is <em>rejected</em>: repeat step E1, then step E4.</li>
+        </ul>
+      </li>
+    </ol>
+  </section>
+
+  <section id="dont">
+    <h2><span class="h">Do not</span></h2>
+    <ul class="dont">
+      <li><strong>Clone the template repository directly</strong>: you will never be able to push your work to it.</li>
+      <li><strong>Click Fork</strong>: a fork of a public repository is public, so your work would be visible to everyone.</li>
+      <li><strong>Create the repository as Public</strong> (if you did: <span class="ui">Settings → General → Danger Zone → Change visibility → Private</span>).</li>
+      <li><strong>Create one repository per member</strong>: the team shares <strong>a single</strong> repository.</li>
+      <li><strong>Download the ZIP</strong> of the template repository: you would not have a Git repository linked to GitHub.</li>
+    </ul>
+  </section>
+
+  <section id="troubleshooting">
+    <h2><span class="h">Troubleshooting</span></h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Symptom</th><th>What to do</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>No <span class="ui">Use this template</span> button</td><td>Sign in to GitHub, then repeat step A1.</td></tr>
+          <tr><td>The team repository shows <strong>404</strong></td><td>Accept the invitation (step C1).</td></tr>
+          <tr><td><code>Permission denied</code> or <code>403</code> on push</td><td><span class="ui">Git → Manage Remotes…</span>: the address must be the <strong>team's</strong> repository. Otherwise, clone again (part C).</td></tr>
+          <tr><td>CLion asks for a GitHub password</td><td>Repeat step P5.</td></tr>
+          <tr><td><code>Push rejected</code></td><td><span class="ui">Git → Update Project</span> (<kbd>Ctrl</kbd>+<kbd>T</kbd>), then push again.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>Later in the project, additional files may be provided; you will be told how to get them when the time comes.</p>
+  </footer>
+
+</main>
+
+</div>
+
+</div>
+
+</body>
+</html>

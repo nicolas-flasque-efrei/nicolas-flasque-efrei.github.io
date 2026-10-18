@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Créer le dépôt de l'équipe</title>
+<meta name="description" content="TI301 – Projet « La forêt et la lumière » : créer le dépôt Git de votre équipe à partir du dépôt modèle.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="alternate" hreflang="en" href="../EN/index.html">
+<link rel="stylesheet" href="../style.css?v=1">
+<script src="../script.js?v=1" defer></script>
+</head>
+<body>
+
+<div class="layout">
+
+<nav class="side" aria-label="Sommaire">
+  <label class="theme">Thème
+    <select id="optTheme">
+      <option value="auto">Automatique</option>
+      <option value="light">Clair</option>
+      <option value="dark">Sombre</option>
+      <option value="neon">Neon</option>
+      <option value="klear">Klear (accessibilité)</option>
+    </select>
+  </label>
+  <p class="lang" aria-label="Langue"><a href="../FR/index.html" lang="fr" aria-current="page"><svg class="flag" viewBox="0 0 3 2" aria-hidden="true"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#FFFFFF"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>FR</a><a href="../EN/index.html" lang="en" hreflang="en"><svg class="flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="flag-uk"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#FFFFFF" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#flag-uk)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#FFFFFF" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>EN</a></p>
+  <p class="toc-title">Sommaire</p>
+  <ol class="toc">
+    <li><a href="#prerequis">Prérequis</a></li>
+    <li><a href="#creer">A · Créer le dépôt</a></li>
+    <li><a href="#inviter">B · Inviter</a></li>
+    <li><a href="#cloner">C · Récupérer dans CLion</a></li>
+    <li><a href="#verifier">D · Vérifier</a></li>
+    <li><a href="#seance">E · À chaque séance</a></li>
+    <li><a href="#interdits">À ne pas faire</a></li>
+    <li><a href="#problemes">En cas de problème</a></li>
+  </ol>
+</nav>
+
+<div class="content">
+
+<header>
+  <div class="wrap">
+    <p class="kicker">TI301 – Algorithmique et Structures de données 2 · Projet « La forêt et la lumière »</p>
+    <h1>Créer le dépôt Git de votre équipe</h1>
+    <p>Votre enseignant vous a fourni le lien du <strong>dépôt modèle</strong> (<em>template</em>) du projet :</p>
+    <div class="link-box">
+      <a href="https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627">https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627</a>
+      <button class="copy" type="button" data-copy="https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627">Copier</button>
+    </div>
+    <p>Vous n'allez <strong>pas</strong> travailler dans ce dépôt modèle : vous allez en créer une <strong>copie privée</strong>, propre à votre équipe (trinôme, ou quadrinôme selon votre groupe). Suivez les étapes dans l'ordre.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="prerequis">
+    <h2><span class="h">Prérequis</span> <span class="who">chaque membre, une seule fois</span></h2>
+    <ol class="steps">
+      <li data-p="P"><strong>Créez un compte GitHub</strong> si vous n'en avez pas : ouvrez <a href="https://github.com/signup">github.com/signup</a> et suivez les instructions.</li>
+      <li data-p="P"><strong>Notez votre nom d'utilisateur GitHub</strong> et donnez-le à vos coéquipiers.</li>
+      <li data-p="P"><strong>Vérifiez que Git est installé</strong> : ouvrez un terminal et tapez <code class="nw">git --version</code>.
+        <ul>
+          <li>Un numéro de version s'affiche → passez à l'étape P4.</li>
+          <li>Message d'erreur → installez <em>Git for Windows</em> depuis <a href="https://git-scm.com/download/win">git-scm.com/download/win</a> (options par défaut), puis recommencez l'étape P3.</li>
+        </ul>
+      </li>
+      <li data-p="P"><strong>Configurez votre identité Git</strong>, dans le même terminal (remplacez par vos nom et prénom) :
+<pre><code>git config --global user.name "Prénom Nom"
+git config --global user.email "nom.prenom@efrei.net"</code></pre>
+      </li>
+      <li data-p="P"><strong>Reliez CLion à votre compte GitHub</strong> :
+        <ol>
+          <li>ouvrez CLion ;</li>
+          <li><span class="ui">File → Settings → Version Control → GitHub</span> ;</li>
+          <li>cliquez sur <span class="ui">+</span>, puis <span class="ui">Log In via GitHub…</span> ;</li>
+          <li>dans le navigateur qui s'ouvre, cliquez sur <span class="ui">Authorize</span> ;</li>
+          <li>revenez dans CLion : votre compte apparaît dans la liste → <span class="ui">OK</span>.</li>
+        </ol>
+      </li>
+    </ol>
+  </section>
+
+  <section id="creer">
+    <h2><span class="h">A · Créer le dépôt de l'équipe</span> <span class="who one">un seul membre</span></h2>
+    <p class="lead">Choisissez <strong>un</strong> membre de l'équipe. Les autres attendent la partie C.</p>
+    <ol class="steps">
+      <li data-p="A"><strong>Suivez le lien fourni</strong> <a href="https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627">github.com/nicolas-flasque-efrei/TI301_PRJ_2627</a>, en étant connecté à GitHub.</li>
+      <li data-p="A"><strong>Créez un nouveau dépôt</strong> : bouton vert <span class="ui">Use this template</span> (en haut à droite) → <span class="ui">Create a new repository</span>.</li>
+      <li data-p="A"><span class="ui">Owner</span> : sélectionnez votre compte.</li>
+      <li data-p="A"><span class="ui">Repository name</span> : tapez <code>TI301_projet_&lt;groupe&gt;_&lt;nom1&gt;_&lt;nom2&gt;_&lt;nom3&gt;</code>, suivi de <code>_&lt;nom4&gt;</code> si l'équipe compte 4 membres (exemple : <code>TI301_projet_SC4_dupont_martin_durand</code>). Utilisez le générateur ci-dessous :
+        <div class="gen" data-incomplet="choisissez le groupe et saisissez au moins 3 noms">
+          <p class="gen-title">Générateur du nom du dépôt</p>
+          <div class="gen-champs">
+            <label>Groupe<select class="gen-groupe">
+              <option value="">— choisir —</option>
+              <option value="SC1">SC1</option>
+              <option value="SC2">SC2</option>
+              <option value="SC3">SC3</option>
+              <option value="SC4">SC4</option>
+              <option value="SC5">SC5</option>
+              <option value="SC7_BN">SC7_BN</option>
+              <option value="PP">PP</option>
+              <option value="PMP">PMP</option>
+              <option value="BDX">BDX</option>
+            </select></label>
+            <label>Nom 1<input type="text" class="gen-nom" autocomplete="off" spellcheck="false" placeholder="ex. dupont"></label>
+            <label>Nom 2<input type="text" class="gen-nom" autocomplete="off" spellcheck="false"></label>
+            <label>Nom 3<input type="text" class="gen-nom" autocomplete="off" spellcheck="false"></label>
+            <label>Nom 4 (facultatif)<input type="text" class="gen-nom" autocomplete="off" spellcheck="false"></label>
+          </div>
+          <p class="gen-res">Nom du dépôt à copier dans <span class="ui">Repository name</span> :</p>
+          <p class="gen-out"><code class="gen-nomdepot"></code> <button class="copy" type="button" disabled>Copier</button></p>
+        </div>
+      </li>
+      <li data-p="A"><span class="ui">Visibility</span> : cochez <span class="ui">Private</span> (obligatoire).</li>
+      <li data-p="A"><span class="ui">Include all branches</span> : laissez décoché.</li>
+      <li data-p="A">Cliquez sur <span class="ui">Create repository</span>.</li>
+      <li data-p="A"><strong>Vérifiez</strong> sur la page qui s'affiche :
+        <ul>
+          <li>l'adresse commence par <code>https://github.com/&lt;votre-compte&gt;/</code> ;</li>
+          <li>la mention <span class="ui">Private</span> figure à côté du nom du dépôt.</li>
+        </ul>
+      </li>
+    </ol>
+  </section>
+
+  <section id="inviter">
+    <h2><span class="h">B · Inviter l'équipe et l'enseignant</span> <span class="who one">le même membre</span></h2>
+    <ol class="steps">
+      <li data-p="B">Sur la page de votre dépôt, cliquez sur l'onglet <span class="ui">Settings</span>.</li>
+      <li data-p="B">Menu de gauche : <span class="ui">Collaborators</span>.</li>
+      <li data-p="B">Cliquez sur <span class="ui">Add people</span>.</li>
+      <li data-p="B">Tapez le nom d'utilisateur GitHub d'un coéquipier → sélectionnez-le → <span class="ui">Add … to this repository</span>.</li>
+      <li data-p="B">Recommencez l'étape B4 pour chaque coéquipier.</li>
+      <li data-p="B">Recommencez l'étape B4 pour votre enseignant : <code>nicolas-flasque-efrei</code>. Avant de valider, vérifiez à l'avatar affiché à côté du nom que c'est bien le compte de votre enseignant, et non un compte au nom proche.</li>
+    </ol>
+  </section>
+
+  <section id="cloner">
+    <h2><span class="h">C · Récupérer le dépôt dans CLion</span> <span class="who">chaque membre</span></h2>
+    <ol class="steps">
+      <li data-p="C"><strong>Les invités seulement</strong> : acceptez l'invitation, depuis l'e-mail reçu ou depuis <a href="https://github.com/notifications">github.com/notifications</a> → <span class="ui">Accept invitation</span>.</li>
+      <li data-p="C">Ouvrez la page du dépôt <strong>de l'équipe</strong> (pas celle du dépôt modèle).</li>
+      <li data-p="C">Cliquez sur le bouton vert <span class="ui">Code</span> → onglet <span class="ui">HTTPS</span> → icône de copie de l'adresse (elle se termine par <code>.git</code>).</li>
+      <li data-p="C">Dans CLion :
+        <ul>
+          <li>écran d'accueil : <span class="ui">Get from VCS</span> ;</li>
+          <li>ou, si un projet est ouvert : <span class="ui">File → New → Project from Version Control…</span></li>
+        </ul>
+      </li>
+      <li data-p="C"><span class="ui">URL</span> : collez l'adresse copiée à l'étape C3.</li>
+      <li data-p="C"><span class="ui">Directory</span> : choisissez un dossier <strong>hors de OneDrive</strong> (exemple : <code>C:\TI301\projet</code>).</li>
+      <li data-p="C">Cliquez sur <span class="ui">Clone</span>.</li>
+      <li data-p="C">Si CLion le demande : <span class="ui">Trust Project</span>.</li>
+      <li data-p="C">Attendez la fin du chargement du projet CMake (barre de progression en bas de la fenêtre).</li>
+    </ol>
+  </section>
+
+  <section id="verifier">
+    <h2><span class="h">D · Vérifier que tout fonctionne</span> <span class="who">chaque membre</span></h2>
+    <ol class="steps">
+      <li data-p="D">En haut à droite de CLion, ouvrez la liste des configurations : vous devez voir <code>etape_1</code>, <code>etape_2</code>, <code>etape_4</code> et <code>foret</code>.</li>
+      <li data-p="D">Sélectionnez <code>etape_1</code>.</li>
+      <li data-p="D">Cliquez sur ▶ (<span class="ui">Run</span>).</li>
+      <li data-p="D">Le programme s'exécute et lit les fichiers du dossier <code>data/</code> : c'est prêt.
+        <ul>
+          <li>S'il ne trouve pas <code>data/…</code> : <span class="ui">Run → Edit Configurations…</span> → <span class="ui">Working directory</span> doit être le dossier du projet (voir <a href="../../FR/#etape1">l'étape 1 du sujet</a>).</li>
+        </ul>
+      </li>
+    </ol>
+  </section>
+
+  <section id="seance">
+    <h2><span class="h">E · À chaque séance de travail</span> <span class="who">chaque membre</span></h2>
+    <ol class="steps">
+      <li data-p="E"><strong>Avant de commencer</strong> : <span class="ui">Git → Update Project</span> (<kbd>Ctrl</kbd>+<kbd>T</kbd>) pour récupérer le travail des autres.</li>
+      <li data-p="E"><strong>Travaillez</strong> : évitez de modifier le même fichier en même temps qu'un coéquipier.</li>
+      <li data-p="E"><strong>Dès qu'une fonction compile et passe son test</strong> : <span class="ui">Git → Commit</span> (<kbd>Ctrl</kbd>+<kbd>K</kbd>), cochez les fichiers modifiés, écrivez un message précis (« growBud : tirage des directions »), puis <span class="ui">Commit</span>.</li>
+      <li data-p="E"><strong>Avant de partir</strong> : <span class="ui">Git → Push</span> (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd>) → <span class="ui">Push</span>.
+        <ul>
+          <li>Si le push est refusé (<em>rejected</em>) : refaites l'étape E1, puis l'étape E4.</li>
+        </ul>
+      </li>
+    </ol>
+  </section>
+
+  <section id="interdits">
+    <h2><span class="h">À ne pas faire</span></h2>
+    <ul class="dont">
+      <li><strong>Cloner directement le dépôt modèle</strong> : vous ne pourrez jamais y pousser votre travail.</li>
+      <li><strong>Cliquer sur Fork</strong> : un fork d'un dépôt public est public, votre travail serait visible de tous.</li>
+      <li><strong>Créer le dépôt en Public</strong> (si c'est fait : <span class="ui">Settings → General → Danger Zone → Change visibility → Private</span>).</li>
+      <li><strong>Créer un dépôt par membre</strong> : l'équipe partage <strong>un seul</strong> dépôt.</li>
+      <li><strong>Télécharger le ZIP</strong> du dépôt modèle : vous n'auriez pas de dépôt Git relié à GitHub.</li>
+    </ul>
+  </section>
+
+  <section id="problemes">
+    <h2><span class="h">En cas de problème</span></h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Symptôme</th><th>Que faire</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Pas de bouton <span class="ui">Use this template</span></td><td>Connectez-vous à GitHub, puis refaites l'étape A1.</td></tr>
+          <tr><td>Le dépôt de l'équipe affiche <strong>404</strong></td><td>Acceptez l'invitation (étape C1).</td></tr>
+          <tr><td><code>Permission denied</code> ou <code>403</code> au push</td><td><span class="ui">Git → Manage Remotes…</span> : l'adresse doit être celle du dépôt <strong>de l'équipe</strong>. Sinon, reclonez (partie C).</td></tr>
+          <tr><td>CLion demande un mot de passe GitHub</td><td>Refaites l'étape P5.</td></tr>
+          <tr><td><code>Push rejected</code></td><td><span class="ui">Git → Update Project</span> (<kbd>Ctrl</kbd>+<kbd>T</kbd>), puis poussez à nouveau.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>Pour la suite du projet, des fichiers supplémentaires pourront vous être fournis ; la façon de les récupérer vous sera indiquée le moment venu.</p>
+  </footer>
+
+</main>
+
+</div>
+
+</div>
+
+</body>
+</html>
