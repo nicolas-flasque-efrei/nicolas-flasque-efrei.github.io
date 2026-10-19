@@ -623,7 +623,7 @@ typedef struct s_rameau {
         <li>Appelez 1 000 000 de fois <code>howManyBranches(70, 25)</code> et comptez les résultats : vous devez obtenir des nombres proches (à environ 2 000 près) de 700 000 fois 1 ; 250 000 fois 2 et 50 000 fois 3. Avec <code>canGrow(95)</code>, un bourgeon donne donc 1 rameau dans \(0{,}95 \times 0{,}70 = 66{,}5\,\%\) des saisons.</li>
         <li>Deux simulations avec la <strong>même graine</strong> donnent exactement le même arbre ; deux graines différentes donnent (presque toujours) des arbres différents.</li>
         <li>Avec la graine 5 et \(S = 3\), vous devez obtenir le même arbre que celui du fichier fourni <code>arbre_petit.txt</code> : mêmes numéros, saisons, générations, états et fils (comparez-les avec <code>displayTree</code>). Seules les extrémités peuvent différer de quelques centièmes, car le fichier arrondit les directions et les longueurs à 2 chiffres après la virgule. De même, avec la graine 3 et \(S = 8\), vous devez retrouver <code>arbre_moyen.txt</code>, et avec la graine 4 et \(S = 30\), <code>arbre_grand.txt</code> (5 518 rameaux).</li>
-        <li>Dessinez les arbres obtenus avec <code>drawSvg</code>, et animez leur pousse avec <code>animateSvg</code>. Avec la graine 3, vous devez retrouver les animations fournies <code>animation_8_saisons.svg</code> (\(S = 8\)) et <code>animation_15_saisons.svg</code> (\(S = 15\)). Les 8 premières saisons des deux animations sont identiques : expliquez pourquoi dans votre rapport.</li>
+        <li>Dessinez les arbres obtenus avec <code>drawSvg</code>, et animez leur pousse avec <code>animateSvg</code>. Avec la graine 3, vous devez retrouver les animations fournies <code>animation_8_saisons.svg</code> (\(S = 8\)) et <code>animation_15_saisons.svg</code> (\(S = 15\)). Les 8 premières saisons des deux animations sont identiques : expliquez pourquoi.</li>
       </ul>
     </div>
   </article>
@@ -670,6 +670,7 @@ typedef struct s_rameau {
       <h4>Validation de l'étape 3</h4>
       <ul>
         <li>Avec la même graine et 8 saisons, <code>growTree</code> et 8 appels à <code>growTreeStep</code> donnent exactement le même arbre.</li>
+        <li>Utilisez <code>main_etape2.c</code> pour faire vos essais de validation. Pour cela, ajoutez la ligne <code>src/croissance_step.c include/croissance_step.h</code> à la cible <code>etape_2</code> de <code>CMakeLists.txt</code> (dans <code>add_executable(etape_2 …)</code>), puis rechargez le projet CMake : sinon, l'édition de liens échoue (<code>undefined reference to …</code>) sur les fonctions de <code>croissance_step.c</code>.</li>
       </ul>
     </div>
 

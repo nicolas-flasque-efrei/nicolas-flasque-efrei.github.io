@@ -646,7 +646,7 @@ typedef struct s_rameau {
         <li>Call <code>howManyBranches(70, 25)</code> 1,000,000 times and count the results: you should obtain numbers close (within about 2,000) to 700,000 times 1, 250,000 times 2 and 50,000 times 3. With <code>canGrow(95)</code>, a bud therefore produces 1 branch in \(0.95 \times 0.70 = 66.5\,\%\) of the seasons.</li>
         <li>Two simulations with the <strong>same seed</strong> give exactly the same tree; two different seeds give (almost always) different trees.</li>
         <li>With seed 5 and \(S = 3\), you must obtain the same tree as the one in the provided file <code>arbre_petit.txt</code>: same numbers, seasons, generations, states and children (compare them with <code>displayTree</code>). Only the tips may differ by a few hundredths, because the file rounds directions and lengths to 2 decimal places. Likewise, with seed 3 and \(S = 8\), you must obtain <code>arbre_moyen.txt</code>, and with seed 4 and \(S = 30\), <code>arbre_grand.txt</code> (5,518 branches).</li>
-        <li>Draw the trees obtained with <code>drawSvg</code>, and animate their growth with <code>animateSvg</code>. With seed 3, you must obtain the provided animations <code>animation_8_saisons.svg</code> (\(S = 8\)) and <code>animation_15_saisons.svg</code> (\(S = 15\)). The first 8 seasons of both animations are identical: explain why in your report.</li>
+        <li>Draw the trees obtained with <code>drawSvg</code>, and animate their growth with <code>animateSvg</code>. With seed 3, you must obtain the provided animations <code>animation_8_saisons.svg</code> (\(S = 8\)) and <code>animation_15_saisons.svg</code> (\(S = 15\)). The first 8 seasons of both animations are identical: explain why.</li>
       </ul>
     </div>
   </article>
@@ -693,6 +693,7 @@ typedef struct s_rameau {
       <h4>Step 3 validation</h4>
       <ul>
         <li>With the same seed and 8 seasons, <code>growTree</code> and 8 calls to <code>growTreeStep</code> give exactly the same tree.</li>
+        <li>Use <code>main_etape2.c</code> for your validation tests. To do so, add the line <code>src/croissance_step.c include/croissance_step.h</code> to the <code>etape_2</code> target in <code>CMakeLists.txt</code> (inside <code>add_executable(etape_2 …)</code>), then reload the CMake project: otherwise, linking fails (<code>undefined reference to …</code>) on the functions of <code>croissance_step.c</code>.</li>
       </ul>
     </div>
 
