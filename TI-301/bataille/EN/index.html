@@ -116,7 +116,7 @@ Player 2: 10H 7H 5C QC 2C 4H 6D</pre>
       <li>New fight: <code>7D</code> against <code>2C</code>. Player 1 wins.</li>
       <li>They collect the cards of P1 (<code>10D 9S 8D KH 7D</code>), then those of P2 (<code>10H 7H 5C QC 2C</code>).</li>
     </ol>
-    <div class="deal" data-j1="10D 9S 8D KH 7D 5H 6S" data-j2="10H 7H 5C QC 2C 4H 6D" data-rounds="1"></div>
+    <div class="deal" data-ex="manche"></div>
     <p>Situation after this single round:</p>
 <pre>Player 1: 5H 6S 10D 9S 8D KH 7D 10H 7H 5C QC 2C
 Player 2: 4H 6D</pre>
@@ -143,7 +143,7 @@ Player 2: 4H 6D</pre>
       <li>In case of a draw: the word <code>PAT</code>.</li>
     </ul>
 
-    <h3>Contraintes</h3>
+    <h3>Constraints</h3>
     <p><code>0 &lt; N, M &lt; 1000</code></p>
   </section>
 
@@ -167,7 +167,7 @@ JC</pre>
         <p class="why">Player 1 wins all three fights (A&gt;K, K&gt;Q, Q&gt;J): player 2 has no cards left after 3 rounds.</p>
       </div>
     </div>
-    <div class="deal" data-j1="AD KC QC" data-j2="KH QS JC"></div>
+    <div class="deal" data-ex="partie"></div>
   </section>
 
   <section class="block">
@@ -197,11 +197,9 @@ JC</pre>
 })();
 </script>
 <script>
-/* Animation des exemples : la partie est simulée une fois, chaque étape est un instantané (paquets, tapis, états des cartes),
+/* Animation des exemples : chaque étape est un instantané écrit en dur (paquets, tapis, états des cartes),
    et chaque carte glisse vers sa place d'une étape à l'autre. */
 (() => {
-const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-const rank = c => c.slice(0, -1), val = c => RANKS.indexOf(rank(c));
 const X0 = 92, STEP = 52, ROWS = { d1: 4, t1: 70, t2: 128, d2: 194 };
 const KINDS = {
   start: ['Start', 't-acc'], combat: ['Fight', 't-cmp'], tie: ['War', 't-bad'], pose: ['Lay down', 't-vio'],
@@ -211,58 +209,36 @@ const ICON = { start: 'M2 3h2v10H2zM9 3v10L4 8zM15 3v10l-5-5z', prev: 'M12 2v12L
   pause: 'M4 2.5h3v11H4zM9 2.5h3v11H9z', next: 'M4 2v12l8-6z', last: 'M14 3h-2v10h2zM7 3v10l5-5zM1 3v10l5-5z' };
 const cartes = n => `${n} card${n > 1 ? 's' : ''}`;
 
-/* Simule la partie (au plus maxRounds manches) et rend la liste des étapes */
-function simulate(d1, d2, maxRounds) {
-  const steps = [];
-  let t1 = [], t2 = [], cls = {}, round = 0;
-  const snap = (kind, msg) => steps.push({ d1: [...d1], d2: [...d2], t1: [...t1], t2: [...t2], cls: { ...cls }, kind, msg });
-  snap('start', 'Initial deal: the top card of each deck is on the left.');
-  while (d1.length && d2.length && round < maxRounds) {
-    round++;
-    cls = {};
-    let a = d1.shift(), b = d2.shift();
-    t1.push(a); t2.push(b); cls[a] = cls[b] = 'cmp';
-    snap('combat', `Round ${round}: each player turns over the top card of their deck, ${a} against ${b}.`);
-    while (val(a) === val(b)) {
-      cls[a] = cls[b] = 'bad';
-      snap('tie', `${a} and ${b} have the same value: it is war!`);
-      if (d1.length < 4 || d2.length < 4) {
-        snap('pat', `Player ${d1.length < 4 ? 1 : 2} does not have enough cards to lay down 3 cards and turn over one more: PAT.`);
-        return steps;
-      }
-      const p1 = d1.splice(0, 3), p2 = d2.splice(0, 3);
-      t1.push(...p1); t2.push(...p2);
-      [a, b, ...p1, ...p2].forEach(c => { cls[c] = 'ghost'; });
-      snap('pose', `Each player lays down 3 cards, which stay in play without being compared: ${p1.join(' ')} for P1, ${p2.join(' ')} for P2.`);
-      a = d1.shift(); b = d2.shift();
-      t1.push(a); t2.push(b); cls[a] = cls[b] = 'cmp';
-      snap('combat', `New fight: ${a} against ${b}.`);
-    }
-    const w = val(a) > val(b) ? 1 : 2, dw = w === 1 ? d1 : d2;
-    cls[w === 1 ? a : b] = 'new'; cls[w === 1 ? b : a] = 'bad';
-    snap('win', `${rank(a)} ${w === 1 ? '>' : '<'} ${rank(b)}: player ${w} wins the round and collects all the cards on the table.`);
-    const g1 = t1, g2 = t2;
-    dw.push(...g1); t1 = [];
-    g1.forEach(c => { cls[c] = 'new'; });
-    snap('gather', `They slide under their deck first the cards of player 1 (${g1.join(' ')}), in the order they were played…`);
-    dw.push(...g2); t2 = [];
-    g2.forEach(c => { cls[c] = 'new'; });
-    snap('gather', `… then those of player 2 (${g2.join(' ')}): this order does not depend on the winner.`);
-  }
-  cls = {};
-  if (!d1.length || !d2.length) {
-    const w = d1.length ? 1 : 2;
-    snap('end', `Player ${3 - w} has no cards left: player ${w} wins after ${round} round${round > 1 ? 's' : ''}. Output: ${w} ${round}`);
-  }
-  else {
-    snap('end', `End of the round: player 1 has ${cartes(d1.length)}, player 2 has ${cartes(d2.length)}.`);
-  }
-  return steps;
-}
+const STEPS = {
+manche: [
+  {"d1":["10D","9S","8D","KH","7D","5H","6S"],"d2":["10H","7H","5C","QC","2C","4H","6D"],"t1":[],"t2":[],"cls":{},"kind":"start","msg":"Initial deal: the top card of each deck is on the left."},
+  {"d1":["9S","8D","KH","7D","5H","6S"],"d2":["7H","5C","QC","2C","4H","6D"],"t1":["10D"],"t2":["10H"],"cls":{"10H":"cmp","10D":"cmp"},"kind":"combat","msg":"Round 1: each player turns over the top card of their deck, 10D against 10H."},
+  {"d1":["9S","8D","KH","7D","5H","6S"],"d2":["7H","5C","QC","2C","4H","6D"],"t1":["10D"],"t2":["10H"],"cls":{"10H":"bad","10D":"bad"},"kind":"tie","msg":"10D and 10H have the same value: it is war!"},
+  {"d1":["7D","5H","6S"],"d2":["2C","4H","6D"],"t1":["10D","9S","8D","KH"],"t2":["10H","7H","5C","QC"],"cls":{"10H":"ghost","10D":"ghost","9S":"ghost","8D":"ghost","KH":"ghost","7H":"ghost","5C":"ghost","QC":"ghost"},"kind":"pose","msg":"Each player lays down 3 cards, which stay in play without being compared: 9S 8D KH for P1, 7H 5C QC for P2."},
+  {"d1":["5H","6S"],"d2":["4H","6D"],"t1":["10D","9S","8D","KH","7D"],"t2":["10H","7H","5C","QC","2C"],"cls":{"10H":"ghost","10D":"ghost","9S":"ghost","8D":"ghost","KH":"ghost","7H":"ghost","5C":"ghost","QC":"ghost","2C":"cmp","7D":"cmp"},"kind":"combat","msg":"New fight: 7D against 2C."},
+  {"d1":["5H","6S"],"d2":["4H","6D"],"t1":["10D","9S","8D","KH","7D"],"t2":["10H","7H","5C","QC","2C"],"cls":{"10H":"ghost","10D":"ghost","9S":"ghost","8D":"ghost","KH":"ghost","7H":"ghost","5C":"ghost","QC":"ghost","2C":"bad","7D":"new"},"kind":"win","msg":"7 > 2: player 1 wins the round and collects all the cards on the table."},
+  {"d1":["5H","6S","10D","9S","8D","KH","7D"],"d2":["4H","6D"],"t1":[],"t2":["10H","7H","5C","QC","2C"],"cls":{"10H":"ghost","10D":"new","9S":"new","8D":"new","KH":"new","7H":"ghost","5C":"ghost","QC":"ghost","2C":"bad","7D":"new"},"kind":"gather","msg":"They slide under their deck first the cards of player 1 (10D 9S 8D KH 7D), in the order they were played…"},
+  {"d1":["5H","6S","10D","9S","8D","KH","7D","10H","7H","5C","QC","2C"],"d2":["4H","6D"],"t1":[],"t2":[],"cls":{"10H":"new","10D":"new","9S":"new","8D":"new","KH":"new","7H":"new","5C":"new","QC":"new","2C":"new","7D":"new"},"kind":"gather","msg":"… then those of player 2 (10H 7H 5C QC 2C): this order does not depend on the winner."},
+  {"d1":["5H","6S","10D","9S","8D","KH","7D","10H","7H","5C","QC","2C"],"d2":["4H","6D"],"t1":[],"t2":[],"cls":{},"kind":"end","msg":"End of the round: player 1 has 12 cards, player 2 has 2 cards."}],
+partie: [
+  {"d1":["AD","KC","QC"],"d2":["KH","QS","JC"],"t1":[],"t2":[],"cls":{},"kind":"start","msg":"Initial deal: the top card of each deck is on the left."},
+  {"d1":["KC","QC"],"d2":["QS","JC"],"t1":["AD"],"t2":["KH"],"cls":{"KH":"cmp","AD":"cmp"},"kind":"combat","msg":"Round 1: each player turns over the top card of their deck, AD against KH."},
+  {"d1":["KC","QC"],"d2":["QS","JC"],"t1":["AD"],"t2":["KH"],"cls":{"KH":"bad","AD":"new"},"kind":"win","msg":"A > K: player 1 wins the round and collects all the cards on the table."},
+  {"d1":["KC","QC","AD"],"d2":["QS","JC"],"t1":[],"t2":["KH"],"cls":{"KH":"bad","AD":"new"},"kind":"gather","msg":"They slide under their deck first the cards of player 1 (AD), in the order they were played…"},
+  {"d1":["KC","QC","AD","KH"],"d2":["QS","JC"],"t1":[],"t2":[],"cls":{"KH":"new","AD":"new"},"kind":"gather","msg":"… then those of player 2 (KH): this order does not depend on the winner."},
+  {"d1":["QC","AD","KH"],"d2":["JC"],"t1":["KC"],"t2":["QS"],"cls":{"QS":"cmp","KC":"cmp"},"kind":"combat","msg":"Round 2: each player turns over the top card of their deck, KC against QS."},
+  {"d1":["QC","AD","KH"],"d2":["JC"],"t1":["KC"],"t2":["QS"],"cls":{"QS":"bad","KC":"new"},"kind":"win","msg":"K > Q: player 1 wins the round and collects all the cards on the table."},
+  {"d1":["QC","AD","KH","KC"],"d2":["JC"],"t1":[],"t2":["QS"],"cls":{"QS":"bad","KC":"new"},"kind":"gather","msg":"They slide under their deck first the cards of player 1 (KC), in the order they were played…"},
+  {"d1":["QC","AD","KH","KC","QS"],"d2":["JC"],"t1":[],"t2":[],"cls":{"QS":"new","KC":"new"},"kind":"gather","msg":"… then those of player 2 (QS): this order does not depend on the winner."},
+  {"d1":["AD","KH","KC","QS"],"d2":[],"t1":["QC"],"t2":["JC"],"cls":{"JC":"cmp","QC":"cmp"},"kind":"combat","msg":"Round 3: each player turns over the top card of their deck, QC against JC."},
+  {"d1":["AD","KH","KC","QS"],"d2":[],"t1":["QC"],"t2":["JC"],"cls":{"JC":"bad","QC":"new"},"kind":"win","msg":"Q > J: player 1 wins the round and collects all the cards on the table."},
+  {"d1":["AD","KH","KC","QS","QC"],"d2":[],"t1":[],"t2":["JC"],"cls":{"JC":"bad","QC":"new"},"kind":"gather","msg":"They slide under their deck first the cards of player 1 (QC), in the order they were played…"},
+  {"d1":["AD","KH","KC","QS","QC","JC"],"d2":[],"t1":[],"t2":[],"cls":{"JC":"new","QC":"new"},"kind":"gather","msg":"… then those of player 2 (JC): this order does not depend on the winner."},
+  {"d1":["AD","KH","KC","QS","QC","JC"],"d2":[],"t1":[],"t2":[],"cls":{},"kind":"end","msg":"Player 2 has no cards left: player 1 wins after 3 rounds. Output: 1 3"}],
+};
 
 function deal(box) {
-  const j1 = box.dataset.j1.split(' '), j2 = box.dataset.j2.split(' ');
-  const steps = simulate([...j1], [...j2], +box.dataset.rounds || Infinity);
+  const steps = STEPS[box.dataset.ex], j1 = steps[0].d1, j2 = steps[0].d2;
   const btn = (go, label, extra = '') => `<button class="ib ${extra}" data-go="${go}" aria-label="${label}" title="${label}"><svg viewBox="0 0 16 16"><path d="${ICON[go]}"/></svg></button>`;
   const who = (k, txt) => `<span class="who" data-who="${k}" style="top:${ROWS[k] + 4}px">${txt}<small></small></span>`;
   box.innerHTML = `<div class="bar">${btn('start', 'Start')}${btn('prev', 'Previous step')}${btn('play', 'Play', 'play')}${btn('next', 'Next step')}${btn('last', 'End')}<span class="counter"></span></div>

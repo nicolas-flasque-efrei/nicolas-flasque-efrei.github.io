@@ -118,7 +118,7 @@ Joueur 2 : 10H 7H 5C QC 2C 4H 6D</pre>
       <li>Nouveau combat : <code>7D</code> contre <code>2C</code>. Le joueur 1 l'emporte.</li>
       <li>Il ramasse les cartes de J1 (<code>10D 9S 8D KH 7D</code>) puis celles de J2 (<code>10H 7H 5C QC 2C</code>).</li>
     </ol>
-    <div class="deal" data-j1="10D 9S 8D KH 7D 5H 6S" data-j2="10H 7H 5C QC 2C 4H 6D" data-rounds="1"></div>
+    <div class="deal" data-ex="manche"></div>
     <p>Situation après cette unique manche :</p>
 <pre>Joueur 1 : 5H 6S 10D 9S 8D KH 7D 10H 7H 5C QC 2C
 Joueur 2 : 4H 6D</pre>
@@ -169,7 +169,7 @@ JC</pre>
         <p class="why">Le joueur 1 remporte les trois combats (A&gt;K, K&gt;Q, Q&gt;J) : le joueur 2 n'a plus de cartes après 3 manches.</p>
       </div>
     </div>
-    <div class="deal" data-j1="AD KC QC" data-j2="KH QS JC"></div>
+    <div class="deal" data-ex="partie"></div>
   </section>
 
   <section class="block">
@@ -199,11 +199,9 @@ JC</pre>
 })();
 </script>
 <script>
-/* Animation des exemples : la partie est simulée une fois, chaque étape est un instantané (paquets, tapis, états des cartes),
+/* Animation des exemples : chaque étape est un instantané écrit en dur (paquets, tapis, états des cartes),
    et chaque carte glisse vers sa place d'une étape à l'autre. */
 (() => {
-const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-const rank = c => c.slice(0, -1), val = c => RANKS.indexOf(rank(c));
 const X0 = 92, STEP = 52, ROWS = { d1: 4, t1: 70, t2: 128, d2: 194 };
 const KINDS = {
   start: ['Départ', 't-acc'], combat: ['Combat', 't-cmp'], tie: ['Bataille', 't-bad'], pose: ['Pose', 't-vio'],
@@ -213,58 +211,36 @@ const ICON = { start: 'M2 3h2v10H2zM9 3v10L4 8zM15 3v10l-5-5z', prev: 'M12 2v12L
   pause: 'M4 2.5h3v11H4zM9 2.5h3v11H9z', next: 'M4 2v12l8-6z', last: 'M14 3h-2v10h2zM7 3v10l5-5zM1 3v10l5-5z' };
 const cartes = n => `${n} carte${n > 1 ? 's' : ''}`;
 
-/* Simule la partie (au plus maxRounds manches) et rend la liste des étapes */
-function simulate(d1, d2, maxRounds) {
-  const steps = [];
-  let t1 = [], t2 = [], cls = {}, round = 0;
-  const snap = (kind, msg) => steps.push({ d1: [...d1], d2: [...d2], t1: [...t1], t2: [...t2], cls: { ...cls }, kind, msg });
-  snap('start', 'Répartition de départ : la carte du dessus de chaque paquet est à gauche.');
-  while (d1.length && d2.length && round < maxRounds) {
-    round++;
-    cls = {};
-    let a = d1.shift(), b = d2.shift();
-    t1.push(a); t2.push(b); cls[a] = cls[b] = 'cmp';
-    snap('combat', `Manche ${round} : chaque joueur retourne la carte du dessus de son paquet, ${a} contre ${b}.`);
-    while (val(a) === val(b)) {
-      cls[a] = cls[b] = 'bad';
-      snap('tie', `${a} et ${b} ont la même valeur : c'est la bataille !`);
-      if (d1.length < 4 || d2.length < 4) {
-        snap('pat', `Le joueur ${d1.length < 4 ? 1 : 2} n'a plus assez de cartes pour poser 3 cartes et en retourner une : PAT.`);
-        return steps;
-      }
-      const p1 = d1.splice(0, 3), p2 = d2.splice(0, 3);
-      t1.push(...p1); t2.push(...p2);
-      [a, b, ...p1, ...p2].forEach(c => { cls[c] = 'ghost'; });
-      snap('pose', `Chacun pose 3 cartes, qui restent en jeu sans être comparées : ${p1.join(' ')} pour J1, ${p2.join(' ')} pour J2.`);
-      a = d1.shift(); b = d2.shift();
-      t1.push(a); t2.push(b); cls[a] = cls[b] = 'cmp';
-      snap('combat', `Nouveau combat : ${a} contre ${b}.`);
-    }
-    const w = val(a) > val(b) ? 1 : 2, dw = w === 1 ? d1 : d2;
-    cls[w === 1 ? a : b] = 'new'; cls[w === 1 ? b : a] = 'bad';
-    snap('win', `${rank(a)} ${w === 1 ? '>' : '<'} ${rank(b)} : le joueur ${w} remporte la manche et ramasse toutes les cartes du tapis.`);
-    const g1 = t1, g2 = t2;
-    dw.push(...g1); t1 = [];
-    g1.forEach(c => { cls[c] = 'new'; });
-    snap('gather', `Il glisse sous son paquet d'abord les cartes du joueur 1 (${g1.join(' ')}), dans l'ordre où elles ont été jouées…`);
-    dw.push(...g2); t2 = [];
-    g2.forEach(c => { cls[c] = 'new'; });
-    snap('gather', `… puis celles du joueur 2 (${g2.join(' ')}) : cet ordre ne dépend pas du gagnant.`);
-  }
-  cls = {};
-  if (!d1.length || !d2.length) {
-    const w = d1.length ? 1 : 2;
-    snap('end', `Le joueur ${3 - w} n'a plus de cartes : le joueur ${w} gagne après ${round} manche${round > 1 ? 's' : ''}. Sortie : ${w} ${round}`);
-  }
-  else {
-    snap('end', `Fin de la manche : le joueur 1 a ${cartes(d1.length)}, le joueur 2 en a ${d2.length}.`);
-  }
-  return steps;
-}
+const STEPS = {
+manche: [
+  {"d1":["10D","9S","8D","KH","7D","5H","6S"],"d2":["10H","7H","5C","QC","2C","4H","6D"],"t1":[],"t2":[],"cls":{},"kind":"start","msg":"Répartition de départ : la carte du dessus de chaque paquet est à gauche."},
+  {"d1":["9S","8D","KH","7D","5H","6S"],"d2":["7H","5C","QC","2C","4H","6D"],"t1":["10D"],"t2":["10H"],"cls":{"10H":"cmp","10D":"cmp"},"kind":"combat","msg":"Manche 1 : chaque joueur retourne la carte du dessus de son paquet, 10D contre 10H."},
+  {"d1":["9S","8D","KH","7D","5H","6S"],"d2":["7H","5C","QC","2C","4H","6D"],"t1":["10D"],"t2":["10H"],"cls":{"10H":"bad","10D":"bad"},"kind":"tie","msg":"10D et 10H ont la même valeur : c'est la bataille !"},
+  {"d1":["7D","5H","6S"],"d2":["2C","4H","6D"],"t1":["10D","9S","8D","KH"],"t2":["10H","7H","5C","QC"],"cls":{"10H":"ghost","10D":"ghost","9S":"ghost","8D":"ghost","KH":"ghost","7H":"ghost","5C":"ghost","QC":"ghost"},"kind":"pose","msg":"Chacun pose 3 cartes, qui restent en jeu sans être comparées : 9S 8D KH pour J1, 7H 5C QC pour J2."},
+  {"d1":["5H","6S"],"d2":["4H","6D"],"t1":["10D","9S","8D","KH","7D"],"t2":["10H","7H","5C","QC","2C"],"cls":{"10H":"ghost","10D":"ghost","9S":"ghost","8D":"ghost","KH":"ghost","7H":"ghost","5C":"ghost","QC":"ghost","2C":"cmp","7D":"cmp"},"kind":"combat","msg":"Nouveau combat : 7D contre 2C."},
+  {"d1":["5H","6S"],"d2":["4H","6D"],"t1":["10D","9S","8D","KH","7D"],"t2":["10H","7H","5C","QC","2C"],"cls":{"10H":"ghost","10D":"ghost","9S":"ghost","8D":"ghost","KH":"ghost","7H":"ghost","5C":"ghost","QC":"ghost","2C":"bad","7D":"new"},"kind":"win","msg":"7 > 2 : le joueur 1 remporte la manche et ramasse toutes les cartes du tapis."},
+  {"d1":["5H","6S","10D","9S","8D","KH","7D"],"d2":["4H","6D"],"t1":[],"t2":["10H","7H","5C","QC","2C"],"cls":{"10H":"ghost","10D":"new","9S":"new","8D":"new","KH":"new","7H":"ghost","5C":"ghost","QC":"ghost","2C":"bad","7D":"new"},"kind":"gather","msg":"Il glisse sous son paquet d'abord les cartes du joueur 1 (10D 9S 8D KH 7D), dans l'ordre où elles ont été jouées…"},
+  {"d1":["5H","6S","10D","9S","8D","KH","7D","10H","7H","5C","QC","2C"],"d2":["4H","6D"],"t1":[],"t2":[],"cls":{"10H":"new","10D":"new","9S":"new","8D":"new","KH":"new","7H":"new","5C":"new","QC":"new","2C":"new","7D":"new"},"kind":"gather","msg":"… puis celles du joueur 2 (10H 7H 5C QC 2C) : cet ordre ne dépend pas du gagnant."},
+  {"d1":["5H","6S","10D","9S","8D","KH","7D","10H","7H","5C","QC","2C"],"d2":["4H","6D"],"t1":[],"t2":[],"cls":{},"kind":"end","msg":"Fin de la manche : le joueur 1 a 12 cartes, le joueur 2 en a 2."}],
+partie: [
+  {"d1":["AD","KC","QC"],"d2":["KH","QS","JC"],"t1":[],"t2":[],"cls":{},"kind":"start","msg":"Répartition de départ : la carte du dessus de chaque paquet est à gauche."},
+  {"d1":["KC","QC"],"d2":["QS","JC"],"t1":["AD"],"t2":["KH"],"cls":{"KH":"cmp","AD":"cmp"},"kind":"combat","msg":"Manche 1 : chaque joueur retourne la carte du dessus de son paquet, AD contre KH."},
+  {"d1":["KC","QC"],"d2":["QS","JC"],"t1":["AD"],"t2":["KH"],"cls":{"KH":"bad","AD":"new"},"kind":"win","msg":"A > K : le joueur 1 remporte la manche et ramasse toutes les cartes du tapis."},
+  {"d1":["KC","QC","AD"],"d2":["QS","JC"],"t1":[],"t2":["KH"],"cls":{"KH":"bad","AD":"new"},"kind":"gather","msg":"Il glisse sous son paquet d'abord les cartes du joueur 1 (AD), dans l'ordre où elles ont été jouées…"},
+  {"d1":["KC","QC","AD","KH"],"d2":["QS","JC"],"t1":[],"t2":[],"cls":{"KH":"new","AD":"new"},"kind":"gather","msg":"… puis celles du joueur 2 (KH) : cet ordre ne dépend pas du gagnant."},
+  {"d1":["QC","AD","KH"],"d2":["JC"],"t1":["KC"],"t2":["QS"],"cls":{"QS":"cmp","KC":"cmp"},"kind":"combat","msg":"Manche 2 : chaque joueur retourne la carte du dessus de son paquet, KC contre QS."},
+  {"d1":["QC","AD","KH"],"d2":["JC"],"t1":["KC"],"t2":["QS"],"cls":{"QS":"bad","KC":"new"},"kind":"win","msg":"K > Q : le joueur 1 remporte la manche et ramasse toutes les cartes du tapis."},
+  {"d1":["QC","AD","KH","KC"],"d2":["JC"],"t1":[],"t2":["QS"],"cls":{"QS":"bad","KC":"new"},"kind":"gather","msg":"Il glisse sous son paquet d'abord les cartes du joueur 1 (KC), dans l'ordre où elles ont été jouées…"},
+  {"d1":["QC","AD","KH","KC","QS"],"d2":["JC"],"t1":[],"t2":[],"cls":{"QS":"new","KC":"new"},"kind":"gather","msg":"… puis celles du joueur 2 (QS) : cet ordre ne dépend pas du gagnant."},
+  {"d1":["AD","KH","KC","QS"],"d2":[],"t1":["QC"],"t2":["JC"],"cls":{"JC":"cmp","QC":"cmp"},"kind":"combat","msg":"Manche 3 : chaque joueur retourne la carte du dessus de son paquet, QC contre JC."},
+  {"d1":["AD","KH","KC","QS"],"d2":[],"t1":["QC"],"t2":["JC"],"cls":{"JC":"bad","QC":"new"},"kind":"win","msg":"Q > J : le joueur 1 remporte la manche et ramasse toutes les cartes du tapis."},
+  {"d1":["AD","KH","KC","QS","QC"],"d2":[],"t1":[],"t2":["JC"],"cls":{"JC":"bad","QC":"new"},"kind":"gather","msg":"Il glisse sous son paquet d'abord les cartes du joueur 1 (QC), dans l'ordre où elles ont été jouées…"},
+  {"d1":["AD","KH","KC","QS","QC","JC"],"d2":[],"t1":[],"t2":[],"cls":{"JC":"new","QC":"new"},"kind":"gather","msg":"… puis celles du joueur 2 (JC) : cet ordre ne dépend pas du gagnant."},
+  {"d1":["AD","KH","KC","QS","QC","JC"],"d2":[],"t1":[],"t2":[],"cls":{},"kind":"end","msg":"Le joueur 2 n'a plus de cartes : le joueur 1 gagne après 3 manches. Sortie : 1 3"}],
+};
 
 function deal(box) {
-  const j1 = box.dataset.j1.split(' '), j2 = box.dataset.j2.split(' ');
-  const steps = simulate([...j1], [...j2], +box.dataset.rounds || Infinity);
+  const steps = STEPS[box.dataset.ex], j1 = steps[0].d1, j2 = steps[0].d2;
   const btn = (go, label, extra = '') => `<button class="ib ${extra}" data-go="${go}" aria-label="${label}" title="${label}"><svg viewBox="0 0 16 16"><path d="${ICON[go]}"/></svg></button>`;
   const who = (k, txt) => `<span class="who" data-who="${k}" style="top:${ROWS[k] + 4}px">${txt}<small></small></span>`;
   box.innerHTML = `<div class="bar">${btn('start', 'Début')}${btn('prev', 'Étape précédente')}${btn('play', 'Lecture', 'play')}${btn('next', 'Étape suivante')}${btn('last', 'Fin')}<span class="counter"></span></div>
