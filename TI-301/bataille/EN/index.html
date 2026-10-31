@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>War</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../../Ateliers/commun/atelier.css">
+<script src="../../Ateliers/commun/atelier.js"></script>
+<style>
+/* Énoncé en anglais : mêmes couleurs, polices et thèmes que les ateliers, en une colonne de lecture */
+html,body{height:auto}
+.wrap{max-width:860px;margin:0 auto;padding:28px 16px 48px;display:flex;flex-direction:column;gap:16px}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:8px}
+.head h1{font-family:var(--f-display);font-size:34px;letter-spacing:-.02em;margin:0;display:flex;align-items:baseline;gap:14px}
+.head h1 .suits{font-size:20px;letter-spacing:6px;color:var(--bad)}
+.head p{margin:6px 0 0;color:var(--muted);max-width:62ch;line-height:1.5}
+.theme{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+.block{padding:18px 22px;gap:0;font-size:15px;line-height:1.6}
+.block h2{margin-bottom:10px}
+.block h3{font-family:var(--f-display);font-size:17px;margin:18px 0 4px}
+.block p{margin:6px 0}
+.block ul,.block ol{margin:6px 0;padding-left:22px}
+.block li{margin-bottom:4px}
+.block code{font-family:var(--f-mono);font-size:13.5px;background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:0 5px}
+.block pre{margin:8px 0;padding:10px 14px;background:var(--soft);border-radius:8px;font-family:var(--f-mono);font-size:13.5px;line-height:1.6;overflow-x:auto}
+.order{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.order span{min-width:38px;padding:5px 8px;text-align:center;font-family:var(--f-mono);font-weight:600;background:var(--node);border:1.5px solid var(--edge);border-radius:6px}
+.order span:last-child{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.callout{margin:12px 0 4px;padding:10px 14px;background:var(--cmp-soft);border-left:4px solid var(--cmp);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:6px 0}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.two .lbl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.two .why{color:var(--muted);font-size:13.5px}
+:root[data-theme="neon"] .block{border-color:transparent;box-shadow:0 1px 3px rgba(16,24,40,.08),0 1px 2px rgba(16,24,40,.04)}
+:root[data-theme="klear"] .block{font-size:17px}
+:root[data-theme="klear"] .order span{border-width:2px}
+.foot{color:var(--muted);font-size:13px;line-height:1.6;text-align:center}
+@media (max-width:560px){.two{grid-template-columns:1fr}.block{padding:16px}}
+/* Animation d'une partie : paquets en haut et en bas, tapis au milieu, lecteur comme dans les ateliers */
+.deal{margin:12px 0 8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.deal .bar{display:flex;align-items:center;gap:4px;padding:8px 12px;border-bottom:1px solid var(--line)}
+.deal .scroll{overflow-x:auto;background-color:var(--panel);background-image:radial-gradient(var(--dot) 1.1px,transparent 1.4px);background-size:22px 22px}
+.deal .board{position:relative;width:720px;height:242px;margin:12px 14px}
+.deal .zone{position:absolute;left:82px;right:0;top:60px;height:122px;background:var(--soft);border:1.5px dashed var(--line);border-radius:8px}
+.deal .who{position:absolute;left:0;width:78px;font-size:12px;font-weight:600;line-height:1.3;color:var(--muted)}
+.deal .who small{display:block;font-family:var(--f-mono);font-weight:400}
+.deal .c{position:absolute;left:0;top:0;width:46px;height:44px;display:grid;place-items:center;font-family:var(--f-mono);font-size:14px;font-weight:600;color:var(--ink);background:var(--node);border:2px solid var(--ink);border-radius:6px;transition:transform .55s cubic-bezier(.45,0,.25,1),background-color .3s,border-color .3s,color .3s}
+.deal .c.cmp{background:var(--cmp-soft);border-color:var(--cmp)}
+.deal .c.new{background:var(--new-soft);border-color:var(--new);color:var(--new)}
+.deal .c.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.deal .c.ghost{background:transparent;border-style:dashed;border-color:var(--edge);color:var(--muted)}
+.deal .still .c{transition:none}
+.deal .say{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-top:1px solid var(--line)}
+.deal .say .msg{font-size:14.5px;height:3em}
+:root[data-theme="neon"] .deal{border-color:transparent;box-shadow:0 1px 3px rgba(16,24,40,.08),0 1px 2px rgba(16,24,40,.04)}
+:root[data-theme="neon"] .deal .scroll{background-image:none}
+@media (prefers-reduced-motion:reduce){.deal .c{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div>
+      <h1>War <span class="suits" aria-hidden="true">♠♥♦♣</span></h1>
+      <p>Simulate a game of the most classic of card games.</p>
+      <p class="credit"><svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - IA Claude code</p>
+    </div>
+    <label class="theme" for="optTheme">Theme
+      <select id="optTheme"><option value="auto">Auto</option><option value="light">Light</option><option value="dark">Dark</option><option value="neon">Neon</option><option value="klear">Klear (accessibility)</option></select></label>
+  </header>
+
+  <section class="block">
+    <h2>Goal</h2>
+    <p>Everyone has played War as a child. Your mission: write a program that, given how the cards are initially dealt between two players, simulates the game to the end and announces who wins it.</p>
+  </section>
+
+  <section class="block">
+    <h2>Rules of the game</h2>
+    <p>Two players face each other. Each one starts with a deck of cards held face down; the card played is always the one on <strong>top</strong>, and the cards won are put at the <strong>bottom</strong>. A deck therefore behaves like a queue (first in, first out).</p>
+
+    <h3>1. The fight</h3>
+    <p>In each round, both players reveal the top card of their deck. The higher card wins: its owner collects the cards played and slides them under their deck.</p>
+    <p>Card values, from lowest to highest (suits do not matter):</p>
+    <div class="order">
+      <span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>J</span><span>Q</span><span>K</span><span>A</span>
+    </div>
+
+    <h3>2. War</h3>
+    <p>In case of a tie, it is <strong>war</strong>! Each player first lays down <strong>3 cards</strong> taken from the top of their deck (they stay in play but are not compared), then the game goes back to the fight step with the next card. A new tie starts a new war, and so on.</p>
+    <p>The player who finally wins collects <strong>all</strong> the cards played during the round.</p>
+
+    <h3>3. Collecting order</h3>
+    <p>The winner puts the cards back under their deck in a fixed order: first <strong>all the cards played by player 1</strong> (in the order they were played), then <strong>all those of player 2</strong>. It does not matter which of the two won the round.</p>
+
+    <h3>4. End of the game</h3>
+    <ul>
+      <li>A player wins as soon as their opponent has <strong>no cards left</strong>.</li>
+      <li>If, during a war, a player does not have enough cards to lay down their 3 cards or to turn over the next fight card, the game ends in a draw: <strong>PAT</strong>.</li>
+    </ul>
+    <div class="callout">The test cases are built so that the game always ends: there is no need to detect an infinite loop.</div>
+  </section>
+
+  <section class="block">
+    <h2>A round in detail</h2>
+    <p>Initial deal (top card on the left):</p>
+<pre>Player 1: 10D 9S 8D KH 7D 5H 6S
+Player 2: 10H 7H 5C QC 2C 4H 6D</pre>
+    <ol>
+      <li><code>10D</code> against <code>10H</code>: tie, war!</li>
+      <li>Each player lays down 3 cards: <code>9S 8D KH</code> for P1, <code>7H 5C QC</code> for P2.</li>
+      <li>New fight: <code>7D</code> against <code>2C</code>. Player 1 wins.</li>
+      <li>They collect the cards of P1 (<code>10D 9S 8D KH 7D</code>), then those of P2 (<code>10H 7H 5C QC 2C</code>).</li>
+    </ol>
+    <div class="deal" data-j1="10D 9S 8D KH 7D 5H 6S" data-j2="10H 7H 5C QC 2C 4H 6D" data-rounds="1"></div>
+    <p>Situation after this single round:</p>
+<pre>Player 1: 5H 6S 10D 9S 8D KH 7D 10H 7H 5C QC 2C
+Player 2: 4H 6D</pre>
+  </section>
+
+  <section class="block">
+    <h2>Data format</h2>
+
+    <h3>Writing a card</h3>
+    <p>A card is written as its value followed by its suit, among <code>D</code> (diamonds), <code>H</code> (hearts), <code>C</code> (clubs) and <code>S</code> (spades). Examples: <code>4H</code>, <code>8C</code>, <code>AS</code>, <code>10D</code>.</p>
+
+    <h3>Input (on standard input)</h3>
+    <table>
+      <tr><th>Line(s)</th><th>Content</th></tr>
+      <tr><td>1</td><td>An integer <code>N</code>: number of cards of player 1</td></tr>
+      <tr><td>N lines</td><td>The cards of player 1, from the top to the bottom of the deck</td></tr>
+      <tr><td>1</td><td>An integer <code>M</code>: number of cards of player 2</td></tr>
+      <tr><td>M lines</td><td>The cards of player 2, from the top to the bottom of the deck</td></tr>
+    </table>
+
+    <h3>Output (on standard output)</h3>
+    <ul>
+      <li>If a player wins: their number (<code>1</code> or <code>2</code>), a space, then the number of rounds played. A war, even chained with other wars, counts as <strong>one</strong> round only.</li>
+      <li>In case of a draw: the word <code>PAT</code>.</li>
+    </ul>
+
+    <h3>Contraintes</h3>
+    <p><code>0 &lt; N, M &lt; 1000</code></p>
+  </section>
+
+  <section class="block">
+    <h2>Input / output example</h2>
+    <div class="two">
+      <div>
+        <span class="lbl">Input</span>
+<pre>3
+AD
+KC
+QC
+3
+KH
+QS
+JC</pre>
+      </div>
+      <div>
+        <span class="lbl">Expected output</span>
+<pre>1 3</pre>
+        <p class="why">Player 1 wins all three fights (A&gt;K, K&gt;Q, Q&gt;J): player 2 has no cards left after 3 rounds.</p>
+      </div>
+    </div>
+    <div class="deal" data-j1="AD KC QC" data-j2="KH QS JC"></div>
+  </section>
+
+  <section class="block">
+    <h2>Cases to cover</h2>
+    <p>Your program will be evaluated on a variety of situations. Make sure to test:</p>
+    <ul>
+      <li>a very short game (3 cards each);</li>
+      <li>games with a full half-deck (26 cards each), short and long;</li>
+      <li>a game with one war;</li>
+      <li>two chained wars in the same round;</li>
+      <li>long games (several hundred rounds);</li>
+      <li>games ending in <strong>PAT</strong>, in two different ways.</li>
+    </ul>
+  </section>
+
+  <p class="foot">Problem statement adapted from the CodinGame puzzle “Winamax Battle”.</p>
+</div>
+<script>
+(() => {
+  const sel = document.getElementById('optTheme');
+  sel.value = document.documentElement.dataset.theme || 'auto';
+  sel.addEventListener('change', () => {
+    const t = sel.value;
+    if (t === 'auto') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
+    try { localStorage.setItem('ateliers-ti301-theme', t); } catch (e) {}
+  });
+})();
+</script>
+<script>
+/* Animation des exemples : la partie est simulée une fois, chaque étape est un instantané (paquets, tapis, états des cartes),
+   et chaque carte glisse vers sa place d'une étape à l'autre. */
+(() => {
+const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+const rank = c => c.slice(0, -1), val = c => RANKS.indexOf(rank(c));
+const X0 = 92, STEP = 52, ROWS = { d1: 4, t1: 70, t2: 128, d2: 194 };
+const KINDS = {
+  start: ['Start', 't-acc'], combat: ['Fight', 't-cmp'], tie: ['War', 't-bad'], pose: ['Lay down', 't-vio'],
+  win: ['Round won', 't-new'], gather: ['Collect', 't-acc'], end: ['End', 't-strong'], pat: ['PAT', 't-bad'],
+};
+const ICON = { start: 'M2 3h2v10H2zM9 3v10L4 8zM15 3v10l-5-5z', prev: 'M12 2v12L4 8z', play: 'M5 2.5v11L13.5 8z',
+  pause: 'M4 2.5h3v11H4zM9 2.5h3v11H9z', next: 'M4 2v12l8-6z', last: 'M14 3h-2v10h2zM7 3v10l5-5zM1 3v10l5-5z' };
+const cartes = n => `${n} card${n > 1 ? 's' : ''}`;
+
+/* Simule la partie (au plus maxRounds manches) et rend la liste des étapes */
+function simulate(d1, d2, maxRounds) {
+  const steps = [];
+  let t1 = [], t2 = [], cls = {}, round = 0;
+  const snap = (kind, msg) => steps.push({ d1: [...d1], d2: [...d2], t1: [...t1], t2: [...t2], cls: { ...cls }, kind, msg });
+  snap('start', 'Initial deal: the top card of each deck is on the left.');
+  while (d1.length && d2.length && round < maxRounds) {
+    round++;
+    cls = {};
+    let a = d1.shift(), b = d2.shift();
+    t1.push(a); t2.push(b); cls[a] = cls[b] = 'cmp';
+    snap('combat', `Round ${round}: each player turns over the top card of their deck, ${a} against ${b}.`);
+    while (val(a) === val(b)) {
+      cls[a] = cls[b] = 'bad';
+      snap('tie', `${a} and ${b} have the same value: it is war!`);
+      if (d1.length < 4 || d2.length < 4) {
+        snap('pat', `Player ${d1.length < 4 ? 1 : 2} does not have enough cards to lay down 3 cards and turn over one more: PAT.`);
+        return steps;
+      }
+      const p1 = d1.splice(0, 3), p2 = d2.splice(0, 3);
+      t1.push(...p1); t2.push(...p2);
+      [a, b, ...p1, ...p2].forEach(c => { cls[c] = 'ghost'; });
+      snap('pose', `Each player lays down 3 cards, which stay in play without being compared: ${p1.join(' ')} for P1, ${p2.join(' ')} for P2.`);
+      a = d1.shift(); b = d2.shift();
+      t1.push(a); t2.push(b); cls[a] = cls[b] = 'cmp';
+      snap('combat', `New fight: ${a} against ${b}.`);
+    }
+    const w = val(a) > val(b) ? 1 : 2, dw = w === 1 ? d1 : d2;
+    cls[w === 1 ? a : b] = 'new'; cls[w === 1 ? b : a] = 'bad';
+    snap('win', `${rank(a)} ${w === 1 ? '>' : '<'} ${rank(b)}: player ${w} wins the round and collects all the cards on the table.`);
+    const g1 = t1, g2 = t2;
+    dw.push(...g1); t1 = [];
+    g1.forEach(c => { cls[c] = 'new'; });
+    snap('gather', `They slide under their deck first the cards of player 1 (${g1.join(' ')}), in the order they were played…`);
+    dw.push(...g2); t2 = [];
+    g2.forEach(c => { cls[c] = 'new'; });
+    snap('gather', `… then those of player 2 (${g2.join(' ')}): this order does not depend on the winner.`);
+  }
+  cls = {};
+  if (!d1.length || !d2.length) {
+    const w = d1.length ? 1 : 2;
+    snap('end', `Player ${3 - w} has no cards left: player ${w} wins after ${round} round${round > 1 ? 's' : ''}. Output: ${w} ${round}`);
+  }
+  else {
+    snap('end', `End of the round: player 1 has ${cartes(d1.length)}, player 2 has ${cartes(d2.length)}.`);
+  }
+  return steps;
+}
+
+function deal(box) {
+  const j1 = box.dataset.j1.split(' '), j2 = box.dataset.j2.split(' ');
+  const steps = simulate([...j1], [...j2], +box.dataset.rounds || Infinity);
+  const btn = (go, label, extra = '') => `<button class="ib ${extra}" data-go="${go}" aria-label="${label}" title="${label}"><svg viewBox="0 0 16 16"><path d="${ICON[go]}"/></svg></button>`;
+  const who = (k, txt) => `<span class="who" data-who="${k}" style="top:${ROWS[k] + 4}px">${txt}<small></small></span>`;
+  box.innerHTML = `<div class="bar">${btn('start', 'Start')}${btn('prev', 'Previous step')}${btn('play', 'Play', 'play')}${btn('next', 'Next step')}${btn('last', 'End')}<span class="counter"></span></div>
+    <div class="scroll"><div class="board still"><div class="zone"></div>${who('d1', 'P1 deck')}${who('t1', 'P1 table')}${who('t2', 'P2 table')}${who('d2', 'P2 deck')}</div></div>
+    <div class="say"><span class="badge"></span><p class="msg" aria-live="polite"></p></div>`;
+  const board = box.querySelector('.board'), q = s => box.querySelector(s), cards = {};
+  [...j1, ...j2].forEach(c => { cards[c] = board.appendChild(Object.assign(document.createElement('div'), { className: 'c', textContent: c })); });
+  let cur = 0, timer = null;
+  const playIcon = q('[data-go="play"] path');
+
+  function render() {
+    const s = steps[cur];
+    for (const zone of ['d1', 't1', 't2', 'd2']) {
+      s[zone].forEach((c, k) => {
+        cards[c].style.transform = `translate(${X0 + k * STEP}px, ${ROWS[zone]}px)`;
+        cards[c].className = 'c ' + (s.cls[c] || '');
+      });
+      if (zone[0] === 'd') q(`[data-who="${zone}"] small`).textContent = cartes(s[zone].length);
+    }
+    const [label, tone] = KINDS[s.kind];
+    q('.badge').textContent = label;
+    q('.badge').className = 'badge ' + tone;
+    q('.msg').textContent = s.msg;
+    q('.counter').textContent = `step ${cur + 1} / ${steps.length}`;
+    q('[data-go="start"]').disabled = q('[data-go="prev"]').disabled = cur === 0;
+    q('[data-go="next"]').disabled = q('[data-go="last"]').disabled = cur === steps.length - 1;
+  }
+  function stop() {
+    clearInterval(timer);
+    timer = null;
+    playIcon.setAttribute('d', ICON.play);
+  }
+  function go(where) {
+    if (where === 'play') {
+      if (timer) { stop(); return; }
+      if (cur === steps.length - 1) cur = 0;
+      playIcon.setAttribute('d', ICON.pause);
+      timer = setInterval(() => { if (cur < steps.length - 1) { cur++; render(); } if (cur === steps.length - 1) stop(); }, 1700);
+      render();
+      return;
+    }
+    stop();
+    cur = { start: 0, prev: Math.max(0, cur - 1), next: Math.min(steps.length - 1, cur + 1), last: steps.length - 1 }[where];
+    render();
+  }
+  box.querySelector('.bar').addEventListener('click', e => { const b = e.target.closest('button'); if (b) go(b.dataset.go); });
+  render();
+  requestAnimationFrame(() => requestAnimationFrame(() => board.classList.remove('still')));
+}
+
+document.querySelectorAll('.deal').forEach(deal);
+})();
+</script>
+</body>
+</html>
