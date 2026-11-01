@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Forest and the Light – Part 2</title>
+<meta name="description" content="TI301 – SDD2 and Probability project: the forest and the light, part 2.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap">
+<!-- KaTeX: renders the formulas written between \( … \) (inline) or $$ … $$ (centred) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="alternate" hreflang="fr" href="../FR/">
+<!-- same style sheet and script as part 1 -->
+<link rel="stylesheet" href="../../EN/style.css?v=2">
+<script src="../../EN/script.js?v=2" defer></script>
+<!-- interactive forest of part 2 (shared with the French page: texts chosen from <html lang>) -->
+<link rel="stylesheet" href="../FR/foret.css?v=1">
+<script src="../FR/foret.js?v=2" defer></script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <p class="kicker">TI301 – Algorithms and Data Structures 2 · Computer Science and Mathematics Project</p>
+    <h1>The Forest and the Light <span class="part">Part 2</span></h1>
+    <p class="lede">This project is written jointly for the SDD2 and Probability modules.</p>
+    <p class="lede"><strong>Original idea, design, implementation: </strong>Nicolas FLASQUE<br><strong>Validation for the probability module:</strong> Federico ZALAMEA, Brice JUANICO<br><strong>Project website and animations:</strong> Nicolas FLASQUE and Claude Code Pro – Opus 5.5 model</p>
+  </div>
+</header>
+
+<div class="layout">
+
+<nav class="toc" aria-label="Contents">
+  <label class="theme">Theme
+    <select id="optTheme">
+      <option value="auto">Automatic</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="neon">Neon</option>
+      <option value="klear">Klear (accessibility)</option>
+    </select>
+  </label>
+  <p class="lang" aria-label="Language"><a href="../FR/" lang="fr" hreflang="fr"><svg class="flag" viewBox="0 0 3 2" aria-hidden="true"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#FFFFFF"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>FR</a><a href="../EN/" lang="en" aria-current="page"><svg class="flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="flag-uk"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#FFFFFF" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#flag-uk)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#FFFFFF" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>EN</a></p>
+  <p class="toc-title">Contents</p>
+  <ol>
+    <li><a href="#intro">Introduction</a></li>
+    <li><a href="#arbre-foret">1 A tree of the forest</a>
+      <ol>
+        <li><a href="#etape1">Measuring a tree</a></li>
+      </ol>
+    </li>
+    <li><a href="#pousse">2 Growing in the light</a>
+      <ol>
+        <li><a href="#etape2">The number of new branches</a></li>
+        <li><a href="#etape3">Growing with a given light</a></li>
+      </ol>
+    </li>
+    <li><a href="#la-foret">3 The forest</a>
+      <ol>
+        <li><a href="#etape4">Filling the occupancy grid</a></li>
+        <li><a href="#etape5">Computing the light</a></li>
+      </ol>
+    </li>
+    <li><a href="#foret">4 The growing forest</a>
+      <ol>
+        <li><a href="#etape6">Growing a forest</a></li>
+      </ol>
+    </li>
+    <li><a href="#hasard">5 Randomness in C</a></li>
+    <li><a href="../../EN/">Part 1</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ================================================================ INTRO -->
+<section id="intro">
+  <p>In part 1, a tree grew on its own, in full light. It is now time to grow <strong>several trees at the same time</strong>. And since trees shade one another, the growth of each tree depends on that of its neighbours: a bud in the shade grows less often, and its branches are shorter.</p>
+  <p class="warn">Part 2 uses the functions of part 1: <code>growBranch</code>, <code>canGrow</code>, <code>clampDirection</code>, the branch queue and the <code>t_arbre_step</code> structure. They must be finished and validated before you start. The files of part 1 are <strong>not modified</strong>: all the code of part 2 is written in new files.</p>
+
+  <h3 class="caption-title">Project organisation</h3>
+  <ol class="parts">
+    <li><b>Part 1</b> Grow a single tree at random, in full light, and save it to a file;</li>
+    <li class="is-current"><b>Part 2</b> Grow a whole forest, in which trees shade one another;</li>
+    <li><b>Part 3</b> Simulate thousands of forests, analyse and visualise the results.</li>
+  </ol>
+
+  <div class="callout">
+    <h4>New French names in the code</h4>
+    <p>As in part 1, the names of the types, fields and files stay in French. The new words of part 2:</p>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>French</th><th>English</th><th>French</th><th>English</th></tr></thead>
+        <tbody>
+          <tr><td><code>foret</code></td><td>forest</td><td><code>lumiere</code></td><td>light</td></tr>
+          <tr><td><code>arbre_foret</code></td><td>tree of the forest</td><td><code>croissance_lumiere</code></td><td>growth in the light</td></tr>
+          <tr><td><code>hauteur</code></td><td>height</td><td><code>cime</code></td><td>top</td></tr>
+          <tr><td><code>nb_bourgeons</code></td><td>number of buds</td><td><code>tronque</code></td><td>truncated</td></tr>
+          <tr><td><code>occupation</code></td><td>occupancy</td><td><code>arbres</code></td><td>trees</td></tr>
+          <tr><td><code>pourcentages</code></td><td>percentages</td><td><code>identique</code></td><td>identical</td></tr>
+          <tr><td><code>sauver_foret</code></td><td>save the forest</td><td><code>cumul</code></td><td>running total</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ ARBRE DE LA FORET -->
+<section id="arbre-foret">
+  <h2><span class="num">1</span>A tree of the forest</h2>
+  <p>To follow the growth of a forest, we need to know, at each season, the <strong>measurements</strong> of each of its trees:</p>
+  <ul>
+    <li>its <strong>number of branches</strong>;</li>
+    <li>its <strong>height</strong>: the highest generation of its branches (the trunk is of generation 0);</li>
+    <li>its <strong>top</strong>: the highest altitude of a tip of its branches;</li>
+    <li>its <strong>extent</strong>: the width it occupies, that is the gap \(x_{max} - x_{min}\) between the largest and the smallest position \(x\) of a tip of its branches;</li>
+    <li>its <strong>number of buds</strong>, that is of branches without children.</li>
+  </ul>
+  <p>We also record whether the tree is <strong>truncated</strong>: a tree that has become too big no longer grows (see <a href="#foret">The growing forest</a>).</p>
+  <p>These measurements are <strong>kept up to date</strong> with each new branch: we never traverse the whole tree to know them, because most of its branches are wood, which no longer changes.</p>
+
+  <article id="etape1" class="step">
+    <h3><span class="step-n">Step 1</span>Measuring a tree</h3>
+
+    <h4>Goal</h4>
+    <p>A tree of the forest is a <code>t_arbre_step</code> from part 1, to which we add its number in the forest and its measurements:</p>
+<pre class="code"><code>typedef struct s_arbre_foret {
+    t_arbre_step step;    // the tree, its queue of buds and its season (part 1, step 3)
+    int id;               // number of the tree in the forest
+    int hauteur;          // highest generation of its branches
+    float cime;           // highest altitude of the tips of its branches
+    float xmin, xmax;     // smallest and largest x positions of the tips of its branches
+    int nb_bourgeons;     // number of buds (the number of elements in the queue)
+    int tronque;          // 1 if the tree has reached P_max branches: it no longer grows
+} t_arbre_foret;</code></pre>
+    <p>The number of branches is already kept up to date by <code>growBranch</code>, in <code>step.arbre.nb_rameaux</code>. The extent of the tree is <code>xmax - xmin</code>.</p>
+    <p>The other measurements will be kept up to date in step 3. To check these up-to-date measurements, you first need to be able to compute them “the old way”, by traversing the whole tree: that is the purpose of this step.</p>
+
+    <div class="callout">
+      <h4>To do</h4>
+      <p>Write the structure and the prototypes in the file <code>arbre_foret.h</code>, and the definitions in <code>arbre_foret.c</code>: both files are provided empty. Test them from <code>src/main_p2_etape1.c</code> (CMake target <code>p2_etape_1</code>).</p>
+    </div>
+
+    <h4>The recursive measurements</h4>
+    <p>Each of these functions receives a branch and measures the subtree of which it is the root; called on the trunk, it measures the whole tree.</p>
+
+    <div class="todo">
+      <h4>Seven recursive functions</h4>
+      <ul>
+        <li><code>int countBranches(t_rameau *r)</code>: number of branches;</li>
+        <li><code>int computeHeight(t_rameau *r)</code>: highest generation;</li>
+        <li><code>float computeTop(t_rameau *r)</code>: highest altitude of a tip (the top);</li>
+        <li><code>float computeXMin(t_rameau *r)</code> and <code>float computeXMax(t_rameau *r)</code>: smallest and largest position \(x\) of a tip;</li>
+        <li><code>int countBuds(t_rameau *r)</code>: number of buds, that is of leaves;</li>
+        <li><code>void freeBranches(t_rameau *r)</code>: frees all the branches, including their arrays of children.</li>
+      </ul>
+      <p><strong>Hints</strong>: each one processes the branch <code>r</code>, then calls itself on its <code>r-&gt;nb_fils</code> children. For <code>freeBranches</code>, mind the order: you can no longer read <code>r-&gt;p_fils</code> once <code>r</code> has been freed.</p>
+    </div>
+
+    <div class="option">
+      <h4><span class="badge">Optional</span>For the most advanced students</h4>
+      <p>Replace <code>computeXMin</code> and <code>computeXMax</code> with a single recursive function, <code>void computeExtension(t_rameau *r, float *p_xmin, float *p_xmax)</code>, which stores in <code>*p_xmin</code> and <code>*p_xmax</code> the smallest and the largest position \(x\) of a tip of the subtree of <code>r</code>. It must give the same values as the two functions. Is this version faster? Is its complexity better?</p>
+      <p>Another question: apart from <code>freeBranches</code>, your teacher claims that a single recursive function can be written for all these computations. What do you think?</p>
+    </div>
+
+    <div class="callout">
+      <h4>Question to think about</h4>
+      <p>For the top, looking at the buds would be enough. For the extent, you must look at <strong>all</strong> the branches, buds and wood. Why? Compare how a child is placed with respect to its parent, in altitude and in position \(x\).</p>
+      <p>In the following tree, which follows the growth rules of part 1 (lengths 1), the tips of buds 3, 4 and 5 go from \(x = 0.516\) to \(x = 1.585\): an extent of 1.070. But the tip of the trunk, which has become wood, is at \(x = 0\): the extent of the tree is 1.585.</p>
+      <figure class="fig">
+        <img src="img/extension_exemple.svg" width="640" height="540" loading="lazy" alt="A tree of 6 branches: the vertical trunk has its children 1 and 2 on the right; branch 1 has its children 3 and 4 on the right; branch 2 has its child 5 on the right. Buds 3, 4 and 5 go from x = 0.516 to x = 1.585, but the tip of the trunk is at x = 0">
+        <figcaption>The trunk and its children all go to the right: the extent measured on the buds alone is too small</figcaption>
+      </figure>
+    </div>
+
+    <h4>Creating and freeing a tree of the forest</h4>
+    <div class="todo">
+      <h4><code>t_arbre_foret createForestTree(int id, float x, float y, int seed)</code></h4>
+      <p><strong>Role</strong>: creates tree number <code>id</code>, reduced to its trunk with tip \((x, y)\), with its measurements: height 0, top \(y\), \(x_{min} = x_{max} = x\), 1 bud, not truncated.</p>
+      <p><strong>Hints</strong>: 😉 <code>createTreeStep</code> already does almost everything.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void freeForestTree(t_arbre_foret *a)</code></h4>
+      <p><strong>Role</strong>: frees the cells of the queue of buds, then all the branches of the tree.</p>
+    </div>
+
+    <div class="check">
+      <h4>Step 1 validation</h4>
+      <ul>
+        <li>Read the trees of part 1 with <code>readTree</code>, and measure them with your recursive functions, called on their trunk. You must get:</li>
+      </ul>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>File</th><th>Branches</th><th>Height</th><th>Top</th><th>Extent</th><th>Buds</th></tr></thead>
+          <tbody>
+            <tr><td><code>exemple1.txt</code></td><td>10</td><td>4</td><td>4.893</td><td>1.638</td><td>5</td></tr>
+            <tr><td><code>arbre_petit.txt</code></td><td>10</td><td>3</td><td>4.135</td><td>2.675</td><td>4</td></tr>
+            <tr><td><code>arbre_moyen.txt</code></td><td>38</td><td>8</td><td>8.311</td><td>9.280</td><td>10</td></tr>
+            <tr><td><code>arbre_grand.txt</code></td><td>5,518</td><td>30</td><td>30.926</td><td>46.720</td><td>1,432</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>For <code>exemple1.txt</code>, the example tree of part 1, check these values by hand: its buds are branches 4, 5, 7, 8 and 9, its top is the tip of branch 8, and its extent goes from the tip of branch 7 to that of branch 4.</li>
+        <li>The number of branches counted by <code>countBranches</code> is equal to the <code>nb_rameaux</code> field of the tree read.</li>
+        <li>A tree created by <code>createForestTree(0, 0, 1, 1)</code> has exactly the measurements computed by your recursive functions: 1 branch, height 0, top 1, extent 0, 1 bud.</li>
+        <li>Free each tree read with <code>freeBranches</code>, and each tree created with <code>freeForestTree</code>.</li>
+      </ul>
+    </div>
+  </article>
+</section>
+
+<!-- ================================================================ POUSSE -->
+<section id="pousse">
+  <h2><span class="num">2</span>Growing in the light</h2>
+  <p>In the forest, each bud receives a light \(L\), between 0 (complete darkness) and 1 (full light), which depends on the branches located above it. The computation of this light comes with the forest (see <a href="#la-foret">The forest</a>); in this part, we assume it is known.</p>
+
+  <h3>The growth table</h3>
+  <p>At each season, each bud receives a light \(L\), and applies the following table:</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Light \(L\)</th><th>The bud grows…</th><th>Number of new branches, if it grows</th></tr></thead>
+      <tbody>
+        <tr><td>\(L \geq 0.7\)</td><td>in 95% of cases</td><td>1 (70%), 2 (25%), 3 (5%)</td></tr>
+        <tr><td>\(0.4 \leq L &lt; 0.7\)</td><td>in 70% of cases</td><td>1 (85%), 2 (15%)</td></tr>
+        <tr><td>\(0.15 \leq L &lt; 0.4\)</td><td>in 40% of cases</td><td>1</td></tr>
+        <tr><td>\(L &lt; 0.15\)</td><td>in 0% of cases: it stays dormant</td><td>–</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>How to read it: a bud in full light grows in 95% of cases; if it grows, it gives 1 new branch in 70% of cases, 2 in 25% of cases, 3 in 5% of cases. In full light, we therefore get exactly the growth of part 1. A bud that does not grow stays a bud and will try again at the next season. No branch dies: a bud deprived of light stays dormant.</p>
+
+  <article id="etape2" class="step">
+    <h3><span class="step-n">Step 2</span>The number of new branches</h3>
+
+    <h4>Goal</h4>
+    <p>Generalise the <code>howManyBranches</code> function of part 1: draw, according to the light a bud that grows receives, its number of new branches. Drawing from a table of any size, and drawing whether a bud grows according to the light, are provided.</p>
+
+    <p class="provided">Provided code</p>
+    <p>The following two functions are written in <code>croissance_lumiere.c</code>, and their prototypes in <code>croissance_lumiere.h</code>. Read them: you are going to use the first one, and the second one will be used in step 3.</p>
+
+    <h4><code>int drawFromTable(float pourcentages[], int n)</code></h4>
+    <p>Randomly draws the number of a slice, between 0 and <code>n - 1</code>, in a table of <code>n</code> percentages (in %, their sum is 100). For example, with the table <code>{70, 25, 5}</code>, it returns 0 in 70% of cases, 1 in 25% of cases and 2 in 5% of cases. It draws <strong>a single</strong> number \(u\), then goes through the slices while adding up the percentages (see “Drawing from a table” in the <a href="#hasard">Randomness in C</a> section); it compares \(u\) with <code>cumul / 100.0</code>, exactly like <code>howManyBranches</code>, to get the trees of part 1 back.</p>
+<pre class="code"><code>int drawFromTable(float pourcentages[], int n)
+{
+    int res = n - 1;        // none of the first n - 1 slices: it is the last one
+    int trouve = 0;
+    float cumul = 0;
+    double u = randomReal();    // a single draw
+
+    for (int i = 0; i &lt; n - 1 &amp;&amp; !trouve; i++)
+    {
+        cumul += pourcentages[i];
+        // comparison with cumul / 100.0, like howManyBranches: we get exactly the trees of part 1 back
+        if (u &lt; cumul / 100.0)
+        {
+            res = i;
+            trouve = 1;
+        }
+    }
+
+    return res;
+}</code></pre>
+
+    <h4><code>int canGrowInLight(double lumiere)</code></h4>
+    <p>Like <code>canGrow</code> of part 1, randomly draws whether a bud that receives the light <code>lumiere</code> grows, by applying the growth table. It returns 1 if the bud grows, 0 otherwise. A dormant bud (\(L &lt; 0.15\)) grows in 0% of cases, but the draw <code>canGrow(0)</code> is still made: each bud makes one draw at each season, whatever its light.</p>
+<pre class="code"><code>int canGrowInLight(double lumiere)
+{
+    int res;
+
+    if (lumiere &gt;= 0.7)
+    {
+        res = canGrow(95);
+    }
+    else if (lumiere &gt;= 0.4)
+    {
+        res = canGrow(70);
+    }
+    else if (lumiere &gt;= 0.15)
+    {
+        res = canGrow(40);
+    }
+    else
+    {
+        // dormancy: the bud grows in 0% of cases, but the draw is made, as for any other light
+        res = canGrow(0);
+    }
+
+    return res;
+}</code></pre>
+
+    <div class="callout">
+      <h4>To do</h4>
+      <p>Write the following function in the files <code>croissance_lumiere.h</code> (prototype) and <code>croissance_lumiere.c</code> (definition), after the provided code, and test it, together with the provided code, from <code>src/main_p2_etape2.c</code> (CMake target <code>p2_etape_2</code>).</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>int howManyBranchesInLight(double lumiere)</code></h4>
+      <p><strong>Role</strong>: like <code>howManyBranches</code> of part 1, randomly draws the number of new branches (1, 2 or 3) of a bud <strong>that grows</strong> and receives the light <code>lumiere</code>, by applying the growth table. It is only called if <code>canGrowInLight</code> returned 1: the light is then at least 0.15.</p>
+      <p><strong>Hints</strong>: a single draw, with <code>drawFromTable</code> and the table of the light (the table <code>{100}</code> is suitable for the last case).</p>
+    </div>
+
+    <div class="check">
+      <h4>Step 2 validation</h4>
+      <ul>
+        <li>Call each of the two functions 1,000,000 times for a few values of \(L\), and count the results. You must get numbers close (to within about 2,000) to those of the following tables.</li>
+      </ul>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Light</th><th><code>canGrowInLight</code> returns 1</th></tr></thead>
+          <tbody>
+            <tr><td>\(L = 1\)</td><td>950,000</td></tr>
+            <tr><td>\(L = 0.5\)</td><td>700,000</td></tr>
+            <tr><td>\(L = 0.2\)</td><td>400,000</td></tr>
+            <tr><td>\(L = 0.1\)</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Light</th><th>1 branch</th><th>2 branches</th><th>3 branches</th></tr></thead>
+          <tbody>
+            <tr><td>\(L = 1\)</td><td>700,000</td><td>250,000</td><td>50,000</td></tr>
+            <tr><td>\(L = 0.5\)</td><td>850,000</td><td>150,000</td><td>0</td></tr>
+            <tr><td>\(L = 0.2\)</td><td>1,000,000</td><td>0</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>No \(L = 0.1\) row for <code>howManyBranchesInLight</code>: a dormant bud never grows, so the function is never called for it.</li>
+        <li>With the same seed, you get exactly the same numbers.</li>
+        <li>For \(L = 1\), <code>canGrowInLight(1)</code> followed, if the bud grows, by <code>howManyBranchesInLight(1)</code> gives <strong>exactly</strong> the same results, in the same order, as <code>canGrow(95)</code> followed, if the bud grows, by <code>howManyBranches(70, 25)</code>. Check it on 1,000 buds, by initialising the generator twice with the same seed.</li>
+      </ul>
+    </div>
+  </article>
+
+  <h3>The length of the new branches</h3>
+  <p>When a bud grows, the rules of part 1 apply (directions, side, directions brought back between −80° and +80°), with a single difference: <strong>in the shade, branches are shorter</strong>. Each new branch has a length</p>
+  $$\ell = (0.5 + 0.5 \times L) \times u$$
+  <p>where \(u\) is drawn at random between 0.7 and 1.3. In full light (\(L = 1\)), we get the length of part 1 back.</p>
+
+  <article id="etape3" class="step">
+    <h3><span class="step-n">Step 3</span>Growing with a given light</h3>
+
+    <h4>Goal</h4>
+    <p>Grow a tree of the forest season by season, like <code>growTreeStep</code> of part 1, but by applying the growth table with a given light, the same for all its buds, and by keeping its measurements up to date with each new branch.</p>
+
+    <div class="callout">
+      <h4>To do</h4>
+      <p>Write the following functions in <code>arbre_foret.h</code> and <code>arbre_foret.c</code>, and test them from <code>src/main_p2_etape3.c</code> (CMake target <code>p2_etape_3</code>).</p>
+      <p>The <code>clampDirection</code> function is defined in <code>croissance.c</code>, without a prototype in <code>croissance.h</code>: to use it, write its prototype, <code>float clampDirection(float);</code>, at the beginning of <code>arbre_foret.c</code>.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void growBudInLight(t_arbre_foret *a, t_rameau *b, int n, double lumiere)</code></h4>
+      <p><strong>Role</strong>: like <code>growBud</code> of part 1, creates <code>n</code> new branches at the tip of the bud <code>b</code>, at season <code>a-&gt;step.saison</code>, but with the length \(\ell = (0.5 + 0.5 \times L) \times u\). It also keeps up to date the height, the top, \(x_{min}\), \(x_{max}\) and the number of buds of the tree.</p>
+      <p><strong>Hints</strong>:</p>
+      <ul>
+        <li>make the draws <strong>in the same order</strong> as <code>growBud</code>: direction (or side then angle), then \(u\) = <code>randomBetween(0.7, 1.3)</code>;</li>
+        <li>the bud <code>b</code> becomes wood and its <code>n</code> children are buds: how many buds has the tree gained?</li>
+      </ul>
+    </div>
+
+    <div class="todo">
+      <h4><code>void growSeason(t_arbre_foret *a, double lumiere)</code></h4>
+      <p><strong>Role</strong>: plays one season for the tree <code>a</code>, like <code>growTreeStep</code> of part 1, by giving the same light <code>lumiere</code> to all its buds.</p>
+      <p><strong>Hints</strong>: the loop is the one of <code>growTreeStep</code>; only the draws change. For each bud, <code>canGrowInLight(lumiere)</code> replaces <code>canGrow(95)</code>; if it grows, and only in that case, <code>howManyBranchesInLight(lumiere)</code> replaces <code>howManyBranches(70, 25)</code>, then <code>growBudInLight</code> replaces <code>growBud</code>.</p>
+    </div>
+
+    <div class="check">
+      <h4>Step 3 validation</h4>
+      <ul>
+        <li>In full light (\(L = 1\)), a tree created at \((0, 1)\) that grows with <code>growSeason</code> is <strong>exactly</strong> the tree of part 1: with seed 5 and 3 seasons, you get <code>arbre_petit.txt</code> back; with seed 3 and 8 seasons, <code>arbre_moyen.txt</code>; with seed 4 and 30 seasons, <code>arbre_grand.txt</code> (5,518 branches). The files round the directions and lengths to two decimal places: the top of the tree that has grown (4.130 for <code>arbre_petit.txt</code>) therefore differs slightly from that of the tree read in step 1 (4.135).</li>
+        <li>After each season, the up-to-date measurements (number of branches, height, top, number of buds) are exactly those computed by your recursive functions. Write an automatic test that checks it for 100 seeds, 20 seasons, with \(L = 1\) then \(L = 0.5\).</li>
+        <li>The height of the tree never exceeds the season number, and it increases by at most 1 at each season.</li>
+        <li>With seed 1 and 20 seasons, at \((0, 1)\): for \(L = 1\), you get 493 branches, a height of 20, a top at 19.869, an extent of 31.761 and 117 buds; for \(L = 0.5\), 62 branches, a height of 19, a top at 14.509, an extent of 8.358 and 10 buds.</li>
+      </ul>
+    </div>
+  </article>
+</section>
+
+<!-- ================================================================ LA FORET -->
+<section id="la-foret">
+  <h2><span class="num">3</span>The forest</h2>
+
+  <h3>What is a forest?</h3>
+  <p>The ground of the forest is divided into <strong>columns</strong> of width 1, numbered from 0: column \(c\) contains the positions \(x\) between \(c\) (included) and \(c + 1\) (excluded).</p>
+  <p>A forest is a line of \(K\) trees planted at regular intervals: one tree every \(E\) columns, where \(E\) is the <strong>spacing</strong>. The forest therefore has \(C = K \times E\) columns, numbered from 0 to \(C - 1\).</p>
+  <ul>
+    <li>Tree number \(i\) (from 0 to \(K - 1\)) is planted at \(x = i \times E + E / 2\). At season 0, it has only one vertical branch, its trunk, whose tip is at an altitude drawn at random between 0.5 and 1.5.</li>
+    <li>The forest <strong>wraps around</strong>: column \(C - 1\) is next to column 0, as in Pac-Man. A branch keeps its position \(x\), even if it goes outside the interval between 0 and \(C\): it is its <strong>column</strong> that wraps around. The column of a position \(x\) is its integer part, taken modulo \(C\).</li>
+  </ul>
+  <div class="callout">
+    <p><strong>Example.</strong> With \(K = 3\) trees and a spacing \(E = 4\), the forest has \(C = 12\) columns, numbered from 0 to 11. Trees 0, 1 and 2 are planted at \(x = 0 \times 4 + 2 = 2\), \(x = 6\) and \(x = 10\). A branch whose tip arrives at \(x = 12.3\) keeps this position, but it is counted in column 0; a branch whose tip arrives at \(x = -0.5\) is counted in column 11.</p>
+  </div>
+  <figure class="fig anim">
+    <img src="img/foret_exemple.svg" width="680" height="310" loading="lazy" alt="A forest of 3 trees and 12 columns at season 0: the trunks of trees 0, 1 and 2 at x = 2, 6 and 10, separated by a spacing E = 4; column 11 touches column 0">
+    <figcaption>The forest of the example at season 0 (\(K = 3\), \(E = 4\)): three trunks, with altitudes drawn at random</figcaption>
+  </figure>
+
+  <h3>The other parameters</h3>
+  <ul>
+    <li>\(A\), between 0 and 1: the share of light held back by each branch tip (see <a href="#ombrage">The shading principle</a>).</li>
+    <li>\(H_{max}\): like the ground in columns, the height is divided into <strong>rows</strong> of height 1, numbered from 0 from the ground: row \(r\) contains the altitudes \(y\) between \(r\) (included) and \(r + 1\) (excluded). \(H_{max}\) is the number of rows taken into account for the shade: a branch tip at altitude \(y \geq H_{max}\) is counted in the last row, row \(H_{max} - 1\). For example, in the forest of the example above (\(C = 12\)) with \(H_{max} = 160\), a branch whose tip is at \((x, y) = (6.4, 2.7)\) is counted in row 2 and column 6, that is in cell \((2, 6)\) of the grid (see <a href="#ombrage">The shading principle</a>).</li>
+  </ul>
+
+  <h3 id="ombrage">The shading principle</h3>
+  <p>To know how much light a bud receives, we do not go through all the branches of the forest: we divide the forest into a grid of cells, by crossing its \(C\) columns and its \(H_{max}\) rows, and we keep two grids of the same size up to date.</p>
+
+  <h3>The occupancy grid</h3>
+  <p>Cell \((r, c)\) is the part of column \(c\) located in row \(r\): it contains the points whose position \(x\) is between \(c\) and \(c + 1\), and whose altitude \(y\) is between \(r\) and \(r + 1\) (lower bounds included, upper bounds excluded).</p>
+  <p>The <strong>occupancy</strong> of a cell is the number of branches, of all the trees, buds or wood, whose <strong>tip</strong> is in this cell. A tip at altitude \(y \geq H_{max}\) counts in the last row.</p>
+  <p>For example, the tree <code>exemple1.txt</code> of part 1, alone in a forest of 10 columns and 8 rows, has its 10 branch tips in 7 cells, all in columns 3 to 5 and rows 1 to 4; all the other cells are empty:</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Row</th><th>Column 3</th><th>Column 4</th><th>Column 5</th></tr></thead>
+      <tbody>
+        <tr><td>4</td><td>0</td><td>1 (branch 8)</td><td>1 (branch 9)</td></tr>
+        <tr><td>3</td><td>0</td><td>1 (branch 6)</td><td>0</td></tr>
+        <tr><td>2</td><td>0</td><td>3 (branches 1, 3 and 5)</td><td>1 (branch 4)</td></tr>
+        <tr><td>1</td><td>2 (branches 2 and 7)</td><td>1 (branch 0)</td><td>0</td></tr>
+        <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <figure class="fig anim">
+    <img src="img/grille_exemple1.svg" width="720" height="606" loading="lazy" alt="The tree exemple1.txt in a grid of 10 columns and 8 rows: each branch tip, numbered, is marked with a dot, and each occupied cell shows its number of tips; branches 1, 3 and 5 are in cell (2, 4), branches 2 and 7 in cell (1, 3)">
+    <figcaption>The tree <code>exemple1.txt</code> in the occupancy grid: only the tip of each branch counts, not the whole branch</figcaption>
+  </figure>
+  <p>Beware of display rounding: branch 3 has its tip at altitude \(2 + \cos(5^\circ) \approx 2.996\), displayed as 3.00 with two decimal places: it is in row 2, and not in row 3. Likewise, branch 6 is in row 3.</p>
+
+  <h3>The size of the grids</h3>
+  <p>The two grids have the same size: \(H_{max}\) rows and \(C = K \times E\) columns, that is \(H_{max} \times C\) cells each. The occupancy grid contains integers, the light grid real numbers. In the typical simulation (\(H_{max} = 160\), \(C = 250\)), each grid has 160 rows and 250 columns, that is 40,000 cells.</p>
+
+  <article id="etape4" class="step">
+    <h3><span class="step-n">Step 4</span>Filling the occupancy grid</h3>
+
+    <h4>Goal</h4>
+    <p>A forest brings together several trees and the two grids they share:</p>
+<pre class="code"><code>typedef struct s_foret {
+    int K, E, C, HMAX;        // number of trees, spacing, columns (C = K x E), rows
+    double A;                 // share of light held back by a branch tip
+    int P_max;                // maximum number of branches of a tree
+    t_arbre_foret *arbres;    // dynamic array of the K trees
+    int **occupation;         // HMAX x C counters of branch tips
+    double **lumiere;         // HMAX x C lights
+    int saison;               // number of seasons already elapsed
+} t_foret;</code></pre>
+    <p>The arrays <code>occupation</code> and <code>lumiere</code> are grids of <code>HMAX</code> rows and <code>C</code> columns, dynamically allocated in <strong>two dimensions</strong>: an array of <code>HMAX</code> pointers, each one to a row of <code>C</code> cells. Cell \((r, c)\) is <code>occupation[r][c]</code>, or <code>lumiere[r][c]</code>.</p>
+    <p>This step creates the forest and fills its occupancy grid; the light grid will be computed in step 5.</p>
+
+    <p class="provided">Provided code</p>
+    <p>The following two functions are written in <code>foret.c</code>, and their prototypes in <code>foret.h</code>. They return the column and the row of the cell that contains the point with abscissa <code>x</code> or altitude <code>y</code>. The forest wraps around: the position <code>x</code> may be negative, or at least equal to <code>C</code>, and its column is its integer part modulo <code>C</code> (in C, <code>-1 % 12</code> is −1: hence the correction when the remainder is negative). An altitude of at least <code>HMAX</code> is in the last row.</p>
+<pre class="code"><code>int columnOf(t_foret *f, float x)
+{
+    // in C, -1 % 12 is -1: the remainder is brought back between 0 and C - 1
+    int c = (int) floorf(x) % f-&gt;C;
+
+    if (c &lt; 0)
+    {
+        c += f-&gt;C;
+    }
+
+    return c;
+}
+
+int rowOf(t_foret *f, float y)
+{
+    int r = (int) floorf(y);
+
+    if (r &gt;= f-&gt;HMAX)
+    {
+        r = f-&gt;HMAX - 1;
+    }
+    else if (r &lt; 0)
+    {
+        r = 0;      // does not happen (a child is always higher than its parent): mere precaution
+    }
+
+    return r;
+}</code></pre>
+
+    <div class="callout">
+      <h4>To do</h4>
+      <p>Write the structure <code>t_foret</code> at the beginning of the file <code>foret.h</code>, at the indicated place: as long as it is not written, the provided code does not compile. Then write the prototypes of the following functions in <code>foret.h</code>, and their definitions in <code>foret.c</code>, after the provided code. Test them from <code>src/main_p2_etape4.c</code> (CMake target <code>p2_etape_4</code>).</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>t_foret createForest(int K, int E, int HMAX, double A, int P_max)</code></h4>
+      <p><strong>Role</strong>: creates a forest of <code>K</code> trees, not yet planted: it allocates the array of trees and the two grids, and sets the occupancy counters to 0.</p>
+      <p><strong>Hints</strong>: for each grid, first allocate the array of the <code>HMAX</code> row pointers, then each row of <code>C</code> cells.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void addToGrid(t_foret *f, t_rameau *r)</code></h4>
+      <p><strong>Role</strong>: adds 1 to the occupancy counter of the cell where the tip of branch <code>r</code> is. It will be called for each new branch of the forest, at the time it is created.</p>
+      <p><strong>Hints</strong>: the cell of the tip \((x, y)\) of <code>r</code> is in row <code>rowOf(f, r-&gt;y)</code> and column <code>columnOf(f, r-&gt;x)</code>: <code>addToGrid</code> must call these two provided functions, and never compute the cell itself.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void addTreeToGrid(t_foret *f, t_rameau *r)</code></h4>
+      <p><strong>Role</strong>: adds to the grid the tip of <code>r</code> and of all the branches of its subtree. It is used for a tree that has already been built, for example read from a file.</p>
+      <p><strong>Hints</strong>: a recursive function, modelled on <code>countBranches</code>, that calls <code>addToGrid</code>.</p>
+    </div>
+
+    <div class="check">
+      <h4>Step 4 validation</h4>
+      <ul>
+        <li>In the forest of the example (\(K = 3\), \(E = 4\), hence 12 columns, and \(H_{max} = 160\)): <code>columnOf(&amp;f, 6.4)</code> is 6, <code>columnOf(&amp;f, 11.99)</code> is 11, <code>columnOf(&amp;f, 12.3)</code> is 0, <code>columnOf(&amp;f, -0.5)</code> is 11, <code>rowOf(&amp;f, 2.7)</code> is 2 and <code>rowOf(&amp;f, 163.2)</code> is 159.</li>
+        <li>Create a forest of 1 tree, with 10 columns (\(E = 10\)) and 8 rows, with \(A = 0.5\), and store in its tree 0 the tree read from <code>exemple1.txt</code>: <code>f.arbres[0].step.arbre = readTree("data/exemple1.txt");</code>, then add its branches to the grid with <code>addTreeToGrid</code>. You must get the occupancy of the table above; the sum of all the counters is 10, the number of branches of the tree.</li>
+        <li>Build two or three other cases by hand, including a branch at an altitude greater than <code>HMAX</code> (it is counted in the last row).</li>
+      </ul>
+    </div>
+  </article>
+
+  <h3>The light grid</h3>
+  <p>Light comes from the sky. Each branch tip it goes through holds back a share \(A\) of it (a parameter of the forest, for example \(A = 0.25\)). In a cell, the light received is therefore:</p>
+  $$L = (1 - A)^n$$
+  <p>where \(n\) is the number of branches (of all the trees, buds or wood) whose tip is in the <strong>same column</strong> and in a <strong>strictly higher</strong> row. A cell with no branch above it receives a light of 1.</p>
+  <div class="callout">
+    <p><strong>Example.</strong> A column contains three branch tips: two in row 5 and one in row 9. With \(A = 0.5\), the light is 1 in rows 9 and above, \(0.5\) in rows 5 to 8, and \(0.5 \times 0.5 \times 0.5 = 0.125\) in rows 0 to 4.</p>
+  </div>
+
+  <h3>Examples</h3>
+  <p>Here is the light of the cells of the forest of the tree <code>exemple1.txt</code>, with \(A = 0.5\). Columns 0 to 2 and 6 to 9, and rows 5 to 7, receive a light of 1. A tree shades itself: its bud 5 now receives only 0.25 of light.</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Row</th><th>Column 3</th><th>Column 4</th><th>Column 5</th></tr></thead>
+      <tbody>
+        <tr><td>4</td><td>1</td><td>1 (branch 8)</td><td>1 (branch 9)</td></tr>
+        <tr><td>3</td><td>1</td><td>0.5 (branch 6)</td><td>0.5</td></tr>
+        <tr><td>2</td><td>1</td><td>0.25 (branches 1, 3 and 5)</td><td>0.5 (branch 4)</td></tr>
+        <tr><td>1</td><td>1 (branches 2 and 7)</td><td>0.03125 (branch 0)</td><td>0.25</td></tr>
+        <tr><td>0</td><td>0.25</td><td>0.015625</td><td>0.25</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Here is the growth of a single tree, season by season, with \(A = 0.5\). On the left, the <strong>occupancy</strong> of the grid: the number of branch tips of each cell, written in its corner; the tips of the buds are green dots, those of the wood small black dots. On the right, the <strong>light</strong> of each cell, computed from this occupancy: it is the light its buds will receive at the next season. The colour of a cell shows the row of the growth table (see <a href="#pousse">Growing in the light</a>) that will apply to its buds. The tree shades itself: its lower branches end up in the dark, only those at the top still grow.</p>
+  <figure class="fig anim">
+    <img src="img/grille_un_arbre.svg" width="898" height="512" loading="lazy" alt="Animation of the growth of a single tree over 8 seasons, with the occupancy grid on the left and the light of each cell on the right">
+    <figcaption>A single tree: occupancy and light (seed 3, 8 seasons, \(A = 0.5\), one season = 1.2 seconds) <button type="button" class="replay">Replay</button></figcaption>
+  </figure>
+
+  <article id="etape5" class="step">
+    <h3><span class="step-n">Step 5</span>Computing the light</h3>
+
+    <h4>Goal</h4>
+    <p>Compute the light grid from the occupancy grid, then read the light that a bud receives.</p>
+
+    <div class="callout">
+      <h4>To do</h4>
+      <p>Write the following functions in <code>foret.h</code> and <code>foret.c</code>, and test them from <code>src/main_p2_etape5.c</code> (CMake target <code>p2_etape_5</code>).</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void computeLight(t_foret *f)</code></h4>
+      <p><strong>Role</strong>: computes the light of all the cells of the grid, from the occupancy, already up to date.</p>
+      <p><strong>Hints</strong>: compute the light <strong>column by column, from top to bottom</strong>, in a single pass per column: going down, keep the light \((1 - A)^n\) up to date, by multiplying it by \((1 - A)\) for each tip encountered. Beware: the tips of a cell shade the rows <strong>below</strong>, not their own cell.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>double getLight(t_foret *f, t_rameau *r)</code></h4>
+      <p><strong>Role</strong>: returns the light of the cell where the tip of branch <code>r</code> is.</p>
+    </div>
+
+    <div class="check">
+      <h4>Step 5 validation</h4>
+      <ul>
+        <li>Build by hand the column of the example (three tips, \(A = 0.5\)): you must get 1, 0.5 and 0.125.</li>
+        <li>Take the forest of the tree <code>exemple1.txt</code> from step 4 again. After <code>computeLight</code>, you must get the values of the light table above; in particular, buds 4, 5, 7, 8 and 9 receive a light of 0.5, 0.25, 1, 1 and 1.</li>
+      </ul>
+    </div>
+  </article>
+</section>
+
+<!-- ================================================================ FORET -->
+<section id="foret">
+  <h2><span class="num">4</span>The growing forest</h2>
+
+  <h3>How a season unfolds</h3>
+  <p>A season unfolds in <strong>two stages</strong>:</p>
+  <ol>
+    <li><strong>Light up</strong>: compute the light of each cell, from the number of branch tips of each cell;</li>
+    <li><strong>Grow</strong>: play all the buds of all the trees, from tree 0 to tree \(K - 1\), with the lights computed in stage 1.</li>
+  </ol>
+  <p>The number of tips of each cell, the <strong>occupancy</strong> of the grid, is kept up to date: each new branch is added at the time it is created, without ever counting all the branches of the forest again. Since the light is computed in stage 1, a branch created during a season is taken into account, for the light, only from the next season. A simulation lasts \(S\) seasons (for example \(S = 120\)).</p>
+  <p>A tree must not grow without limit: a tree that has at least \(P_{max}\) branches at the end of a season (for example \(P_{max} = 20{,}000\)) is marked <strong>truncated</strong>, and it no longer grows.</p>
+  <p>The <strong>seed</strong> of the generator fixes all the draws: with the same seed and the same parameters, you get exactly the same forest.</p>
+  <div class="callout">
+    <p><strong>Example.</strong> The parameters of a typical simulation:</p>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Parameter</th><th>Role</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>\(K\)</td><td>number of trees</td><td>50</td></tr>
+          <tr><td>\(E\)</td><td>spacing between two trees</td><td>5</td></tr>
+          <tr><td>\(C = K \times E\)</td><td>number of columns</td><td>250</td></tr>
+          <tr><td>\(A\)</td><td>share of light held back by a tip</td><td>0.25</td></tr>
+          <tr><td>\(H_{max}\)</td><td>number of rows</td><td>160</td></tr>
+          <tr><td>\(P_{max}\)</td><td>maximum number of branches of a tree</td><td>20,000</td></tr>
+          <tr><td>\(S\)</td><td>number of seasons</td><td>120</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p>Here is now a small forest. Choose the number of trees \(K\), the spacing \(E\) between two trunks (the grid therefore has \(C = K \times E\) columns), the share of light \(A\) held back by a tip, the number of seasons \(S\) and the seed, then start the simulation. With the same seed and the same settings, you always get the same forest; the “Random seed” button draws another one. The branches that leave the grid on the right reappear on the left: the forest wraps around.</p>
+  <p>With the initial settings (\(K = 3\), \(E = 3\), \(A = 0.25\), \(S = 10\), seed 6), the trees are planted at \(x = 1.5\), \(x = 4.5\) and \(x = 7.5\). Tree 2 falls behind and stays in the shade of its neighbours: 16 branches, against 39 and 53 for the other two. Bring the trees closer (\(E = 1\)) and make them opaque (\(A = 1\)): the forest now has only 26 branches, against 108. Tick “Trunks at the same altitude”: the trees then start on an equal footing, and the differences between them come only from the growth draws.</p>
+  <p>Below the figure, pause the animation and step forward season by season; hover over a cell (or tap it) to see how its light is computed. The table gives the measurements of each tree at the end of the simulation.</p>
+  <figure class="fig sim" id="foret-interactive">
+    <div class="sim-ctrl" hidden>
+      <label for="simK">Trees \(K\) <input type="range" id="simK" name="K" min="2" max="5" step="1" value="3"> <output for="simK">3</output></label>
+      <label for="simE">Spacing \(E\) <input type="range" id="simE" name="E" min="1" max="3" step="1" value="3"> <output for="simE">3</output></label>
+      <label for="simA">Light held back \(A\) <input type="range" id="simA" name="A" min="15" max="100" step="5" value="25"> <output for="simA">0.25</output></label>
+      <label for="simS">Seasons \(S\) <input type="range" id="simS" name="S" min="5" max="20" step="1" value="10"> <output for="simS">10</output></label>
+      <label for="simG">Seed <input type="number" id="simG" name="graine" min="0" max="2147483647" step="1" value="6"></label>
+      <button type="button" class="sim-hasard">Random seed</button>
+      <label for="simI"><input type="checkbox" id="simI" name="identique"> Trunks at the same altitude</label>
+      <button type="button" class="sim-go">Start the simulation</button>
+    </div>
+    <div class="sim-avance" hidden>
+      <div class="sim-prog"><span></span></div>
+      <p class="sim-etat">Set the sliders, then start the simulation.</p>
+    </div>
+    <img src="img/grille_foret.svg" width="818" height="612" loading="lazy" alt="Animation of the growth of a forest of 3 trees over 10 seasons (E = 3, A = 0.25), with the occupancy grid on the left and the light of each cell on the right">
+    <div class="sim-vue" hidden>
+      <div class="sim-bulle" hidden></div>
+    </div>
+    <div class="sim-lecteur" hidden>
+      <button type="button" data-act="rejouer">⏮ Replay</button>
+      <button type="button" data-act="avant">◀ Previous season</button>
+      <button type="button" data-act="lecture">⏸ Pause</button>
+      <button type="button" data-act="apres">Next season ▶</button>
+      <label for="simV">Speed
+        <select id="simV">
+          <option value="2.4">slow</option>
+          <option value="1.2" selected>normal</option>
+          <option value="0.6">fast</option>
+        </select>
+      </label>
+      <span class="sim-saison" aria-live="polite"></span>
+    </div>
+    <figcaption><span class="sim-leg">A forest of 3 trees, E = 3, so 9 columns; A = 0.25; seed 6; 10 seasons; random trunk altitudes; one season = 1.2 seconds</span></figcaption>
+    <div class="sim-bilan"></div>
+  </figure>
+
+  <article id="etape6" class="step">
+    <h3><span class="step-n">Step 6</span>Growing a forest</h3>
+
+    <h4>Goal</h4>
+    <p>Put everything together: plant the \(K\) trees, then play the seasons in two stages, light up then grow.</p>
+
+    <div class="callout">
+      <h4>To do</h4>
+      <p>Write the following functions in <code>foret.h</code> and <code>foret.c</code>, and test them from <code>src/main_p2_etape6.c</code> (CMake target <code>p2_etape_6</code>).</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void plantForest(t_foret *f, int seed, int identique)</code></h4>
+      <p><strong>Role</strong>: plants the \(K\) trees of the forest, tree <code>i</code> at \(x = i \times E + E / 2\), and initialises the random generator with the seed <code>seed</code>. With <code>identique</code> set to 1, all the trunks have their tip at altitude 1; otherwise, the altitude of each trunk is drawn at random between 0.5 and 1.5.</p>
+      <p><strong>Hints</strong>:</p>
+      <ul>
+        <li>first create the \(K\) trees with <code>createForestTree</code>, with a trunk at altitude 1;</li>
+        <li><code>createTreeStep</code>, and therefore <code>createTree</code>, has reinitialised the random generator for each tree: call <code>randomInit(seed)</code> <strong>afterwards</strong>, only once for the whole forest;</li>
+        <li>then, if <code>identique</code> is 0, draw the altitude of the trunk of each tree, from tree 0 to tree \(K - 1\), with <code>randomBetween(0.5, 1.5)</code>, and update the trunk (its \(y\) and its length) and the top of the tree;</li>
+        <li>finally, add the trunk of each tree to the grid, at its final altitude, with <code>addToGrid</code>.</li>
+      </ul>
+    </div>
+
+    <div class="todo">
+      <h4><code>void growSeasonInForest(t_foret *f, t_arbre_foret *a)</code></h4>
+      <p><strong>Role</strong>: plays one season for the tree <code>a</code> of the forest <code>f</code>, like <code>growSeason</code>, but each bud receives the light of its cell, read from the grid with <code>getLight</code>.</p>
+      <p><strong>Hints</strong>:</p>
+      <ul>
+        <li>the season of the tree increases by 1, even if it is truncated; a truncated tree makes no draw;</li>
+        <li>each new branch is added to the grid with <code>addToGrid</code>; its position \(x\) is not modified: it is <code>columnOf</code> that makes the forest wrap around;</li>
+        <li>at the end of the season, a tree that has at least <code>P_max</code> branches is marked truncated.</li>
+      </ul>
+    </div>
+
+    <div class="todo">
+      <h4><code>void growForestSeason(t_foret *f)</code>, <code>void simulateForest(t_foret *f, int S)</code> and <code>void freeForest(t_foret *f)</code></h4>
+      <p><strong>Role</strong>: <code>growForestSeason</code> plays one season for the whole forest, in two stages: <code>computeLight</code>, then the season of each tree, from tree 0 to tree \(K - 1\). <code>simulateForest</code> plays \(S\) seasons. <code>freeForest</code> frees all the trees, then the arrays of the forest: for each grid, the rows first, then the array of row pointers.</p>
+    </div>
+
+    <div class="callout">
+      <h4>Question to think about</h4>
+      <p>Why do we compute all the lights before growing a single bud? What would happen if the grid were updated after each tree? Which tree would be favoured?</p>
+    </div>
+
+    <div class="check">
+      <h4>Step 6 validation</h4>
+      <ul>
+        <li>For each tree, the up-to-date measurements are those computed by your recursive functions, and the sum of the numbers of branches of the trees is equal to the sum of the occupancy counters of the grid. Even better: the up-to-date occupancy is exactly that of a new grid, filled with <code>addTreeToGrid</code> for all the trees.</li>
+        <li>With a single tree (\(K = 1\), \(E = 10\)), \(A = 0\) (no shade), identical planting and seed 3, after 8 seasons, you get the tree of <code>arbre_moyen.txt</code> back, shifted by 5 to the right: each branch has the same altitude, and a position \(x\) greater by 5.</li>
+        <li>With the same seed, two simulations give exactly the same forest.</li>
+        <li>With \(K = 24\), \(E = 3\), \(A = 0.25\), \(H_{max} = 160\), \(P_{max} = 20{,}000\), seed 1 and 32 seasons, the forest has 6,809 branches; tree 0 has 352 branches, a height of 32, a top at 33.009, an extent of 17.479 and 87 buds; tree 7, smothered by its neighbours, has only 17 branches, a height of 8 and an extent of 3.941.</li>
+      </ul>
+    </div>
+
+    <div class="callout">
+      <h4>See your forest</h4>
+      <p>The <code>saveForest</code> function, provided in <code>sauver_foret.c</code>, writes a forest to a text file. The <a href="../../visualiseur/EN/">Viewer</a> page draws this file: you get a PNG image and an animated GIF of its growth. It also accepts the files written by <code>saveTree</code> (part 1).</p>
+      <p>The provided file <code>data/foret_exemple.txt</code> is the forest of the last validation (\(K = 24\), seed 1, 32 seasons): write yours with <code>saveForest</code>, and drop both files; you must get exactly the same image.</p>
+    </div>
+
+    <div class="option">
+      <h4><span class="badge">Optional</span>Updating the grid during growth</h4>
+      <p>Program the variant in which the grid is recomputed after each tree, and compare the heights of tree number 0 and tree number \(K - 1\) in both versions.</p>
+    </div>
+  </article>
+</section>
+
+<!-- ================================================================ HASARD -->
+<section id="hasard">
+  <h2><span class="num">5</span>Randomness in C</h2>
+  <p>You keep using the <code>alea.h</code> / <code>alea.c</code> module of part 1; the <code>rand()</code> function is still forbidden. The seed is a parameter of the simulation: with the same seed, you get exactly the same forest.</p>
+  <p class="warn">⚠️ As in part 1, do not call <code>randomInit</code> yourself, with <strong>a single exception</strong>: <code>plantForest</code>, which initialises the random generator once for the whole forest, after creating its trees.</p>
+
+  <h3 class="caption-title">Drawing from a table</h3>
+  <p>To choose 1, 2 or 3 new branches in 70%, 25% and 5% of cases, we draw a number \(u\) = <code>randomReal()</code>, then return 1 if \(u &lt; 0.70\); otherwise 2 if \(u &lt; 0.70 + 0.25 = 0.95\); otherwise 3. Each result corresponds to a “slice” of the interval between 0 and 1, whose width is the desired percentage.</p>
+  <p>With a table of \(n\) percentages, we do the same: we add up the percentages, slice after slice, until the first slice whose running total exceeds \(u\).</p>
+</section>
+
+<footer class="foot">
+  <p class="credit"><svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - IA Claude code</p>
+</footer>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+/* TI301 — Projet « La forêt et la lumière », partie 2 : forêt interactive (foret.js).
+   La figure garde le fond blanc des figures (.fig) dans tous les thèmes : couleurs fixes. */
+.fig.sim{text-align:center}
+.fig.sim [hidden]{display:none !important}   /* les display:flex ou block ci-dessous ne doivent pas l'emporter */
+.fig.sim img{display:block;margin:0 auto;max-width:100%;height:auto;max-height:560px;width:auto}
+
+/* réglages */
+.sim-ctrl{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px 24px;margin:0 0 12px;font:500 14px/1.3 var(--f-body);color:#1E2420}
+.sim-ctrl label{display:inline-flex;align-items:center;gap:8px}
+.sim-ctrl input[type="range"]{width:120px;accent-color:#2B50C8}
+.sim-ctrl input[type="checkbox"]{width:16px;height:16px;accent-color:#2B50C8}
+.sim-ctrl input[type="number"]{width:7em;padding:4px 6px;border:1px solid #DCD8CD;border-radius:6px;font:500 14px var(--f-mono);color:#1E2420;background:#fff}
+.sim-ctrl output{min-width:2.4em;text-align:left;font-family:var(--f-mono);font-weight:600}
+.sim-go{font:600 14px/1 var(--f-body);padding:8px 16px;border-radius:999px;border:0;background:#2B50C8;color:#fff;cursor:pointer}
+.sim-go:hover{background:#1F3C9C}
+.sim-hasard,.sim-lecteur button{font:500 13px/1 var(--f-body);padding:6px 12px;border-radius:999px;border:1px solid #DCD8CD;background:#fff;color:#1E2420;cursor:pointer}
+.sim-hasard:hover,.sim-lecteur button:hover{border-color:#1E2420}
+.sim-go:disabled,.sim-hasard:disabled{opacity:.5;cursor:default}
+
+/* progression */
+.sim-avance{max-width:420px;margin:0 auto 12px}
+.sim-prog{height:8px;border-radius:999px;background:#EEEBE3;overflow:hidden}
+.sim-prog>span{display:block;height:100%;width:0;background:#2F9A3E;transition:width .05s linear}
+.sim-etat{margin:4px 0 0;font-size:13px;color:#5F665F}
+
+/* dessin et bulle du survol */
+.sim-vue{position:relative}
+.sim-vue svg{display:block;margin:0 auto;width:100%;height:auto;max-height:80vh;touch-action:manipulation}
+.sim-bulle{position:absolute;z-index:2;max-width:320px;padding:7px 10px;border-radius:8px;background:#1E2420;color:#fff;font:13px/1.45 var(--f-body);text-align:left;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.sim-bulle b{font-weight:600}
+
+/* lecteur */
+.sim-lecteur{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 10px;margin:10px 0 0;font:500 13px/1.3 var(--f-body);color:#1E2420}
+.sim-lecteur label{display:inline-flex;align-items:center;gap:6px}
+.sim-lecteur select{font:500 13px var(--f-body);padding:4px 6px;border:1px solid #DCD8CD;border-radius:6px;background:#fff;color:#1E2420}
+.sim-saison{min-width:9em;font-family:var(--f-mono);color:#5F665F}
+
+/* mesures des arbres */
+.sim-bilan{overflow-x:auto;margin:10px 0 0}
+.sim-bilan table{margin:0 auto;border-collapse:collapse;font-size:13px;color:#1E2420}
+.sim-bilan caption{font-size:13px;color:#5F665F;padding-bottom:4px}
+.sim-bilan th,.sim-bilan td{padding:3px 10px;border-bottom:1px solid #DCD8CD;text-align:right;white-space:nowrap}
+.sim-bilan th{font-weight:600}
+.sim-bilan td:first-child{text-align:left}
+.sim-bilan i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+[data-theme="klear"] .sim-ctrl,[data-theme="klear"] .sim-etat,[data-theme="klear"] .sim-lecteur,
+[data-theme="klear"] .sim-bilan table,[data-theme="klear"] .sim-bilan caption,[data-theme="klear"] .sim-bulle{font-size:16px;color:#000}
+[data-theme="klear"] .sim-bulle{color:#fff;background:#000}

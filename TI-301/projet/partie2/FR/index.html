@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La forêt et la lumière – Partie 2</title>
+<meta name="description" content="TI301 – Projet SDD2 et Probabilités : la forêt et la lumière, partie 2.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap">
+<!-- KaTeX : rendu des formules écrites entre \( … \) (dans le texte) ou $$ … $$ (centrées) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="alternate" hreflang="en" href="../EN/">
+<!-- même feuille de style et même script que la partie 1 -->
+<link rel="stylesheet" href="../../FR/style.css?v=2">
+<script src="../../FR/script.js?v=2" defer></script>
+<!-- forêt interactive de la partie 2 -->
+<link rel="stylesheet" href="foret.css?v=1">
+<script src="foret.js?v=2" defer></script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <p class="kicker">TI301 – Algorithmique et Structures de données 2 · Projet Informatique et Mathématiques</p>
+    <h1>La forêt et la lumière <span class="part">Partie 2</span></h1>
+    <p class="lede">Ce projet est rédigé en commun pour les modules SDD2 et Probabilités.</p>
+    <p class="lede"><strong>Idée originale, conception, réalisation : </strong>Nicolas FLASQUE<br><strong>Validation pour le module de probabilités :</strong> Federico ZALAMEA, Brice JUANICO<br><strong>Site web du projet et animations :</strong> Nicolas FLASQUE et Claude code pro - modèle Opus 5.5</p>
+  </div>
+</header>
+
+<div class="layout">
+
+<nav class="toc" aria-label="Sommaire">
+  <label class="theme">Thème
+    <select id="optTheme">
+      <option value="auto">Automatique</option>
+      <option value="light">Clair</option>
+      <option value="dark">Sombre</option>
+      <option value="neon">Neon</option>
+      <option value="klear">Klear (accessibilité)</option>
+    </select>
+  </label>
+  <p class="lang" aria-label="Langue"><a href="../FR/" lang="fr" aria-current="page"><svg class="flag" viewBox="0 0 3 2" aria-hidden="true"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#FFFFFF"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>FR</a><a href="../EN/" lang="en" hreflang="en"><svg class="flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="flag-uk"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#FFFFFF" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#flag-uk)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#FFFFFF" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>EN</a></p>
+  <p class="toc-title">Sommaire</p>
+  <ol>
+    <li><a href="#intro">Introduction</a></li>
+    <li><a href="#arbre-foret">1 Un arbre de la forêt</a>
+      <ol>
+        <li><a href="#etape1">Mesurer un arbre</a></li>
+      </ol>
+    </li>
+    <li><a href="#pousse">2 Pousser à la lumière</a>
+      <ol>
+        <li><a href="#etape2">Le nombre de nouveaux rameaux</a></li>
+        <li><a href="#etape3">Pousser avec une lumière donnée</a></li>
+      </ol>
+    </li>
+    <li><a href="#la-foret">3 La forêt</a>
+      <ol>
+        <li><a href="#etape4">Remplir la grille d'occupation</a></li>
+        <li><a href="#etape5">Calculer la lumière</a></li>
+      </ol>
+    </li>
+    <li><a href="#foret">4 La forêt qui pousse</a>
+      <ol>
+        <li><a href="#etape6">Faire pousser une forêt</a></li>
+      </ol>
+    </li>
+    <li><a href="#hasard">5 Le hasard en C</a></li>
+    <li><a href="../../FR/">Partie 1</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ================================================================ INTRO -->
+<section id="intro">
+  <p>En partie 1, un arbre poussait seul, en pleine lumière. Il est maintenant temps de faire pousser <strong>plusieurs arbres en même temps</strong>. Et comme les arbres se font de l'ombre, la pousse de chaque arbre dépend de celle de ses voisins : un bourgeon à l'ombre pousse moins souvent, et ses rameaux sont plus courts.</p>
+  <p class="warn">La partie 2 utilise les fonctions de la partie 1 : <code>growBranch</code>, <code>canGrow</code>, <code>clampDirection</code>, la file de rameaux et la structure <code>t_arbre_step</code>. Elles doivent être terminées et validées avant de commencer. Les fichiers de la partie 1 ne sont <strong>pas modifiés</strong> : tout le code de la partie 2 est écrit dans de nouveaux fichiers.</p>
+
+  <h3 class="caption-title">Organisation du projet</h3>
+  <ol class="parts">
+    <li><b>Partie 1</b> Faire pousser au hasard un arbre seul, en pleine lumière, et l'enregistrer dans un fichier ;</li>
+    <li class="is-current"><b>Partie 2</b> Faire pousser une forêt entière, dans laquelle les arbres se font de l'ombre ;</li>
+    <li><b>Partie 3</b> Simuler des milliers de forêts, analyser et visualiser les résultats.</li>
+  </ol>
+</section>
+
+<!-- ================================================================ ARBRE DE LA FORET -->
+<section id="arbre-foret">
+  <h2><span class="num">1</span>Un arbre de la forêt</h2>
+  <p>Pour suivre la pousse d'une forêt, on a besoin de connaître, à chaque saison, les <strong>mesures</strong> de chacun de ses arbres :</p>
+  <ul>
+    <li>son <strong>nombre de rameaux</strong> ;</li>
+    <li>sa <strong>hauteur</strong> : la plus grande génération de ses rameaux (le pied est de génération 0) ;</li>
+    <li>sa <strong>cime</strong> : la plus grande altitude d'une extrémité de ses rameaux ;</li>
+    <li>son <strong>extension</strong> : la largeur qu'il occupe, c'est-à-dire l'écart \(x_{max} - x_{min}\) entre la plus grande et la plus petite position \(x\) d'une extrémité de ses rameaux ;</li>
+    <li>son <strong>nombre de bourgeons</strong>, c'est-à-dire de rameaux sans fils.</li>
+  </ul>
+  <p>On note aussi si l'arbre est <strong>tronqué</strong> : un arbre devenu trop gros ne pousse plus (voir <a href="#foret">La forêt qui pousse</a>).</p>
+  <p>Ces mesures sont <strong>tenues à jour</strong> à chaque nouveau rameau : on ne parcourt jamais tout l'arbre pour les connaître, car la plupart de ses rameaux sont du bois, qui ne change plus.</p>
+
+  <article id="etape1" class="step">
+    <h3><span class="step-n">Étape 1</span>Mesurer un arbre</h3>
+
+    <h4>Objectif</h4>
+    <p>Un arbre de la forêt est un <code>t_arbre_step</code> de la partie 1, auquel on ajoute son numéro dans la forêt et ses mesures :</p>
+<pre class="code"><code>typedef struct s_arbre_foret {
+    t_arbre_step step;    // l'arbre, sa file de bourgeons et sa saison (partie 1, étape 3)
+    int id;               // numéro de l'arbre dans la forêt
+    int hauteur;          // génération maximale de ses rameaux
+    float cime;           // altitude maximale des extrémités de ses rameaux
+    float xmin, xmax;     // positions x minimale et maximale des extrémités de ses rameaux
+    int nb_bourgeons;     // nombre de bourgeons (le nombre d'éléments de la file)
+    int tronque;          // 1 si l'arbre a atteint P_max rameaux : il ne pousse plus
+} t_arbre_foret;</code></pre>
+    <p>Le nombre de rameaux est déjà tenu à jour par <code>growBranch</code>, dans <code>step.arbre.nb_rameaux</code>. L'extension de l'arbre est <code>xmax - xmin</code>.</p>
+    <p>Les autres mesures seront tenues à jour à l'étape 3. Pour vérifier ces mesures tenues à jour, il faut d'abord savoir les calculer « à l'ancienne », en parcourant tout l'arbre : c'est l'objet de cette étape.</p>
+
+    <div class="callout">
+      <h4>À faire</h4>
+      <p>Écrivez la structure et les prototypes dans le fichier <code>arbre_foret.h</code>, et les définitions dans <code>arbre_foret.c</code> : ces deux fichiers sont fournis vides. Testez-les depuis <code>src/main_p2_etape1.c</code> (cible CMake <code>p2_etape_1</code>).</p>
+    </div>
+
+    <h4>Les mesures récursives</h4>
+    <p>Chacune de ces fonctions reçoit un rameau et mesure le sous-arbre dont il est la racine ; appelée sur le pied, elle mesure tout l'arbre.</p>
+
+    <div class="todo">
+      <h4>Sept fonctions récursives</h4>
+      <ul>
+        <li><code>int countBranches(t_rameau *r)</code> : nombre de rameaux ;</li>
+        <li><code>int computeHeight(t_rameau *r)</code> : plus grande génération ;</li>
+        <li><code>float computeTop(t_rameau *r)</code> : plus grande altitude d'une extrémité (la cime) ;</li>
+        <li><code>float computeXMin(t_rameau *r)</code> et <code>float computeXMax(t_rameau *r)</code> : plus petite et plus grande position \(x\) d'une extrémité ;</li>
+        <li><code>int countBuds(t_rameau *r)</code> : nombre de bourgeons, c'est-à-dire de feuilles ;</li>
+        <li><code>void freeBranches(t_rameau *r)</code> : libère tous les rameaux, leurs tableaux de fils compris.</li>
+      </ul>
+      <p><strong>Indices</strong> : chacune traite le rameau <code>r</code>, puis s'appelle sur ses <code>r-&gt;nb_fils</code> fils. Pour <code>freeBranches</code>, attention à l'ordre : on ne peut plus lire <code>r-&gt;p_fils</code> une fois <code>r</code> libéré.</p>
+    </div>
+
+    <div class="option">
+      <h4><span class="badge">En option</span>Pour les étudiants les plus avancés</h4>
+      <p>Remplacez <code>computeXMin</code> et <code>computeXMax</code> par une seule fonction récursive, <code>void computeExtension(t_rameau *r, float *p_xmin, float *p_xmax)</code>, qui range dans <code>*p_xmin</code> et <code>*p_xmax</code> la plus petite et la plus grande position \(x\) d'une extrémité du sous-arbre de <code>r</code>. Elle doit donner les mêmes valeurs que les deux fonctions. Cette version est-elle plus rapide ? Sa complexité est-elle meilleure ?</p>
+      <p>Autre question : à part <code>freeBranches</code>, votre enseignant affirme qu'on peut écrire une seule fonction récursive pour tous ces calculs. Qu'en pensez-vous ?</p>
+    </div>
+
+    <div class="callout">
+      <h4>Question de réflexion</h4>
+      <p>Pour la cime, on pourrait se contenter de regarder les bourgeons. Pour l'extension, il faut regarder <strong>tous</strong> les rameaux, bourgeons et bois. Pourquoi ? Comparez la façon dont un fils se place par rapport à son parent, en altitude et en position \(x\).</p>
+      <p>Dans l'arbre suivant, qui respecte les règles de pousse de la partie 1 (longueurs 1), les extrémités des bourgeons 3, 4 et 5 vont de \(x = 0{,}516\) à \(x = 1{,}585\) : une extension de 1,070. Mais l'extrémité du pied, devenu du bois, est en \(x = 0\) : l'extension de l'arbre est 1,585.</p>
+      <figure class="fig">
+        <img src="img/extension_exemple.svg" width="640" height="540" loading="lazy" alt="Un arbre de 6 rameaux : le pied, vertical, a ses fils 1 et 2 à droite ; le rameau 1 a ses fils 3 et 4 à droite ; le rameau 2 a son fils 5 à droite. Les bourgeons 3, 4 et 5 vont de x = 0,516 à x = 1,585, mais l'extrémité du pied est en x = 0">
+        <figcaption>Le pied et ses fils partent tous vers la droite : l'extension mesurée sur les seuls bourgeons est trop petite</figcaption>
+      </figure>
+    </div>
+
+    <h4>Créer et libérer un arbre de la forêt</h4>
+    <div class="todo">
+      <h4><code>t_arbre_foret createForestTree(int id, float x, float y, int seed)</code></h4>
+      <p><strong>Rôle</strong> : crée l'arbre numéro <code>id</code>, réduit à son pied d'extrémité \((x\,;\,y)\), avec ses mesures : hauteur 0, cime \(y\), \(x_{min} = x_{max} = x\), 1 bourgeon, non tronqué.</p>
+      <p><strong>Indices</strong> : 😉 <code>createTreeStep</code> fait déjà presque tout.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void freeForestTree(t_arbre_foret *a)</code></h4>
+      <p><strong>Rôle</strong> : libère les cellules de la file des bourgeons, puis tous les rameaux de l'arbre.</p>
+    </div>
+
+    <div class="check">
+      <h4>Validation de l'étape 1</h4>
+      <ul>
+        <li>Lisez les arbres de la partie 1 avec <code>readTree</code>, et mesurez-les avec vos fonctions récursives, appelées sur leur pied. Vous devez obtenir :</li>
+      </ul>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Fichier</th><th>Rameaux</th><th>Hauteur</th><th>Cime</th><th>Extension</th><th>Bourgeons</th></tr></thead>
+          <tbody>
+            <tr><td><code>exemple1.txt</code></td><td>10</td><td>4</td><td>4,893</td><td>1,638</td><td>5</td></tr>
+            <tr><td><code>arbre_petit.txt</code></td><td>10</td><td>3</td><td>4,135</td><td>2,675</td><td>4</td></tr>
+            <tr><td><code>arbre_moyen.txt</code></td><td>38</td><td>8</td><td>8,311</td><td>9,280</td><td>10</td></tr>
+            <tr><td><code>arbre_grand.txt</code></td><td>5 518</td><td>30</td><td>30,926</td><td>46,720</td><td>1 432</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Pour <code>exemple1.txt</code>, l'arbre de l'exemple de la partie 1, vérifiez ces valeurs à la main : ses bourgeons sont les rameaux 4, 5, 7, 8 et 9, sa cime est l'extrémité du rameau 8, et son extension va de l'extrémité du rameau 7 à celle du rameau 4.</li>
+        <li>Le nombre de rameaux compté par <code>countBranches</code> est égal au champ <code>nb_rameaux</code> de l'arbre lu.</li>
+        <li>Un arbre créé par <code>createForestTree(0, 0, 1, 1)</code> a exactement les mesures que calculent vos fonctions récursives : 1 rameau, hauteur 0, cime 1, extension 0, 1 bourgeon.</li>
+        <li>Libérez chaque arbre lu avec <code>freeBranches</code>, et chaque arbre créé avec <code>freeForestTree</code>.</li>
+      </ul>
+    </div>
+  </article>
+</section>
+
+<!-- ================================================================ POUSSE -->
+<section id="pousse">
+  <h2><span class="num">2</span>Pousser à la lumière</h2>
+  <p>Dans la forêt, chaque bourgeon reçoit une lumière \(L\), comprise entre 0 (le noir complet) et 1 (la pleine lumière), qui dépend des rameaux situés au-dessus de lui. Le calcul de cette lumière vient avec la forêt (voir <a href="#la-foret">La forêt</a>) ; dans cette partie, on la suppose connue.</p>
+
+  <h3>La table de pousse</h3>
+  <p>À chaque saison, chaque bourgeon reçoit une lumière \(L\), et applique la table suivante :</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Lumière \(L\)</th><th>Le bourgeon pousse…</th><th>Nombre de nouveaux rameaux, s'il pousse</th></tr></thead>
+      <tbody>
+        <tr><td>\(L \geq 0{,}7\)</td><td>dans 95 % des cas</td><td>1 (70 %), 2 (25 %), 3 (5 %)</td></tr>
+        <tr><td>\(0{,}4 \leq L &lt; 0{,}7\)</td><td>dans 70 % des cas</td><td>1 (85 %), 2 (15 %)</td></tr>
+        <tr><td>\(0{,}15 \leq L &lt; 0{,}4\)</td><td>dans 40 % des cas</td><td>1</td></tr>
+        <tr><td>\(L &lt; 0{,}15\)</td><td>dans 0 % des cas : il reste en dormance</td><td>–</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Lecture : un bourgeon en pleine lumière pousse dans 95 % des cas ; s'il pousse, il donne 1 nouveau rameau dans 70 % des cas, 2 dans 25 % des cas, 3 dans 5 % des cas. En pleine lumière, on retrouve donc exactement la pousse de la partie 1. Un bourgeon qui ne pousse pas reste bourgeon et retentera sa chance à la saison suivante. Aucun rameau ne meurt : un bourgeon privé de lumière reste en dormance.</p>
+
+  <article id="etape2" class="step">
+    <h3><span class="step-n">Étape 2</span>Le nombre de nouveaux rameaux</h3>
+
+    <h4>Objectif</h4>
+    <p>Généraliser la fonction <code>howManyBranches</code> de la partie 1 : tirer, selon la lumière que reçoit un bourgeon qui pousse, son nombre de nouveaux rameaux. Le tirage dans une table de taille quelconque, et le tirage de la pousse selon la lumière, sont fournis.</p>
+
+    <p class="provided">Code fourni</p>
+    <p>Les deux fonctions suivantes sont écrites dans <code>croissance_lumiere.c</code>, et leurs prototypes dans <code>croissance_lumiere.h</code>. Lisez-les : vous allez utiliser la première, et la seconde vous servira à l'étape 3.</p>
+
+    <h4><code>int drawFromTable(float pourcentages[], int n)</code></h4>
+    <p>Tire au hasard le numéro d'une tranche, entre 0 et <code>n - 1</code>, dans une table de <code>n</code> pourcentages (en %, leur somme vaut 100). Par exemple, avec la table <code>{70, 25, 5}</code>, elle renvoie 0 dans 70 % des cas, 1 dans 25 % des cas et 2 dans 5 % des cas. Elle tire <strong>un seul</strong> nombre \(u\), puis parcourt les tranches en cumulant les pourcentages (voir « Tirer dans une table » dans la partie <a href="#hasard">Le hasard en C</a>) ; elle compare \(u\) avec <code>cumul / 100.0</code>, exactement comme <code>howManyBranches</code>, pour retrouver les arbres de la partie 1.</p>
+<pre class="code"><code>int drawFromTable(float pourcentages[], int n)
+{
+    int res = n - 1;        // aucune des n - 1 premières tranches : c'est la dernière
+    int trouve = 0;
+    float cumul = 0;
+    double u = randomReal();    // un seul tirage
+
+    for (int i = 0; i &lt; n - 1 &amp;&amp; !trouve; i++)
+    {
+        cumul += pourcentages[i];
+        // comparaison avec cumul / 100.0, comme howManyBranches : on retrouve exactement les arbres de la partie 1
+        if (u &lt; cumul / 100.0)
+        {
+            res = i;
+            trouve = 1;
+        }
+    }
+
+    return res;
+}</code></pre>
+
+    <h4><code>int canGrowInLight(double lumiere)</code></h4>
+    <p>Comme <code>canGrow</code> de la partie 1, tire au hasard si un bourgeon qui reçoit la lumière <code>lumiere</code> pousse, en appliquant la table de pousse. Elle renvoie 1 si le bourgeon pousse, 0 sinon. Un bourgeon en dormance (\(L &lt; 0{,}15\)) pousse dans 0 % des cas, mais le tirage <code>canGrow(0)</code> est quand même fait : chaque bourgeon fait un tirage à chaque saison, quelle que soit sa lumière.</p>
+<pre class="code"><code>int canGrowInLight(double lumiere)
+{
+    int res;
+
+    if (lumiere &gt;= 0.7)
+    {
+        res = canGrow(95);
+    }
+    else if (lumiere &gt;= 0.4)
+    {
+        res = canGrow(70);
+    }
+    else if (lumiere &gt;= 0.15)
+    {
+        res = canGrow(40);
+    }
+    else
+    {
+        // dormance : le bourgeon pousse dans 0 % des cas, mais le tirage est fait, comme pour toute autre lumière
+        res = canGrow(0);
+    }
+
+    return res;
+}</code></pre>
+
+    <div class="callout">
+      <h4>À faire</h4>
+      <p>Écrivez la fonction suivante dans les fichiers <code>croissance_lumiere.h</code> (prototype) et <code>croissance_lumiere.c</code> (définition), à la suite du code fourni, et testez-la, avec le code fourni, depuis <code>src/main_p2_etape2.c</code> (cible CMake <code>p2_etape_2</code>).</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>int howManyBranchesInLight(double lumiere)</code></h4>
+      <p><strong>Rôle</strong> : comme <code>howManyBranches</code> de la partie 1, tire au hasard le nombre de nouveaux rameaux (1, 2 ou 3) d'un bourgeon <strong>qui pousse</strong> et reçoit la lumière <code>lumiere</code>, en appliquant la table de pousse. Elle n'est appelée que si <code>canGrowInLight</code> a renvoyé 1 : la lumière est alors au moins 0,15.</p>
+      <p><strong>Indices</strong> : un seul tirage, avec <code>drawFromTable</code> et la table de la lumière (la table <code>{100}</code> convient pour le dernier cas).</p>
+    </div>
+
+    <div class="check">
+      <h4>Validation de l'étape 2</h4>
+      <ul>
+        <li>Appelez 1 000 000 de fois chacune des deux fonctions pour quelques valeurs de \(L\), et comptez les résultats. Vous devez obtenir des nombres proches (à environ 2 000 près) de ceux des tableaux suivants.</li>
+      </ul>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Lumière</th><th><code>canGrowInLight</code> renvoie 1</th></tr></thead>
+          <tbody>
+            <tr><td>\(L = 1\)</td><td>950 000</td></tr>
+            <tr><td>\(L = 0{,}5\)</td><td>700 000</td></tr>
+            <tr><td>\(L = 0{,}2\)</td><td>400 000</td></tr>
+            <tr><td>\(L = 0{,}1\)</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Lumière</th><th>1 rameau</th><th>2 rameaux</th><th>3 rameaux</th></tr></thead>
+          <tbody>
+            <tr><td>\(L = 1\)</td><td>700 000</td><td>250 000</td><td>50 000</td></tr>
+            <tr><td>\(L = 0{,}5\)</td><td>850 000</td><td>150 000</td><td>0</td></tr>
+            <tr><td>\(L = 0{,}2\)</td><td>1 000 000</td><td>0</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Pas de ligne \(L = 0{,}1\) pour <code>howManyBranchesInLight</code> : un bourgeon en dormance ne pousse jamais, la fonction n'est donc jamais appelée pour lui.</li>
+        <li>Avec la même graine, vous obtenez exactement les mêmes nombres.</li>
+        <li>Pour \(L = 1\), <code>canGrowInLight(1)</code> suivi, si le bourgeon pousse, de <code>howManyBranchesInLight(1)</code> donne <strong>exactement</strong> les mêmes résultats, dans le même ordre, que <code>canGrow(95)</code> suivi, si le bourgeon pousse, de <code>howManyBranches(70, 25)</code>. Vérifiez-le sur 1 000 bourgeons, en initialisant deux fois le générateur avec la même graine.</li>
+      </ul>
+    </div>
+  </article>
+
+  <h3>La longueur des nouveaux rameaux</h3>
+  <p>Quand un bourgeon pousse, les règles de la partie 1 s'appliquent (directions, côté, directions ramenées entre −80° et +80°), avec une seule différence : <strong>à l'ombre, les rameaux sont plus courts</strong>. Chaque nouveau rameau a une longueur</p>
+  $$\ell = (0{,}5 + 0{,}5 \times L) \times u$$
+  <p>où \(u\) est tiré au hasard entre 0,7 et 1,3. En pleine lumière (\(L = 1\)), on retrouve la longueur de la partie 1.</p>
+
+  <article id="etape3" class="step">
+    <h3><span class="step-n">Étape 3</span>Pousser avec une lumière donnée</h3>
+
+    <h4>Objectif</h4>
+    <p>Faire pousser un arbre de la forêt saison par saison, comme <code>growTreeStep</code> de la partie 1, mais en appliquant la table de pousse avec une lumière donnée, la même pour tous ses bourgeons, et en tenant à jour ses mesures à chaque nouveau rameau.</p>
+
+    <div class="callout">
+      <h4>À faire</h4>
+      <p>Écrivez les fonctions suivantes dans <code>arbre_foret.h</code> et <code>arbre_foret.c</code>, et testez-les depuis <code>src/main_p2_etape3.c</code> (cible CMake <code>p2_etape_3</code>).</p>
+      <p>La fonction <code>clampDirection</code> est définie dans <code>croissance.c</code>, sans prototype dans <code>croissance.h</code> : pour l'utiliser, écrivez son prototype, <code>float clampDirection(float);</code>, au début de <code>arbre_foret.c</code>.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void growBudInLight(t_arbre_foret *a, t_rameau *b, int n, double lumiere)</code></h4>
+      <p><strong>Rôle</strong> : comme <code>growBud</code> de la partie 1, fait naître <code>n</code> nouveaux rameaux à l'extrémité du bourgeon <code>b</code>, à la saison <code>a-&gt;step.saison</code>, mais avec la longueur \(\ell = (0{,}5 + 0{,}5 \times L) \times u\). Elle tient aussi à jour la hauteur, la cime, \(x_{min}\), \(x_{max}\) et le nombre de bourgeons de l'arbre.</p>
+      <p><strong>Indices</strong> :</p>
+      <ul>
+        <li>faites les tirages <strong>dans le même ordre</strong> que <code>growBud</code> : direction (ou côté puis angle), puis \(u\) = <code>randomBetween(0.7, 1.3)</code> ;</li>
+        <li>le bourgeon <code>b</code> devient du bois et ses <code>n</code> fils sont des bourgeons : combien de bourgeons l'arbre a-t-il gagnés ?</li>
+      </ul>
+    </div>
+
+    <div class="todo">
+      <h4><code>void growSeason(t_arbre_foret *a, double lumiere)</code></h4>
+      <p><strong>Rôle</strong> : fait jouer une saison à l'arbre <code>a</code>, comme <code>growTreeStep</code> de la partie 1, en donnant la même lumière <code>lumiere</code> à tous ses bourgeons.</p>
+      <p><strong>Indices</strong> : la boucle est celle de <code>growTreeStep</code> ; seuls les tirages changent. Pour chaque bourgeon, <code>canGrowInLight(lumiere)</code> remplace <code>canGrow(95)</code> ; s'il pousse, et seulement dans ce cas, <code>howManyBranchesInLight(lumiere)</code> remplace <code>howManyBranches(70, 25)</code>, puis <code>growBudInLight</code> remplace <code>growBud</code>.</p>
+    </div>
+
+    <div class="check">
+      <h4>Validation de l'étape 3</h4>
+      <ul>
+        <li>En pleine lumière (\(L = 1\)), un arbre créé en \((0\,;\,1)\) qui pousse avec <code>growSeason</code> est <strong>exactement</strong> l'arbre de la partie 1 : avec la graine 5 et 3 saisons, vous retrouvez <code>arbre_petit.txt</code> ; avec la graine 3 et 8 saisons, <code>arbre_moyen.txt</code> ; avec la graine 4 et 30 saisons, <code>arbre_grand.txt</code> (5 518 rameaux). Les fichiers arrondissent les directions et les longueurs à deux chiffres après la virgule : la cime de l'arbre qui a poussé (4,130 pour <code>arbre_petit.txt</code>) diffère donc un peu de celle de l'arbre lu à l'étape 1 (4,135).</li>
+        <li>Après chaque saison, les mesures tenues à jour (nombre de rameaux, hauteur, cime, nombre de bourgeons) sont exactement celles que calculent vos fonctions récursives. Écrivez un test automatique qui le vérifie pour 100 graines, 20 saisons, avec \(L = 1\) puis \(L = 0{,}5\).</li>
+        <li>La hauteur de l'arbre ne dépasse jamais le numéro de la saison, et elle augmente d'au plus 1 à chaque saison.</li>
+        <li>Avec la graine 1 et 20 saisons, en \((0\,;\,1)\) : pour \(L = 1\), vous obtenez 493 rameaux, une hauteur de 20, une cime à 19,869, une extension de 31,761 et 117 bourgeons ; pour \(L = 0{,}5\), 62 rameaux, une hauteur de 19, une cime à 14,509, une extension de 8,358 et 10 bourgeons.</li>
+      </ul>
+    </div>
+  </article>
+</section>
+
+<!-- ================================================================ LA FORET -->
+<section id="la-foret">
+  <h2><span class="num">3</span>La forêt</h2>
+
+  <h3>Qu'est-ce qu'une forêt ?</h3>
+  <p>Le sol de la forêt est découpé en <strong>colonnes</strong> de largeur 1, numérotées à partir de 0 : la colonne \(c\) contient les positions \(x\) comprises entre \(c\) (compris) et \(c + 1\) (non compris).</p>
+  <p>Une forêt est une ligne de \(K\) arbres plantés à intervalles réguliers : un arbre toutes les \(E\) colonnes, où \(E\) est l'<strong>écartement</strong>. La forêt compte donc \(C = K \times E\) colonnes, numérotées de 0 à \(C - 1\).</p>
+  <ul>
+    <li>L'arbre numéro \(i\) (de 0 à \(K - 1\)) est planté en \(x = i \times E + E / 2\). À la saison 0, il n'a qu'un rameau vertical, son pied, dont l'extrémité est à une altitude tirée au hasard entre 0,5 et 1,5.</li>
+    <li>La forêt <strong>fait le tour</strong> : la colonne \(C - 1\) est voisine de la colonne 0, comme dans Pac-Man. Un rameau garde sa position \(x\), même si elle sort de l'intervalle entre 0 et \(C\) : c'est sa <strong>colonne</strong> qui fait le tour. La colonne d'une position \(x\) est sa partie entière, prise modulo \(C\).</li>
+  </ul>
+  <div class="callout">
+    <p><strong>Exemple.</strong> Avec \(K = 3\) arbres et un écartement \(E = 4\), la forêt compte \(C = 12\) colonnes, numérotées de 0 à 11. Les arbres 0, 1 et 2 sont plantés en \(x = 0 \times 4 + 2 = 2\), \(x = 6\) et \(x = 10\). Un rameau dont l'extrémité arrive en \(x = 12{,}3\) garde cette position, mais il est compté dans la colonne 0 ; un rameau dont l'extrémité arrive en \(x = -0{,}5\) est compté dans la colonne 11.</p>
+  </div>
+  <figure class="fig anim">
+    <img src="img/foret_exemple.svg" width="680" height="310" loading="lazy" alt="Une forêt de 3 arbres et 12 colonnes à la saison 0 : les pieds des arbres 0, 1 et 2 en x = 2, 6 et 10, séparés par un écartement E = 4 ; la colonne 11 touche la colonne 0">
+    <figcaption>La forêt de l'exemple à la saison 0 (\(K = 3\), \(E = 4\)) : trois pieds, d'altitudes tirées au hasard</figcaption>
+  </figure>
+
+  <h3>Les autres paramètres</h3>
+  <ul>
+    <li>\(A\), entre 0 et 1 : la part de lumière retenue par chaque extrémité de rameau (voir <a href="#ombrage">Le principe de l'ombrage</a>).</li>
+    <li>\(H_{max}\) : comme le sol en colonnes, la hauteur est découpée en <strong>rangées</strong> de hauteur 1, numérotées à partir de 0 depuis le sol : la rangée \(r\) contient les altitudes \(y\) comprises entre \(r\) (compris) et \(r + 1\) (non compris). \(H_{max}\) est le nombre de rangées prises en compte pour l'ombre : une extrémité de rameau d'altitude \(y \geq H_{max}\) est comptée dans la dernière rangée, la rangée \(H_{max} - 1\). Par exemple, dans la forêt de l'exemple ci-dessus (\(C = 12\)) avec \(H_{max} = 160\), un rameau dont l'extrémité est en \((x\,;\,y) = (6{,}4\,;\,2{,}7)\) est compté dans la rangée 2 et la colonne 6, c'est-à-dire dans la case \((2\,;\,6)\) de la grille (voir <a href="#ombrage">Le principe de l'ombrage</a>).</li>
+  </ul>
+
+  <h3 id="ombrage">Le principe de l'ombrage</h3>
+  <p>Pour savoir combien de lumière reçoit un bourgeon, on ne parcourt pas tous les rameaux de la forêt : on découpe la forêt en une grille de cases, en croisant ses \(C\) colonnes et ses \(H_{max}\) rangées, et on tient à jour deux grilles de même taille.</p>
+
+  <h3>La grille d'occupation</h3>
+  <p>La case \((r\,;\,c)\) est la partie de la colonne \(c\) située dans la rangée \(r\) : elle contient les points dont la position \(x\) est entre \(c\) et \(c + 1\), et l'altitude \(y\) entre \(r\) et \(r + 1\) (bornes inférieures comprises, bornes supérieures non comprises).</p>
+  <p>L'<strong>occupation</strong> d'une case est le nombre de rameaux, de tous les arbres, bourgeons ou bois, dont <strong>l'extrémité</strong> se trouve dans cette case. Une extrémité d'altitude \(y \geq H_{max}\) compte dans la dernière rangée.</p>
+  <p>Par exemple, l'arbre <code>exemple1.txt</code> de la partie 1, seul dans une forêt de 10 colonnes et 8 rangées, a ses 10 extrémités de rameaux dans 7 cases, toutes dans les colonnes 3 à 5 et les rangées 1 à 4 ; toutes les autres cases sont vides :</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Rangée</th><th>Colonne 3</th><th>Colonne 4</th><th>Colonne 5</th></tr></thead>
+      <tbody>
+        <tr><td>4</td><td>0</td><td>1 (rameau 8)</td><td>1 (rameau 9)</td></tr>
+        <tr><td>3</td><td>0</td><td>1 (rameau 6)</td><td>0</td></tr>
+        <tr><td>2</td><td>0</td><td>3 (rameaux 1, 3 et 5)</td><td>1 (rameau 4)</td></tr>
+        <tr><td>1</td><td>2 (rameaux 2 et 7)</td><td>1 (rameau 0)</td><td>0</td></tr>
+        <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <figure class="fig anim">
+    <img src="img/grille_exemple1.svg" width="720" height="606" loading="lazy" alt="L'arbre exemple1.txt dans une grille de 10 colonnes et 8 rangées : chaque extrémité de rameau, numérotée, est marquée d'un point, et chaque case occupée indique son nombre d'extrémités ; les rameaux 1, 3 et 5 sont dans la case (2 ; 4), les rameaux 2 et 7 dans la case (1 ; 3)">
+    <figcaption>L'arbre <code>exemple1.txt</code> dans la grille d'occupation : seule l'extrémité de chaque rameau compte, pas le rameau tout entier</figcaption>
+  </figure>
+  <p>Attention aux arrondis de l'affichage : le rameau 3 a son extrémité à l'altitude \(2 + \cos(5^\circ) \approx 2{,}996\), affichée 3,00 avec deux chiffres après la virgule : il est dans la rangée 2, et non dans la rangée 3. De même, le rameau 6 est dans la rangée 3.</p>
+
+  <h3>La taille des grilles</h3>
+  <p>Les deux grilles ont la même taille : \(H_{max}\) rangées et \(C = K \times E\) colonnes, soit \(H_{max} \times C\) cases chacune. La grille d'occupation contient des entiers, la grille de lumière des réels. Dans la simulation type (\(H_{max} = 160\), \(C = 250\)), chaque grille a 160 rangées et 250 colonnes, soit 40 000 cases.</p>
+
+  <article id="etape4" class="step">
+    <h3><span class="step-n">Étape 4</span>Remplir la grille d'occupation</h3>
+
+    <h4>Objectif</h4>
+    <p>Une forêt réunit plusieurs arbres et les deux grilles qu'ils partagent :</p>
+<pre class="code"><code>typedef struct s_foret {
+    int K, E, C, HMAX;        // nombre d'arbres, écartement, colonnes (C = K x E), rangées
+    double A;                 // part de lumière retenue par une extrémité de rameau
+    int P_max;                // nombre maximal de rameaux d'un arbre
+    t_arbre_foret *arbres;    // tableau dynamique des K arbres
+    int **occupation;         // HMAX x C compteurs d'extrémités de rameaux
+    double **lumiere;         // HMAX x C lumières
+    int saison;               // nombre de saisons déjà écoulées
+} t_foret;</code></pre>
+    <p>Les tableaux <code>occupation</code> et <code>lumiere</code> sont des grilles de <code>HMAX</code> rangées et <code>C</code> colonnes, allouées dynamiquement en <strong>deux dimensions</strong> : un tableau de <code>HMAX</code> pointeurs, chacun vers une rangée de <code>C</code> cases. La case \((r\,;\,c)\) est <code>occupation[r][c]</code>, ou <code>lumiere[r][c]</code>.</p>
+    <p>Cette étape crée la forêt et remplit sa grille d'occupation ; la grille de lumière sera calculée à l'étape 5.</p>
+
+    <p class="provided">Code fourni</p>
+    <p>Les deux fonctions suivantes sont écrites dans <code>foret.c</code>, et leurs prototypes dans <code>foret.h</code>. Elles renvoient la colonne et la rangée de la case qui contient le point d'abscisse <code>x</code> ou d'altitude <code>y</code>. La forêt fait le tour : la position <code>x</code> peut être négative, ou au moins égale à <code>C</code>, et sa colonne est sa partie entière modulo <code>C</code> (en C, <code>-1 % 12</code> vaut −1 : d'où la correction quand le reste est négatif). Une altitude d'au moins <code>HMAX</code> est dans la dernière rangée.</p>
+<pre class="code"><code>int columnOf(t_foret *f, float x)
+{
+    // en C, -1 % 12 vaut -1 : on ramène le reste entre 0 et C - 1
+    int c = (int) floorf(x) % f-&gt;C;
+
+    if (c &lt; 0)
+    {
+        c += f-&gt;C;
+    }
+
+    return c;
+}
+
+int rowOf(t_foret *f, float y)
+{
+    int r = (int) floorf(y);
+
+    if (r &gt;= f-&gt;HMAX)
+    {
+        r = f-&gt;HMAX - 1;
+    }
+    else if (r &lt; 0)
+    {
+        r = 0;      // ne se produit pas (un fils est toujours plus haut que son parent) : simple précaution
+    }
+
+    return r;
+}</code></pre>
+
+    <div class="callout">
+      <h4>À faire</h4>
+      <p>Écrivez la structure <code>t_foret</code> au début du fichier <code>foret.h</code>, à l'endroit indiqué : tant qu'elle n'est pas écrite, le code fourni ne compile pas. Écrivez ensuite les prototypes des fonctions suivantes dans <code>foret.h</code>, et leurs définitions dans <code>foret.c</code>, à la suite du code fourni. Testez-les depuis <code>src/main_p2_etape4.c</code> (cible CMake <code>p2_etape_4</code>).</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>t_foret createForest(int K, int E, int HMAX, double A, int P_max)</code></h4>
+      <p><strong>Rôle</strong> : crée une forêt de <code>K</code> arbres, pas encore plantés : elle alloue le tableau des arbres et les deux grilles, et met les compteurs d'occupation à 0.</p>
+      <p><strong>Indices</strong> : pour chaque grille, allouez d'abord le tableau des <code>HMAX</code> pointeurs de rangées, puis chaque rangée de <code>C</code> cases.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void addToGrid(t_foret *f, t_rameau *r)</code></h4>
+      <p><strong>Rôle</strong> : ajoute 1 au compteur d'occupation de la case où se trouve l'extrémité du rameau <code>r</code>. Elle sera appelée pour chaque nouveau rameau de la forêt, au moment où il est créé.</p>
+      <p><strong>Indices</strong> : la case de l'extrémité \((x\,;\,y)\) de <code>r</code> est dans la rangée <code>rowOf(f, r-&gt;y)</code> et la colonne <code>columnOf(f, r-&gt;x)</code> : <code>addToGrid</code> doit appeler ces deux fonctions fournies, et ne jamais calculer la case elle-même.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void addTreeToGrid(t_foret *f, t_rameau *r)</code></h4>
+      <p><strong>Rôle</strong> : ajoute à la grille l'extrémité de <code>r</code> et de tous les rameaux de son sous-arbre. Elle sert pour un arbre déjà construit, par exemple lu dans un fichier.</p>
+      <p><strong>Indices</strong> : une fonction récursive, sur le modèle de <code>countBranches</code>, qui appelle <code>addToGrid</code>.</p>
+    </div>
+
+    <div class="check">
+      <h4>Validation de l'étape 4</h4>
+      <ul>
+        <li>Dans la forêt de l'exemple (\(K = 3\), \(E = 4\), donc 12 colonnes, et \(H_{max} = 160\)) : <code>columnOf(&amp;f, 6.4)</code> vaut 6, <code>columnOf(&amp;f, 11.99)</code> vaut 11, <code>columnOf(&amp;f, 12.3)</code> vaut 0, <code>columnOf(&amp;f, -0.5)</code> vaut 11, <code>rowOf(&amp;f, 2.7)</code> vaut 2 et <code>rowOf(&amp;f, 163.2)</code> vaut 159.</li>
+        <li>Créez une forêt de 1 arbre, de 10 colonnes (\(E = 10\)) et 8 rangées, avec \(A = 0{,}5\), et rangez dans son arbre 0 l'arbre lu dans <code>exemple1.txt</code> : <code>f.arbres[0].step.arbre = readTree("data/exemple1.txt");</code>, puis ajoutez ses rameaux à la grille avec <code>addTreeToGrid</code>. Vous devez retrouver l'occupation du tableau ci-dessus ; la somme de tous les compteurs vaut 10, le nombre de rameaux de l'arbre.</li>
+        <li>Construisez deux ou trois autres cas à la main, dont un rameau d'altitude supérieure à <code>HMAX</code> (il est compté dans la dernière rangée).</li>
+      </ul>
+    </div>
+  </article>
+
+  <h3>La grille de lumière</h3>
+  <p>La lumière vient du ciel. Chaque extrémité de rameau qu'elle traverse en retient une part \(A\) (paramètre de la forêt, par exemple \(A = 0{,}25\)). Dans une case, la lumière reçue vaut donc :</p>
+  $$L = (1 - A)^n$$
+  <p>où \(n\) est le nombre de rameaux (de tous les arbres, bourgeons ou bois) dont l'extrémité est dans la <strong>même colonne</strong> et dans une rangée <strong>strictement plus haute</strong>. Une case sans aucun rameau au-dessus reçoit une lumière de 1.</p>
+  <div class="callout">
+    <p><strong>Exemple.</strong> Une colonne contient trois extrémités de rameaux : deux dans la rangée 5 et une dans la rangée 9. Avec \(A = 0{,}5\), la lumière vaut 1 dans les rangées 9 et au-dessus, \(0{,}5\) dans les rangées 5 à 8, et \(0{,}5 \times 0{,}5 \times 0{,}5 = 0{,}125\) dans les rangées 0 à 4.</p>
+  </div>
+
+  <h3>Exemples</h3>
+  <p>Voici la lumière des cases de la forêt de l'arbre <code>exemple1.txt</code>, avec \(A = 0{,}5\). Les colonnes 0 à 2 et 6 à 9, et les rangées 5 à 7, reçoivent une lumière de 1. Un arbre se fait de l'ombre à lui-même : son bourgeon 5 ne reçoit plus que 0,25 de lumière.</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Rangée</th><th>Colonne 3</th><th>Colonne 4</th><th>Colonne 5</th></tr></thead>
+      <tbody>
+        <tr><td>4</td><td>1</td><td>1 (rameau 8)</td><td>1 (rameau 9)</td></tr>
+        <tr><td>3</td><td>1</td><td>0,5 (rameau 6)</td><td>0,5</td></tr>
+        <tr><td>2</td><td>1</td><td>0,25 (rameaux 1, 3 et 5)</td><td>0,5 (rameau 4)</td></tr>
+        <tr><td>1</td><td>1 (rameaux 2 et 7)</td><td>0,03125 (rameau 0)</td><td>0,25</td></tr>
+        <tr><td>0</td><td>0,25</td><td>0,015625</td><td>0,25</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Voici la pousse d'un arbre seul, saison par saison, avec \(A = 0{,}5\). À gauche, l'<strong>occupation</strong> de la grille : le nombre d'extrémités de rameaux de chaque case, écrit dans son coin ; les extrémités des bourgeons sont des ronds verts, celles du bois des petits ronds noirs. À droite, la <strong>lumière</strong> de chaque case, calculée à partir de cette occupation : c'est celle que recevront ses bourgeons à la saison suivante. La couleur d'une case indique la ligne de la table de pousse (voir <a href="#pousse">Pousser à la lumière</a>) qui s'appliquera à ses bourgeons. L'arbre se fait de l'ombre à lui-même : ses rameaux du bas finissent dans le noir, seuls ceux de la cime poussent encore.</p>
+  <figure class="fig anim">
+    <img src="img/grille_un_arbre.svg" width="898" height="512" loading="lazy" alt="Animation de la pousse d'un arbre seul pendant 8 saisons, avec la grille d'occupation à gauche et la lumière de chaque case à droite">
+    <figcaption>Un arbre seul : occupation et lumière (graine 3, 8 saisons, \(A = 0{,}5\), une saison = 1,2 seconde) <button type="button" class="replay">Rejouer</button></figcaption>
+  </figure>
+
+  <article id="etape5" class="step">
+    <h3><span class="step-n">Étape 5</span>Calculer la lumière</h3>
+
+    <h4>Objectif</h4>
+    <p>Calculer la grille de lumière à partir de la grille d'occupation, puis lire la lumière que reçoit un bourgeon.</p>
+
+    <div class="callout">
+      <h4>À faire</h4>
+      <p>Écrivez les fonctions suivantes dans <code>foret.h</code> et <code>foret.c</code>, et testez-les depuis <code>src/main_p2_etape5.c</code> (cible CMake <code>p2_etape_5</code>).</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void computeLight(t_foret *f)</code></h4>
+      <p><strong>Rôle</strong> : calcule la lumière de toutes les cases de la grille, à partir de l'occupation, déjà à jour.</p>
+      <p><strong>Indices</strong> : calculez la lumière <strong>colonne par colonne, du haut vers le bas</strong>, en un seul passage par colonne : en descendant, on tient à jour la lumière \((1 - A)^n\), en la multipliant par \((1 - A)\) pour chaque extrémité rencontrée. Attention : les extrémités d'une case font de l'ombre aux rangées <strong>en dessous</strong>, pas à leur propre case.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>double getLight(t_foret *f, t_rameau *r)</code></h4>
+      <p><strong>Rôle</strong> : renvoie la lumière de la case où se trouve l'extrémité du rameau <code>r</code>.</p>
+    </div>
+
+    <div class="check">
+      <h4>Validation de l'étape 5</h4>
+      <ul>
+        <li>Construisez à la main la colonne de l'exemple (trois extrémités, \(A = 0{,}5\)) : vous devez retrouver 1, 0,5 et 0,125.</li>
+        <li>Reprenez la forêt de l'arbre <code>exemple1.txt</code> de l'étape 4. Après <code>computeLight</code>, vous devez retrouver les valeurs du tableau de lumière ci-dessus ; en particulier, les bourgeons 4, 5, 7, 8 et 9 reçoivent une lumière de 0,5 ; 0,25 ; 1 ; 1 et 1.</li>
+      </ul>
+    </div>
+  </article>
+</section>
+
+<!-- ================================================================ FORET -->
+<section id="foret">
+  <h2><span class="num">4</span>La forêt qui pousse</h2>
+
+  <h3>Le déroulement d'une saison</h3>
+  <p>Une saison se déroule en <strong>deux temps</strong> :</p>
+  <ol>
+    <li><strong>Éclairer</strong> : calculer la lumière de chaque case, à partir du nombre d'extrémités de rameaux de chaque case ;</li>
+    <li><strong>Pousser</strong> : faire jouer tous les bourgeons de tous les arbres, de l'arbre 0 à l'arbre \(K - 1\), avec les lumières calculées au temps 1.</li>
+  </ol>
+  <p>Le nombre d'extrémités de chaque case, l'<strong>occupation</strong> de la grille, est tenu à jour : on ajoute chaque nouveau rameau au moment où il est créé, sans jamais recompter tous les rameaux de la forêt. Comme la lumière est calculée au temps 1, un rameau créé pendant une saison n'est pris en compte, pour la lumière, qu'à partir de la saison suivante. Une simulation dure \(S\) saisons (par exemple \(S = 120\)).</p>
+  <p>Un arbre ne doit pas grossir sans limite : un arbre qui a au moins \(P_{max}\) rameaux à la fin d'une saison (par exemple \(P_{max} = 20\,000\)) est marqué <strong>tronqué</strong>, et il ne pousse plus.</p>
+  <p>La <strong>graine</strong> du générateur fixe tous les tirages : avec la même graine et les mêmes paramètres, on obtient exactement la même forêt.</p>
+  <div class="callout">
+    <p><strong>Exemple.</strong> Les paramètres d'une simulation type :</p>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Paramètre</th><th>Rôle</th><th>Valeur</th></tr></thead>
+        <tbody>
+          <tr><td>\(K\)</td><td>nombre d'arbres</td><td>50</td></tr>
+          <tr><td>\(E\)</td><td>écartement entre deux arbres</td><td>5</td></tr>
+          <tr><td>\(C = K \times E\)</td><td>nombre de colonnes</td><td>250</td></tr>
+          <tr><td>\(A\)</td><td>part de lumière retenue par une extrémité</td><td>0,25</td></tr>
+          <tr><td>\(H_{max}\)</td><td>nombre de rangées</td><td>160</td></tr>
+          <tr><td>\(P_{max}\)</td><td>nombre maximal de rameaux d'un arbre</td><td>20 000</td></tr>
+          <tr><td>\(S\)</td><td>nombre de saisons</td><td>120</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p>Voici maintenant une petite forêt. Choisissez le nombre d'arbres \(K\), l'écartement \(E\) entre deux pieds (la grille a donc \(C = K \times E\) colonnes), la part de lumière \(A\) retenue par une extrémité, le nombre de saisons \(S\) et la graine, puis lancez la simulation. Avec la même graine et les mêmes réglages, on obtient toujours la même forêt ; le bouton « Graine au hasard » en tire une autre. Les branches qui sortent à droite de la grille réapparaissent à gauche : la forêt fait le tour.</p>
+  <p>Avec les réglages de départ (\(K = 3\), \(E = 3\), \(A = 0{,}25\), \(S = 10\), graine 6), les arbres sont plantés en \(x = 1{,}5\), \(x = 4{,}5\) et \(x = 7{,}5\). L'arbre 2 prend du retard et reste à l'ombre de ses voisins : 16 rameaux, contre 39 et 53 pour les deux autres. Rapprochez les arbres (\(E = 1\)) et rendez-les opaques (\(A = 1\)) : la forêt ne compte plus que 26 rameaux, contre 108. Cochez « Pieds à la même altitude » : les arbres partent alors à égalité, et les écarts entre eux ne viennent plus que des tirages de la pousse.</p>
+  <p>Sous la figure, mettez l'animation en pause et avancez saison par saison ; survolez une case (ou touchez-la) pour voir le calcul de sa lumière. Le tableau donne les mesures de chaque arbre à la fin de la simulation.</p>
+  <figure class="fig sim" id="foret-interactive">
+    <div class="sim-ctrl" hidden>
+      <label for="simK">Arbres \(K\) <input type="range" id="simK" name="K" min="2" max="5" step="1" value="3"> <output for="simK">3</output></label>
+      <label for="simE">Écartement \(E\) <input type="range" id="simE" name="E" min="1" max="3" step="1" value="3"> <output for="simE">3</output></label>
+      <label for="simA">Lumière retenue \(A\) <input type="range" id="simA" name="A" min="15" max="100" step="5" value="25"> <output for="simA">0,25</output></label>
+      <label for="simS">Saisons \(S\) <input type="range" id="simS" name="S" min="5" max="20" step="1" value="10"> <output for="simS">10</output></label>
+      <label for="simG">Graine <input type="number" id="simG" name="graine" min="0" max="2147483647" step="1" value="6"></label>
+      <button type="button" class="sim-hasard">Graine au hasard</button>
+      <label for="simI"><input type="checkbox" id="simI" name="identique"> Pieds à la même altitude</label>
+      <button type="button" class="sim-go">Lancer la simulation</button>
+    </div>
+    <div class="sim-avance" hidden>
+      <div class="sim-prog"><span></span></div>
+      <p class="sim-etat">Réglez les curseurs, puis lancez la simulation.</p>
+    </div>
+    <img src="img/grille_foret.svg" width="818" height="612" loading="lazy" alt="Animation de la pousse d'une forêt de 3 arbres pendant 10 saisons (E = 3, A = 0,25), avec la grille d'occupation à gauche et la lumière de chaque case à droite">
+    <div class="sim-vue" hidden>
+      <div class="sim-bulle" hidden></div>
+    </div>
+    <div class="sim-lecteur" hidden>
+      <button type="button" data-act="rejouer">⏮ Rejouer</button>
+      <button type="button" data-act="avant">◀ Saison précédente</button>
+      <button type="button" data-act="lecture">⏸ Pause</button>
+      <button type="button" data-act="apres">Saison suivante ▶</button>
+      <label for="simV">Vitesse
+        <select id="simV">
+          <option value="2.4">lente</option>
+          <option value="1.2" selected>normale</option>
+          <option value="0.6">rapide</option>
+        </select>
+      </label>
+      <span class="sim-saison" aria-live="polite"></span>
+    </div>
+    <figcaption><span class="sim-leg">Une forêt de 3 arbres, E = 3, donc 9 colonnes ; A = 0,25 ; graine 6 ; 10 saisons ; altitudes des pieds tirées au hasard ; une saison = 1,2 seconde</span></figcaption>
+    <div class="sim-bilan"></div>
+  </figure>
+
+  <article id="etape6" class="step">
+    <h3><span class="step-n">Étape 6</span>Faire pousser une forêt</h3>
+
+    <h4>Objectif</h4>
+    <p>Assembler le tout : planter les \(K\) arbres, puis faire jouer les saisons en deux temps, éclairer puis pousser.</p>
+
+    <div class="callout">
+      <h4>À faire</h4>
+      <p>Écrivez les fonctions suivantes dans <code>foret.h</code> et <code>foret.c</code>, et testez-les depuis <code>src/main_p2_etape6.c</code> (cible CMake <code>p2_etape_6</code>).</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>void plantForest(t_foret *f, int seed, int identique)</code></h4>
+      <p><strong>Rôle</strong> : plante les \(K\) arbres de la forêt, l'arbre <code>i</code> en \(x = i \times E + E / 2\), et initialise le hasard avec la graine <code>seed</code>. Avec <code>identique</code> à 1, tous les pieds ont leur extrémité à l'altitude 1 ; sinon, l'altitude de chaque pied est tirée au hasard entre 0,5 et 1,5.</p>
+      <p><strong>Indices</strong> :</p>
+      <ul>
+        <li>créez d'abord les \(K\) arbres avec <code>createForestTree</code>, avec un pied d'altitude 1 ;</li>
+        <li><code>createTreeStep</code>, donc <code>createTree</code>, a réinitialisé le hasard à chaque arbre : appelez <strong>ensuite</strong> <code>randomInit(seed)</code>, une seule fois pour toute la forêt ;</li>
+        <li>puis, si <code>identique</code> vaut 0, tirez l'altitude du pied de chaque arbre, de l'arbre 0 à l'arbre \(K - 1\), avec <code>randomBetween(0.5, 1.5)</code>, et mettez à jour le pied (son \(y\) et sa longueur) et la cime de l'arbre ;</li>
+        <li>enfin, ajoutez le pied de chaque arbre à la grille, à son altitude définitive, avec <code>addToGrid</code>.</li>
+      </ul>
+    </div>
+
+    <div class="todo">
+      <h4><code>void growSeasonInForest(t_foret *f, t_arbre_foret *a)</code></h4>
+      <p><strong>Rôle</strong> : fait jouer une saison à l'arbre <code>a</code> de la forêt <code>f</code>, comme <code>growSeason</code>, mais chaque bourgeon reçoit la lumière de sa case, lue dans la grille avec <code>getLight</code>.</p>
+      <p><strong>Indices</strong> :</p>
+      <ul>
+        <li>la saison de l'arbre augmente de 1, même s'il est tronqué ; un arbre tronqué ne fait aucun tirage ;</li>
+        <li>chaque nouveau rameau est ajouté à la grille avec <code>addToGrid</code> ; sa position \(x\) n'est pas modifiée : c'est <code>columnOf</code> qui fait faire le tour à la forêt ;</li>
+        <li>à la fin de la saison, un arbre qui a au moins <code>P_max</code> rameaux est marqué tronqué.</li>
+      </ul>
+    </div>
+
+    <div class="todo">
+      <h4><code>void growForestSeason(t_foret *f)</code>, <code>void simulateForest(t_foret *f, int S)</code> et <code>void freeForest(t_foret *f)</code></h4>
+      <p><strong>Rôle</strong> : <code>growForestSeason</code> fait jouer une saison à toute la forêt, en deux temps : <code>computeLight</code>, puis la saison de chaque arbre, de l'arbre 0 à l'arbre \(K - 1\). <code>simulateForest</code> fait jouer \(S\) saisons. <code>freeForest</code> libère tous les arbres, puis les tableaux de la forêt : pour chaque grille, les rangées d'abord, puis le tableau des pointeurs de rangées.</p>
+    </div>
+
+    <div class="callout">
+      <h4>Question de réflexion</h4>
+      <p>Pourquoi calcule-t-on toutes les lumières avant de faire pousser le moindre bourgeon ? Que se passerait-il si l'on mettait la grille à jour après chaque arbre ? Quel arbre serait avantagé ?</p>
+    </div>
+
+    <div class="check">
+      <h4>Validation de l'étape 6</h4>
+      <ul>
+        <li>Pour chaque arbre, les mesures tenues à jour sont celles que calculent vos fonctions récursives, et la somme des nombres de rameaux des arbres est égale à la somme des compteurs d'occupation de la grille. Mieux : l'occupation tenue à jour est exactement celle d'une nouvelle grille, remplie avec <code>addTreeToGrid</code> pour tous les arbres.</li>
+        <li>Avec un seul arbre (\(K = 1\), \(E = 10\)), \(A = 0\) (aucune ombre), la plantation identique et la graine 3, après 8 saisons, vous retrouvez l'arbre de <code>arbre_moyen.txt</code>, décalé de 5 vers la droite : chaque rameau a la même altitude, et une position \(x\) plus grande de 5.</li>
+        <li>Avec la même graine, deux simulations donnent exactement la même forêt.</li>
+        <li>Avec \(K = 24\), \(E = 3\), \(A = 0{,}25\), \(H_{max} = 160\), \(P_{max} = 20\,000\), la graine 1 et 32 saisons, la forêt compte 6 809 rameaux ; l'arbre 0 a 352 rameaux, une hauteur de 32, une cime à 33,009, une extension de 17,479 et 87 bourgeons ; l'arbre 7, étouffé par ses voisins, n'a que 17 rameaux, une hauteur de 8 et une extension de 3,941.</li>
+      </ul>
+    </div>
+
+    <div class="callout">
+      <h4>Voir votre forêt</h4>
+      <p>La fonction <code>saveForest</code>, fournie dans <code>sauver_foret.c</code>, écrit une forêt dans un fichier texte. La page <a href="../../visualiseur/FR/">Visualiseur</a> dessine ce fichier : vous obtenez une image PNG et un GIF animé de sa pousse. Elle accepte aussi les fichiers écrits par <code>saveTree</code> (partie 1).</p>
+      <p>Le fichier fourni <code>data/foret_exemple.txt</code> est la forêt de la dernière validation (\(K = 24\), graine 1, 32 saisons) : écrivez la vôtre avec <code>saveForest</code>, et déposez les deux fichiers ; vous devez obtenir exactement la même image.</p>
+    </div>
+
+    <div class="option">
+      <h4><span class="badge">En option</span>Mettre à jour la grille pendant la pousse</h4>
+      <p>Programmez la variante où la grille est recalculée après chaque arbre, et comparez les hauteurs des arbres numéro 0 et numéro \(K - 1\) dans les deux versions.</p>
+    </div>
+  </article>
+</section>
+
+<!-- ================================================================ HASARD -->
+<section id="hasard">
+  <h2><span class="num">5</span>Le hasard en C</h2>
+  <p>Vous continuez à utiliser le module <code>alea.h</code> / <code>alea.c</code> de la partie 1 ; la fonction <code>rand()</code> reste interdite. La graine est un paramètre de la simulation : avec la même graine, on obtient exactement la même forêt.</p>
+  <p class="warn">⚠️ Comme en partie 1, n'appelez pas <code>randomInit</code> vous-même, avec <strong>une seule exception</strong> : <code>plantForest</code>, qui initialise le hasard une fois pour toute la forêt, après avoir créé ses arbres.</p>
+
+  <h3 class="caption-title">Tirer dans une table</h3>
+  <p>Pour choisir 1, 2 ou 3 nouveaux rameaux dans 70 %, 25 % et 5 % des cas, on tire un nombre \(u\) = <code>randomReal()</code>, puis on renvoie 1 si \(u &lt; 0{,}70\) ; sinon 2 si \(u &lt; 0{,}70 + 0{,}25 = 0{,}95\) ; sinon 3. Chaque résultat correspond à une « tranche » de l'intervalle entre 0 et 1, dont la largeur est le pourcentage voulu.</p>
+  <p>Avec une table de \(n\) pourcentages, on fait de même : on cumule les pourcentages, tranche après tranche, jusqu'à la première tranche dont le cumul dépasse \(u\).</p>
+</section>
+
+<footer class="foot">
+  <p class="credit"><svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - IA Claude code</p>
+</footer>
+
+</main>
+</div>
+</body>
+</html>

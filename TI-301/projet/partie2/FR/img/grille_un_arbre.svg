@@ -1,0 +1,720 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="898" height="512" viewBox="0 0 898 512" font-family="sans-serif">
+<rect width="100%" height="100%" fill="white"/>
+<style>
+  .r { fill: none; stroke-dasharray: 1 1; stroke-dashoffset: 1; animation: pousse 0.66s linear forwards; }
+  .v { opacity: 0; animation: apparait 0.01s forwards, disparait 0.01s forwards; }
+  .dernier { animation: apparait 0.01s forwards; }
+  @keyframes pousse    { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes apparait  { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes disparait { from { opacity: 1; } to { opacity: 0; } }
+  .num { font-size: 14px; text-anchor: middle; dominant-baseline: central; }
+  .ax { font-size: 11px; fill: rgb(110,110,110); }
+</style>
+<clipPath id="c0"><rect x="40" y="48" width="400" height="400"/></clipPath>
+<clipPath id="c1"><rect x="486" y="48" width="400" height="400"/></clipPath>
+<text x="40" y="22" font-size="15" font-weight="bold">Occupation</text>
+<text x="486" y="22" font-size="15" font-weight="bold">Lumière (A = 0,5)</text>
+<text class="v" style="animation-delay:0.00s, 1.86s" x="440" y="22" font-size="15" text-anchor="end">Saison 0</text>
+<text class="v" style="animation-delay:1.86s, 3.06s" x="440" y="22" font-size="15" text-anchor="end">Saison 1</text>
+<text class="v" style="animation-delay:3.06s, 4.26s" x="440" y="22" font-size="15" text-anchor="end">Saison 2</text>
+<text class="v" style="animation-delay:4.26s, 5.46s" x="440" y="22" font-size="15" text-anchor="end">Saison 3</text>
+<text class="v" style="animation-delay:5.46s, 6.66s" x="440" y="22" font-size="15" text-anchor="end">Saison 4</text>
+<text class="v" style="animation-delay:6.66s, 7.86s" x="440" y="22" font-size="15" text-anchor="end">Saison 5</text>
+<text class="v" style="animation-delay:7.86s, 9.06s" x="440" y="22" font-size="15" text-anchor="end">Saison 6</text>
+<text class="v" style="animation-delay:9.06s, 10.26s" x="440" y="22" font-size="15" text-anchor="end">Saison 7</text>
+<text class="v dernier" style="animation-delay:10.26s" x="440" y="22" font-size="15" text-anchor="end">Saison 8</text>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="40" y="408" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="80" y="408" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="120" y="408" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="160" y="408" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="200" y="408" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="240" y="408" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="280" y="408" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="320" y="408" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="360" y="408" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="400" y="408" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="40" y="368" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="80" y="368" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="120" y="368" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="160" y="368" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 1.86s"><rect x="200" y="368" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:1.86s"><rect x="200" y="368" width="40" height="40" fill="rgb(233,240,228)"/><text x="203" y="380" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 1.86s"><rect x="240" y="368" width="40" height="40" fill="rgb(233,240,228)"/><text x="243" y="380" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:1.86s"><rect x="240" y="368" width="40" height="40" fill="rgb(233,240,228)"/><text x="243" y="380" fill="rgb(60,90,50)" font-weight="bold" font-size="12">2</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="280" y="368" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="320" y="368" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="360" y="368" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="400" y="368" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="40" y="328" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="80" y="328" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 4.26s"><rect x="120" y="328" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:4.26s"><rect x="120" y="328" width="40" height="40" fill="rgb(233,240,228)"/><text x="123" y="340" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 3.06s"><rect x="160" y="328" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:3.06s"><rect x="160" y="328" width="40" height="40" fill="rgb(233,240,228)"/><text x="163" y="340" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="200" y="328" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 3.06s"><rect x="240" y="328" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:3.06s"><rect x="240" y="328" width="40" height="40" fill="rgb(233,240,228)"/><text x="243" y="340" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="280" y="328" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="320" y="328" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="360" y="328" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="400" y="328" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="40" y="288" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 5.46s"><rect x="80" y="288" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:5.46s"><rect x="80" y="288" width="40" height="40" fill="rgb(233,240,228)"/><text x="83" y="300" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 5.46s"><rect x="120" y="288" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:5.46s"><rect x="120" y="288" width="40" height="40" fill="rgb(233,240,228)"/><text x="123" y="300" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 4.26s"><rect x="160" y="288" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:4.26s"><rect x="160" y="288" width="40" height="40" fill="rgb(233,240,228)"/><text x="163" y="300" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="200" y="288" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 4.26s"><rect x="240" y="288" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:4.26s"><rect x="240" y="288" width="40" height="40" fill="rgb(233,240,228)"/><text x="243" y="300" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="280" y="288" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="320" y="288" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="360" y="288" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="400" y="288" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 6.66s"><rect x="40" y="248" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:6.66s"><rect x="40" y="248" width="40" height="40" fill="rgb(233,240,228)"/><text x="43" y="260" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="80" y="248" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 6.66s"><rect x="120" y="248" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:6.66s"><rect x="120" y="248" width="40" height="40" fill="rgb(233,240,228)"/><text x="123" y="260" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 5.46s"><rect x="160" y="248" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:5.46s"><rect x="160" y="248" width="40" height="40" fill="rgb(233,240,228)"/><text x="163" y="260" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="200" y="248" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 5.46s"><rect x="240" y="248" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:5.46s"><rect x="240" y="248" width="40" height="40" fill="rgb(233,240,228)"/><text x="243" y="260" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="280" y="248" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="320" y="248" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="360" y="248" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="400" y="248" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="40" y="208" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="40" y="208" width="40" height="40" fill="rgb(233,240,228)"/><text x="43" y="220" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="80" y="208" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="120" y="208" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="120" y="208" width="40" height="40" fill="rgb(233,240,228)"/><text x="123" y="220" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 6.66s"><rect x="160" y="208" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:6.66s"><rect x="160" y="208" width="40" height="40" fill="rgb(233,240,228)"/><text x="163" y="220" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="200" y="208" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 6.66s"><rect x="240" y="208" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:6.66s"><rect x="240" y="208" width="40" height="40" fill="rgb(233,240,228)"/><text x="243" y="220" fill="rgb(60,90,50)" font-weight="bold" font-size="12">2</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="280" y="208" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="320" y="208" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="320" y="208" width="40" height="40" fill="rgb(233,240,228)"/><text x="323" y="220" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="360" y="208" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="400" y="208" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="40" y="168" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="80" y="168" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:9.06s"><rect x="80" y="168" width="40" height="40" fill="rgb(233,240,228)"/><text x="83" y="180" fill="rgb(60,90,50)" font-weight="bold" font-size="12">2</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="120" y="168" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="160" y="168" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="160" y="168" width="40" height="40" fill="rgb(233,240,228)"/><text x="163" y="180" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="200" y="168" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="240" y="168" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="240" y="168" width="40" height="40" fill="rgb(233,240,228)"/><text x="243" y="180" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="280" y="168" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="320" y="168" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:9.06s"><rect x="320" y="168" width="40" height="40" fill="rgb(233,240,228)"/><text x="323" y="180" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="360" y="168" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="360" y="168" width="40" height="40" fill="rgb(233,240,228)"/><text x="363" y="180" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="360" y="168" width="40" height="40" fill="rgb(233,240,228)"/><text x="363" y="180" fill="rgb(60,90,50)" font-weight="bold" font-size="12">2</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="400" y="168" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="400" y="168" width="40" height="40" fill="rgb(233,240,228)"/><text x="403" y="180" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="40" y="128" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="40" y="128" width="40" height="40" fill="rgb(233,240,228)"/><text x="43" y="140" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="80" y="128" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="80" y="128" width="40" height="40" fill="rgb(233,240,228)"/><text x="83" y="140" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="120" y="128" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="120" y="128" width="40" height="40" fill="rgb(233,240,228)"/><text x="123" y="140" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="120" y="128" width="40" height="40" fill="rgb(233,240,228)"/><text x="123" y="140" fill="rgb(60,90,50)" font-weight="bold" font-size="12">2</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="160" y="128" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="200" y="128" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="240" y="128" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="280" y="128" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:9.06s"><rect x="280" y="128" width="40" height="40" fill="rgb(233,240,228)"/><text x="283" y="140" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="320" y="128" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="360" y="128" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="360" y="128" width="40" height="40" fill="rgb(233,240,228)"/><text x="363" y="140" fill="rgb(60,90,50)" font-weight="bold" font-size="12">3</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="400" y="128" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="40" y="88" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="80" y="88" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="120" y="88" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="120" y="88" width="40" height="40" fill="rgb(233,240,228)"/><text x="123" y="100" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="160" y="88" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="200" y="88" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="240" y="88" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="280" y="88" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="280" y="88" width="40" height="40" fill="rgb(233,240,228)"/><text x="283" y="100" fill="rgb(60,90,50)" font-weight="bold" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="320" y="88" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="360" y="88" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="400" y="88" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="40" y="48" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="80" y="48" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="120" y="48" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="160" y="48" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="200" y="48" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="240" y="48" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="280" y="48" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="320" y="48" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="360" y="48" width="40" height="40" fill="white"/></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="400" y="48" width="40" height="40" fill="white"/></g>
+<g class="v" style="animation-delay:0.00s, 6.66s"><rect x="486" y="408" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="506.0" y="428.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="486" y="408" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="506.0" y="428.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:7.86s, 10.26s"><rect x="486" y="408" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="506.0" y="428.0" fill="white" font-size="12">0,25</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="486" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="506.0" y="428.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:0.00s, 5.46s"><rect x="526" y="408" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="546.0" y="428.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:5.46s, 9.06s"><rect x="526" y="408" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="546.0" y="428.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="526" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="546.0" y="428.0" fill="white" font-size="12">0,13</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="526" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="546.0" y="428.0" fill="white" font-size="12">0,06</text></g>
+<g class="v" style="animation-delay:0.00s, 4.26s"><rect x="566" y="408" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="586.0" y="428.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:4.26s, 5.46s"><rect x="566" y="408" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="586.0" y="428.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:5.46s, 6.66s"><rect x="566" y="408" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="586.0" y="428.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="566" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="428.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:7.86s, 9.06s"><rect x="566" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="428.0" fill="white" font-size="12">0,06</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="566" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="428.0" fill="white" font-size="12">0,03</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="566" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="428.0" fill="white" font-size="12">0,01</text></g>
+<g class="v" style="animation-delay:0.00s, 3.06s"><rect x="606" y="408" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="626.0" y="428.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:3.06s, 4.26s"><rect x="606" y="408" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="626.0" y="428.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:4.26s, 5.46s"><rect x="606" y="408" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="626.0" y="428.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:5.46s, 6.66s"><rect x="606" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="626.0" y="428.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="606" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="626.0" y="428.0" fill="white" font-size="12">0,06</text></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="606" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="626.0" y="428.0" fill="white" font-size="12">0,03</text></g>
+<g class="v" style="animation-delay:0.00s, 1.86s"><rect x="646" y="408" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="666.0" y="428.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:1.86s"><rect x="646" y="408" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="666.0" y="428.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:0.00s, 1.86s"><rect x="686" y="408" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="706.0" y="428.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:1.86s, 3.06s"><rect x="686" y="408" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="706.0" y="428.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:3.06s, 4.26s"><rect x="686" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="428.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:4.26s, 5.46s"><rect x="686" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="428.0" fill="white" font-size="12">0,06</text></g>
+<g class="v" style="animation-delay:5.46s, 6.66s"><rect x="686" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="428.0" fill="white" font-size="12">0,03</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="686" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="428.0" fill="white" font-size="12">0,01</text></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="686" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="428.0" fill="white" font-size="12">≈0</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="726" y="408" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="746.0" y="428.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="726" y="408" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="746.0" y="428.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="726" y="408" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="746.0" y="428.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="766" y="408" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="786.0" y="428.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:7.86s, 9.06s"><rect x="766" y="408" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="786.0" y="428.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:9.06s"><rect x="766" y="408" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="786.0" y="428.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="806" y="408" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="826.0" y="428.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="806" y="408" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="826.0" y="428.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="806" y="408" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="826.0" y="428.0" fill="white" font-size="12">0,03</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="846" y="408" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="866.0" y="428.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="846" y="408" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="866.0" y="428.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:0.00s, 6.66s"><rect x="486" y="368" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="506.0" y="388.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="486" y="368" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="506.0" y="388.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:7.86s, 10.26s"><rect x="486" y="368" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="506.0" y="388.0" fill="white" font-size="12">0,25</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="486" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="506.0" y="388.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:0.00s, 5.46s"><rect x="526" y="368" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="546.0" y="388.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:5.46s, 9.06s"><rect x="526" y="368" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="546.0" y="388.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="526" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="546.0" y="388.0" fill="white" font-size="12">0,13</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="526" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="546.0" y="388.0" fill="white" font-size="12">0,06</text></g>
+<g class="v" style="animation-delay:0.00s, 4.26s"><rect x="566" y="368" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="586.0" y="388.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:4.26s, 5.46s"><rect x="566" y="368" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="586.0" y="388.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:5.46s, 6.66s"><rect x="566" y="368" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="586.0" y="388.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="566" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="388.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:7.86s, 9.06s"><rect x="566" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="388.0" fill="white" font-size="12">0,06</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="566" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="388.0" fill="white" font-size="12">0,03</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="566" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="388.0" fill="white" font-size="12">0,01</text></g>
+<g class="v" style="animation-delay:0.00s, 3.06s"><rect x="606" y="368" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="626.0" y="388.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:3.06s, 4.26s"><rect x="606" y="368" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="626.0" y="388.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:4.26s, 5.46s"><rect x="606" y="368" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="626.0" y="388.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:5.46s, 6.66s"><rect x="606" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="626.0" y="388.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="606" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="626.0" y="388.0" fill="white" font-size="12">0,06</text></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="606" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="626.0" y="388.0" fill="white" font-size="12">0,03</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="646" y="368" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="666.0" y="388.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 3.06s"><rect x="686" y="368" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="706.0" y="388.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:3.06s, 4.26s"><rect x="686" y="368" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="706.0" y="388.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:4.26s, 5.46s"><rect x="686" y="368" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="706.0" y="388.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:5.46s, 6.66s"><rect x="686" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="388.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="686" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="388.0" fill="white" font-size="12">0,03</text></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="686" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="388.0" fill="white" font-size="12">0,02</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="726" y="368" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="746.0" y="388.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="726" y="368" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="746.0" y="388.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="726" y="368" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="746.0" y="388.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="766" y="368" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="786.0" y="388.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:7.86s, 9.06s"><rect x="766" y="368" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="786.0" y="388.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:9.06s"><rect x="766" y="368" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="786.0" y="388.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="806" y="368" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="826.0" y="388.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="806" y="368" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="826.0" y="388.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="806" y="368" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="826.0" y="388.0" fill="white" font-size="12">0,03</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="846" y="368" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="866.0" y="388.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="846" y="368" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="866.0" y="388.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:0.00s, 6.66s"><rect x="486" y="328" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="506.0" y="348.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="486" y="328" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="506.0" y="348.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:7.86s, 10.26s"><rect x="486" y="328" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="506.0" y="348.0" fill="white" font-size="12">0,25</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="486" y="328" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="506.0" y="348.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:0.00s, 5.46s"><rect x="526" y="328" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="546.0" y="348.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:5.46s, 9.06s"><rect x="526" y="328" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="546.0" y="348.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="526" y="328" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="546.0" y="348.0" fill="white" font-size="12">0,13</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="526" y="328" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="546.0" y="348.0" fill="white" font-size="12">0,06</text></g>
+<g class="v" style="animation-delay:0.00s, 5.46s"><rect x="566" y="328" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="586.0" y="348.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:5.46s, 6.66s"><rect x="566" y="328" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="586.0" y="348.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="566" y="328" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="586.0" y="348.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:7.86s, 9.06s"><rect x="566" y="328" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="348.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="566" y="328" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="348.0" fill="white" font-size="12">0,06</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="566" y="328" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="348.0" fill="white" font-size="12">0,02</text></g>
+<g class="v" style="animation-delay:0.00s, 4.26s"><rect x="606" y="328" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="626.0" y="348.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:4.26s, 5.46s"><rect x="606" y="328" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="626.0" y="348.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:5.46s, 6.66s"><rect x="606" y="328" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="626.0" y="348.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="606" y="328" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="626.0" y="348.0" fill="white" font-size="12">0,13</text></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="606" y="328" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="626.0" y="348.0" fill="white" font-size="12">0,06</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="646" y="328" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="666.0" y="348.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 4.26s"><rect x="686" y="328" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="706.0" y="348.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:4.26s, 5.46s"><rect x="686" y="328" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="706.0" y="348.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:5.46s, 6.66s"><rect x="686" y="328" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="706.0" y="348.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="686" y="328" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="348.0" fill="white" font-size="12">0,06</text></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="686" y="328" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="348.0" fill="white" font-size="12">0,03</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="726" y="328" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="746.0" y="348.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="726" y="328" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="746.0" y="348.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="726" y="328" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="746.0" y="348.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="766" y="328" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="786.0" y="348.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:7.86s, 9.06s"><rect x="766" y="328" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="786.0" y="348.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:9.06s"><rect x="766" y="328" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="786.0" y="348.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="806" y="328" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="826.0" y="348.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="806" y="328" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="826.0" y="348.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="806" y="328" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="826.0" y="348.0" fill="white" font-size="12">0,03</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="846" y="328" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="866.0" y="348.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="846" y="328" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="866.0" y="348.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:0.00s, 6.66s"><rect x="486" y="288" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="506.0" y="308.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="486" y="288" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="506.0" y="308.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:7.86s, 10.26s"><rect x="486" y="288" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="506.0" y="308.0" fill="white" font-size="12">0,25</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="486" y="288" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="506.0" y="308.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="526" y="288" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="546.0" y="308.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="526" y="288" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="546.0" y="308.0" fill="white" font-size="12">0,25</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="526" y="288" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="546.0" y="308.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:0.00s, 6.66s"><rect x="566" y="288" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="586.0" y="308.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="566" y="288" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="586.0" y="308.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:7.86s, 9.06s"><rect x="566" y="288" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="586.0" y="308.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="566" y="288" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="308.0" fill="white" font-size="12">0,13</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="566" y="288" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="308.0" fill="white" font-size="12">0,03</text></g>
+<g class="v" style="animation-delay:0.00s, 5.46s"><rect x="606" y="288" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="626.0" y="308.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:5.46s, 6.66s"><rect x="606" y="288" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="626.0" y="308.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="606" y="288" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="626.0" y="308.0" fill="white" font-size="12">0,25</text></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="606" y="288" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="626.0" y="308.0" fill="white" font-size="12">0,13</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="646" y="288" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="666.0" y="308.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 5.46s"><rect x="686" y="288" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="706.0" y="308.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:5.46s, 6.66s"><rect x="686" y="288" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="706.0" y="308.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="686" y="288" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="308.0" fill="white" font-size="12">0,13</text></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="686" y="288" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="308.0" fill="white" font-size="12">0,06</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="726" y="288" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="746.0" y="308.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="726" y="288" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="746.0" y="308.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="726" y="288" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="746.0" y="308.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="766" y="288" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="786.0" y="308.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:7.86s, 9.06s"><rect x="766" y="288" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="786.0" y="308.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:9.06s"><rect x="766" y="288" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="786.0" y="308.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="806" y="288" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="826.0" y="308.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="806" y="288" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="826.0" y="308.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="806" y="288" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="826.0" y="308.0" fill="white" font-size="12">0,03</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="846" y="288" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="866.0" y="308.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="846" y="288" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="866.0" y="308.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="486" y="248" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="506.0" y="268.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:7.86s, 10.26s"><rect x="486" y="248" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="506.0" y="268.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="486" y="248" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="506.0" y="268.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="526" y="248" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="546.0" y="268.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="526" y="248" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="546.0" y="268.0" fill="white" font-size="12">0,25</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="526" y="248" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="546.0" y="268.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="566" y="248" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="586.0" y="268.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:7.86s, 9.06s"><rect x="566" y="248" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="586.0" y="268.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="566" y="248" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="586.0" y="268.0" fill="white" font-size="12">0,25</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="566" y="248" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="268.0" fill="white" font-size="12">0,06</text></g>
+<g class="v" style="animation-delay:0.00s, 6.66s"><rect x="606" y="248" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="626.0" y="268.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="606" y="248" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="626.0" y="268.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="606" y="248" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="626.0" y="268.0" fill="white" font-size="12">0,25</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="646" y="248" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="666.0" y="268.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 6.66s"><rect x="686" y="248" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="706.0" y="268.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:6.66s, 7.86s"><rect x="686" y="248" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="706.0" y="268.0" fill="white" font-size="12">0,25</text></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="686" y="248" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="706.0" y="268.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="726" y="248" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="746.0" y="268.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="726" y="248" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="746.0" y="268.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="726" y="248" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="746.0" y="268.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="766" y="248" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="786.0" y="268.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:7.86s, 9.06s"><rect x="766" y="248" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="786.0" y="268.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:9.06s"><rect x="766" y="248" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="786.0" y="268.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="806" y="248" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="826.0" y="268.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="806" y="248" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="826.0" y="268.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="806" y="248" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="826.0" y="268.0" fill="white" font-size="12">0,03</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="846" y="248" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="866.0" y="268.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="846" y="248" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="866.0" y="268.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="486" y="208" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="506.0" y="228.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="486" y="208" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="506.0" y="228.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="526" y="208" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="546.0" y="228.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="526" y="208" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="546.0" y="228.0" fill="white" font-size="12">0,25</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="526" y="208" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="546.0" y="228.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="566" y="208" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="586.0" y="228.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="566" y="208" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="586.0" y="228.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="566" y="208" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="228.0" fill="white" font-size="12">0,13</text></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="606" y="208" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="626.0" y="228.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="606" y="208" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="626.0" y="228.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="646" y="208" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="666.0" y="228.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 7.86s"><rect x="686" y="208" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="706.0" y="228.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:7.86s"><rect x="686" y="208" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="706.0" y="228.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="726" y="208" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="746.0" y="228.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="726" y="208" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="746.0" y="228.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="726" y="208" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="746.0" y="228.0" fill="white" font-size="12">0,25</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="766" y="208" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="786.0" y="228.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:9.06s"><rect x="766" y="208" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="786.0" y="228.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="806" y="208" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="826.0" y="228.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="806" y="208" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="826.0" y="228.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="806" y="208" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="826.0" y="228.0" fill="white" font-size="12">0,03</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="846" y="208" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="866.0" y="228.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="846" y="208" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="866.0" y="228.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="486" y="168" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="506.0" y="188.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="486" y="168" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="506.0" y="188.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="526" y="168" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="546.0" y="188.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="526" y="168" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="546.0" y="188.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="566" y="168" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="586.0" y="188.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="566" y="168" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="586.0" y="188.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="566" y="168" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="586.0" y="188.0" fill="white" font-size="12">0,13</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="606" y="168" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="626.0" y="188.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="646" y="168" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="666.0" y="188.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="686" y="168" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="706.0" y="188.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 9.06s"><rect x="726" y="168" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="746.0" y="188.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:9.06s, 10.26s"><rect x="726" y="168" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="746.0" y="188.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="726" y="168" width="40" height="40" fill="rgb(150,150,160)"/><text class="num" x="746.0" y="188.0" fill="white" font-size="12">0,25</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="766" y="168" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="786.0" y="188.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="806" y="168" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="826.0" y="188.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="806" y="168" width="40" height="40" fill="rgb(70,80,100)"/><text class="num" x="826.0" y="188.0" fill="white" font-size="12">0,13</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="846" y="168" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="866.0" y="188.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="486" y="128" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="506.0" y="148.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="526" y="128" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="546.0" y="148.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="566" y="128" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="586.0" y="148.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="566" y="128" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="586.0" y="148.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="606" y="128" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="626.0" y="148.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="646" y="128" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="666.0" y="148.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="686" y="128" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="706.0" y="148.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v" style="animation-delay:0.00s, 10.26s"><rect x="726" y="128" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="746.0" y="148.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:10.26s"><rect x="726" y="128" width="40" height="40" fill="rgb(240,200,120)"/><text class="num" x="746.0" y="148.0" fill="rgb(80,60,20)" font-size="12">0,5</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="766" y="128" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="786.0" y="148.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="806" y="128" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="826.0" y="148.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="846" y="128" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="866.0" y="148.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="486" y="88" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="506.0" y="108.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="526" y="88" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="546.0" y="108.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="566" y="88" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="586.0" y="108.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="606" y="88" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="626.0" y="108.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="646" y="88" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="666.0" y="108.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="686" y="88" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="706.0" y="108.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="726" y="88" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="746.0" y="108.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="766" y="88" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="786.0" y="108.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="806" y="88" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="826.0" y="108.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="846" y="88" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="866.0" y="108.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="486" y="48" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="506.0" y="68.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="526" y="48" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="546.0" y="68.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="566" y="48" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="586.0" y="68.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="606" y="48" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="626.0" y="68.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="646" y="48" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="666.0" y="68.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="686" y="48" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="706.0" y="68.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="726" y="48" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="746.0" y="68.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="766" y="48" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="786.0" y="68.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="806" y="48" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="826.0" y="68.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g class="v dernier" style="animation-delay:0.00s"><rect x="846" y="48" width="40" height="40" fill="rgb(255,241,184)"/><text class="num" x="866.0" y="68.0" fill="rgb(90,80,40)" font-size="12">1</text></g>
+<g stroke="rgb(200,200,200)" stroke-width="1">
+<line x1="40" y1="48" x2="40" y2="448"/>
+<line x1="80" y1="48" x2="80" y2="448"/>
+<line x1="120" y1="48" x2="120" y2="448"/>
+<line x1="160" y1="48" x2="160" y2="448"/>
+<line x1="200" y1="48" x2="200" y2="448"/>
+<line x1="240" y1="48" x2="240" y2="448"/>
+<line x1="280" y1="48" x2="280" y2="448"/>
+<line x1="320" y1="48" x2="320" y2="448"/>
+<line x1="360" y1="48" x2="360" y2="448"/>
+<line x1="400" y1="48" x2="400" y2="448"/>
+<line x1="440" y1="48" x2="440" y2="448"/>
+<line x1="40" y1="48" x2="440" y2="48"/>
+<line x1="40" y1="88" x2="440" y2="88"/>
+<line x1="40" y1="128" x2="440" y2="128"/>
+<line x1="40" y1="168" x2="440" y2="168"/>
+<line x1="40" y1="208" x2="440" y2="208"/>
+<line x1="40" y1="248" x2="440" y2="248"/>
+<line x1="40" y1="288" x2="440" y2="288"/>
+<line x1="40" y1="328" x2="440" y2="328"/>
+<line x1="40" y1="368" x2="440" y2="368"/>
+<line x1="40" y1="408" x2="440" y2="408"/>
+<line x1="40" y1="448" x2="440" y2="448"/>
+</g>
+<line x1="40" y1="448" x2="440" y2="448" stroke="rgb(120,100,80)" stroke-width="2"/>
+<text class="ax" x="60.0" y="464" text-anchor="middle">0</text>
+<text class="ax" x="100.0" y="464" text-anchor="middle">1</text>
+<text class="ax" x="140.0" y="464" text-anchor="middle">2</text>
+<text class="ax" x="180.0" y="464" text-anchor="middle">3</text>
+<text class="ax" x="220.0" y="464" text-anchor="middle">4</text>
+<text class="ax" x="260.0" y="464" text-anchor="middle">5</text>
+<text class="ax" x="300.0" y="464" text-anchor="middle">6</text>
+<text class="ax" x="340.0" y="464" text-anchor="middle">7</text>
+<text class="ax" x="380.0" y="464" text-anchor="middle">8</text>
+<text class="ax" x="420.0" y="464" text-anchor="middle">9</text>
+<text class="ax" x="34" y="432.0" text-anchor="end">0</text>
+<text class="ax" x="34" y="392.0" text-anchor="end">1</text>
+<text class="ax" x="34" y="352.0" text-anchor="end">2</text>
+<text class="ax" x="34" y="312.0" text-anchor="end">3</text>
+<text class="ax" x="34" y="272.0" text-anchor="end">4</text>
+<text class="ax" x="34" y="232.0" text-anchor="end">5</text>
+<text class="ax" x="34" y="192.0" text-anchor="end">6</text>
+<text class="ax" x="34" y="152.0" text-anchor="end">7</text>
+<text class="ax" x="34" y="112.0" text-anchor="end">8</text>
+<text class="ax" x="34" y="72.0" text-anchor="end">9</text>
+<g stroke="rgb(200,200,200)" stroke-width="1">
+<line x1="486" y1="48" x2="486" y2="448"/>
+<line x1="526" y1="48" x2="526" y2="448"/>
+<line x1="566" y1="48" x2="566" y2="448"/>
+<line x1="606" y1="48" x2="606" y2="448"/>
+<line x1="646" y1="48" x2="646" y2="448"/>
+<line x1="686" y1="48" x2="686" y2="448"/>
+<line x1="726" y1="48" x2="726" y2="448"/>
+<line x1="766" y1="48" x2="766" y2="448"/>
+<line x1="806" y1="48" x2="806" y2="448"/>
+<line x1="846" y1="48" x2="846" y2="448"/>
+<line x1="886" y1="48" x2="886" y2="448"/>
+<line x1="486" y1="48" x2="886" y2="48"/>
+<line x1="486" y1="88" x2="886" y2="88"/>
+<line x1="486" y1="128" x2="886" y2="128"/>
+<line x1="486" y1="168" x2="886" y2="168"/>
+<line x1="486" y1="208" x2="886" y2="208"/>
+<line x1="486" y1="248" x2="886" y2="248"/>
+<line x1="486" y1="288" x2="886" y2="288"/>
+<line x1="486" y1="328" x2="886" y2="328"/>
+<line x1="486" y1="368" x2="886" y2="368"/>
+<line x1="486" y1="408" x2="886" y2="408"/>
+<line x1="486" y1="448" x2="886" y2="448"/>
+</g>
+<line x1="486" y1="448" x2="886" y2="448" stroke="rgb(120,100,80)" stroke-width="2"/>
+<text class="ax" x="506.0" y="464" text-anchor="middle">0</text>
+<text class="ax" x="546.0" y="464" text-anchor="middle">1</text>
+<text class="ax" x="586.0" y="464" text-anchor="middle">2</text>
+<text class="ax" x="626.0" y="464" text-anchor="middle">3</text>
+<text class="ax" x="666.0" y="464" text-anchor="middle">4</text>
+<text class="ax" x="706.0" y="464" text-anchor="middle">5</text>
+<text class="ax" x="746.0" y="464" text-anchor="middle">6</text>
+<text class="ax" x="786.0" y="464" text-anchor="middle">7</text>
+<text class="ax" x="826.0" y="464" text-anchor="middle">8</text>
+<text class="ax" x="866.0" y="464" text-anchor="middle">9</text>
+<text class="ax" x="480" y="432.0" text-anchor="end">0</text>
+<text class="ax" x="480" y="392.0" text-anchor="end">1</text>
+<text class="ax" x="480" y="352.0" text-anchor="end">2</text>
+<text class="ax" x="480" y="312.0" text-anchor="end">3</text>
+<text class="ax" x="480" y="272.0" text-anchor="end">4</text>
+<text class="ax" x="480" y="232.0" text-anchor="end">5</text>
+<text class="ax" x="480" y="192.0" text-anchor="end">6</text>
+<text class="ax" x="480" y="152.0" text-anchor="end">7</text>
+<text class="ax" x="480" y="112.0" text-anchor="end">8</text>
+<text class="ax" x="480" y="72.0" text-anchor="end">9</text>
+<text class="ax" x="40" y="484">colonnes 0 à 9 ; rangées 0 à 9 (la forêt fait le tour : la colonne 9 touche la colonne 0)</text>
+<rect x="486" y="474" width="14" height="12" fill="rgb(255,241,184)" stroke="rgb(170,170,170)"/>
+<text class="ax" x="506" y="484">L ≥ 0,7 : pousse 95 %</text>
+<rect x="686" y="474" width="14" height="12" fill="rgb(240,200,120)" stroke="rgb(170,170,170)"/>
+<text class="ax" x="706" y="484">0,4 ≤ L &lt; 0,7 : pousse 70 %</text>
+<rect x="486" y="492" width="14" height="12" fill="rgb(150,150,160)" stroke="rgb(170,170,170)"/>
+<text class="ax" x="506" y="502">0,15 ≤ L &lt; 0,4 : pousse 40 %</text>
+<rect x="686" y="492" width="14" height="12" fill="rgb(70,80,100)" stroke="rgb(170,170,170)"/>
+<text class="ax" x="706" y="502">L &lt; 0,15 : dormance</text>
+<g clip-path="url(#c0)" opacity="1.0">
+<path class="r" pathLength="1" style="animation-delay:0.00s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M240.0 448.0 L240.0 408.0"/>
+<path class="r" pathLength="1" style="animation-delay:1.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M240.0 408.0 L241.2 378.3"/>
+<path class="r" pathLength="1" style="animation-delay:1.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M240.0 408.0 L216.4 387.5"/>
+<path class="r" pathLength="1" style="animation-delay:2.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M241.2 378.3 L249.0 334.2"/>
+<path class="r" pathLength="1" style="animation-delay:2.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M216.4 387.5 L180.6 359.9"/>
+<path class="r" pathLength="1" style="animation-delay:3.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M249.0 334.2 L250.2 302.1"/>
+<path class="r" pathLength="1" style="animation-delay:3.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M180.6 359.9 L150.2 328.0"/>
+<path class="r" pathLength="1" style="animation-delay:3.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M180.6 359.9 L177.4 310.7"/>
+<path class="r" pathLength="1" style="animation-delay:4.80s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M250.2 302.1 L254.4 253.3"/>
+<path class="r" pathLength="1" style="animation-delay:4.80s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M150.2 328.0 L112.3 296.1"/>
+<path class="r" pathLength="1" style="animation-delay:4.80s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M150.2 328.0 L145.2 289.0"/>
+<path class="r" pathLength="1" style="animation-delay:4.80s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M177.4 310.7 L173.9 279.1"/>
+<path class="r" pathLength="1" style="animation-delay:6.00s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M254.4 253.3 L261.8 218.5"/>
+<path class="r" pathLength="1" style="animation-delay:6.00s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M254.4 253.3 L279.4 239.9"/>
+<path class="r" pathLength="1" style="animation-delay:6.00s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M112.3 296.1 L80.0 265.1"/>
+<path class="r" pathLength="1" style="animation-delay:6.00s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M145.2 289.0 L139.2 251.2"/>
+<path class="r" pathLength="1" style="animation-delay:6.00s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M173.9 279.1 L171.1 242.3"/>
+<path class="r" pathLength="1" style="animation-delay:7.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M261.8 218.5 L274.6 182.7"/>
+<path class="r" pathLength="1" style="animation-delay:7.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M279.4 239.9 L322.8 216.9"/>
+<path class="r" pathLength="1" style="animation-delay:7.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M80.0 265.1 L57.4 246.3"/>
+<path class="r" pathLength="1" style="animation-delay:7.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M139.2 251.2 L132.8 222.0"/>
+<path class="r" pathLength="1" style="animation-delay:7.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M171.1 242.3 L165.9 195.9"/>
+<path class="r" pathLength="1" style="animation-delay:8.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M274.6 182.7 L283.9 150.8"/>
+<path class="r" pathLength="1" style="animation-delay:8.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M322.8 216.9 L362.2 186.3"/>
+<path class="r" pathLength="1" style="animation-delay:8.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M322.8 216.9 L345.4 171.1"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M57.4 246.3 L24.0 207.5"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M457.4 246.3 L424.0 207.5"/>
+<path class="r" pathLength="1" style="animation-delay:8.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M132.8 222.0 L114.1 175.1"/>
+<path class="r" pathLength="1" style="animation-delay:8.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M132.8 222.0 L93.0 192.9"/>
+<path class="r" pathLength="1" style="animation-delay:8.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M165.9 195.9 L153.4 149.0"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M283.9 150.8 L288.7 115.1"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M362.2 186.3 L390.6 159.9"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M362.2 186.3 L363.4 154.4"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M362.2 186.3 L395.1 180.5"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M345.4 171.1 L361.1 147.0"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M114.1 175.1 L96.7 139.4"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M93.0 192.9 L63.3 164.7"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M153.4 149.0 L146.8 121.0"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M153.4 149.0 L127.5 138.3"/>
+<circle class="v" style="animation-delay:0.00s, 1.20s" cx="240.0" cy="408.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:1.20s" cx="240.0" cy="408.0" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:1.86s, 2.40s" cx="241.2" cy="378.3" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:2.40s" cx="241.2" cy="378.3" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:1.86s, 2.40s" cx="216.4" cy="387.5" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:2.40s" cx="216.4" cy="387.5" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:3.06s, 3.60s" cx="249.0" cy="334.2" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:3.60s" cx="249.0" cy="334.2" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:3.06s, 3.60s" cx="180.6" cy="359.9" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:3.60s" cx="180.6" cy="359.9" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:4.26s, 4.80s" cx="250.2" cy="302.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:4.80s" cx="250.2" cy="302.1" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:4.26s, 4.80s" cx="150.2" cy="328.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:4.80s" cx="150.2" cy="328.0" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:4.26s, 4.80s" cx="177.4" cy="310.7" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:4.80s" cx="177.4" cy="310.7" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:5.46s, 6.00s" cx="254.4" cy="253.3" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:6.00s" cx="254.4" cy="253.3" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:5.46s, 6.00s" cx="112.3" cy="296.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:6.00s" cx="112.3" cy="296.1" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:5.46s, 6.00s" cx="145.2" cy="289.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:6.00s" cx="145.2" cy="289.0" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:5.46s, 6.00s" cx="173.9" cy="279.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:6.00s" cx="173.9" cy="279.1" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:6.66s, 7.20s" cx="261.8" cy="218.5" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:7.20s" cx="261.8" cy="218.5" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:6.66s, 7.20s" cx="279.4" cy="239.9" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:7.20s" cx="279.4" cy="239.9" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:6.66s, 7.20s" cx="80.0" cy="265.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:7.20s" cx="80.0" cy="265.1" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:6.66s, 7.20s" cx="139.2" cy="251.2" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:7.20s" cx="139.2" cy="251.2" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:6.66s, 7.20s" cx="171.1" cy="242.3" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:7.20s" cx="171.1" cy="242.3" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:7.86s, 8.40s" cx="274.6" cy="182.7" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:8.40s" cx="274.6" cy="182.7" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:7.86s, 8.40s" cx="322.8" cy="216.9" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:8.40s" cx="322.8" cy="216.9" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:7.86s, 9.60s" cx="57.4" cy="246.3" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="57.4" cy="246.3" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:7.86s, 8.40s" cx="132.8" cy="222.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:8.40s" cx="132.8" cy="222.0" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:7.86s, 8.40s" cx="165.9" cy="195.9" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:8.40s" cx="165.9" cy="195.9" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:9.06s, 9.60s" cx="283.9" cy="150.8" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="283.9" cy="150.8" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:9.06s, 9.60s" cx="362.2" cy="186.3" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="362.2" cy="186.3" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:9.06s, 9.60s" cx="345.4" cy="171.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="345.4" cy="171.1" r="2.6" fill="black"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="424.0" cy="207.5" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v" style="animation-delay:9.06s, 9.60s" cx="114.1" cy="175.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="114.1" cy="175.1" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:9.06s, 9.60s" cx="93.0" cy="192.9" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="93.0" cy="192.9" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:9.06s, 9.60s" cx="153.4" cy="149.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="153.4" cy="149.0" r="2.6" fill="black"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="288.7" cy="115.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="390.6" cy="159.9" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="363.4" cy="154.4" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="395.1" cy="180.5" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="361.1" cy="147.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="96.7" cy="139.4" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="63.3" cy="164.7" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="146.8" cy="121.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="127.5" cy="138.3" r="4.5" fill="rgb(58,154,58)"/>
+</g>
+<g clip-path="url(#c1)" opacity="0.55">
+<path class="r" pathLength="1" style="animation-delay:0.00s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M686.0 448.0 L686.0 408.0"/>
+<path class="r" pathLength="1" style="animation-delay:1.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M686.0 408.0 L687.2 378.3"/>
+<path class="r" pathLength="1" style="animation-delay:1.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M686.0 408.0 L662.4 387.5"/>
+<path class="r" pathLength="1" style="animation-delay:2.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M687.2 378.3 L695.0 334.2"/>
+<path class="r" pathLength="1" style="animation-delay:2.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M662.4 387.5 L626.6 359.9"/>
+<path class="r" pathLength="1" style="animation-delay:3.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M695.0 334.2 L696.2 302.1"/>
+<path class="r" pathLength="1" style="animation-delay:3.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M626.6 359.9 L596.2 328.0"/>
+<path class="r" pathLength="1" style="animation-delay:3.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M626.6 359.9 L623.4 310.7"/>
+<path class="r" pathLength="1" style="animation-delay:4.80s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M696.2 302.1 L700.4 253.3"/>
+<path class="r" pathLength="1" style="animation-delay:4.80s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M596.2 328.0 L558.3 296.1"/>
+<path class="r" pathLength="1" style="animation-delay:4.80s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M596.2 328.0 L591.2 289.0"/>
+<path class="r" pathLength="1" style="animation-delay:4.80s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M623.4 310.7 L619.9 279.1"/>
+<path class="r" pathLength="1" style="animation-delay:6.00s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M700.4 253.3 L707.8 218.5"/>
+<path class="r" pathLength="1" style="animation-delay:6.00s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M700.4 253.3 L725.4 239.9"/>
+<path class="r" pathLength="1" style="animation-delay:6.00s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M558.3 296.1 L526.0 265.1"/>
+<path class="r" pathLength="1" style="animation-delay:6.00s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M591.2 289.0 L585.2 251.2"/>
+<path class="r" pathLength="1" style="animation-delay:6.00s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M619.9 279.1 L617.1 242.3"/>
+<path class="r" pathLength="1" style="animation-delay:7.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M707.8 218.5 L720.6 182.7"/>
+<path class="r" pathLength="1" style="animation-delay:7.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M725.4 239.9 L768.8 216.9"/>
+<path class="r" pathLength="1" style="animation-delay:7.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M526.0 265.1 L503.4 246.3"/>
+<path class="r" pathLength="1" style="animation-delay:7.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M585.2 251.2 L578.8 222.0"/>
+<path class="r" pathLength="1" style="animation-delay:7.20s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M617.1 242.3 L611.9 195.9"/>
+<path class="r" pathLength="1" style="animation-delay:8.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M720.6 182.7 L729.9 150.8"/>
+<path class="r" pathLength="1" style="animation-delay:8.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M768.8 216.9 L808.2 186.3"/>
+<path class="r" pathLength="1" style="animation-delay:8.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M768.8 216.9 L791.4 171.1"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M503.4 246.3 L470.0 207.5"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M903.4 246.3 L870.0 207.5"/>
+<path class="r" pathLength="1" style="animation-delay:8.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M578.8 222.0 L560.1 175.1"/>
+<path class="r" pathLength="1" style="animation-delay:8.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M578.8 222.0 L539.0 192.9"/>
+<path class="r" pathLength="1" style="animation-delay:8.40s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M611.9 195.9 L599.4 149.0"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M729.9 150.8 L734.7 115.1"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M808.2 186.3 L836.6 159.9"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M808.2 186.3 L809.4 154.4"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M808.2 186.3 L841.1 180.5"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M791.4 171.1 L807.1 147.0"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M560.1 175.1 L542.7 139.4"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M539.0 192.9 L509.3 164.7"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M599.4 149.0 L592.8 121.0"/>
+<path class="r" pathLength="1" style="animation-delay:9.60s" stroke="rgb(122,82,48)" stroke-width="3" stroke-linecap="round" d="M599.4 149.0 L573.5 138.3"/>
+<circle class="v" style="animation-delay:0.00s, 1.20s" cx="686.0" cy="408.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:1.20s" cx="686.0" cy="408.0" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:1.86s, 2.40s" cx="687.2" cy="378.3" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:2.40s" cx="687.2" cy="378.3" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:1.86s, 2.40s" cx="662.4" cy="387.5" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:2.40s" cx="662.4" cy="387.5" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:3.06s, 3.60s" cx="695.0" cy="334.2" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:3.60s" cx="695.0" cy="334.2" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:3.06s, 3.60s" cx="626.6" cy="359.9" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:3.60s" cx="626.6" cy="359.9" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:4.26s, 4.80s" cx="696.2" cy="302.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:4.80s" cx="696.2" cy="302.1" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:4.26s, 4.80s" cx="596.2" cy="328.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:4.80s" cx="596.2" cy="328.0" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:4.26s, 4.80s" cx="623.4" cy="310.7" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:4.80s" cx="623.4" cy="310.7" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:5.46s, 6.00s" cx="700.4" cy="253.3" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:6.00s" cx="700.4" cy="253.3" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:5.46s, 6.00s" cx="558.3" cy="296.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:6.00s" cx="558.3" cy="296.1" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:5.46s, 6.00s" cx="591.2" cy="289.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:6.00s" cx="591.2" cy="289.0" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:5.46s, 6.00s" cx="619.9" cy="279.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:6.00s" cx="619.9" cy="279.1" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:6.66s, 7.20s" cx="707.8" cy="218.5" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:7.20s" cx="707.8" cy="218.5" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:6.66s, 7.20s" cx="725.4" cy="239.9" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:7.20s" cx="725.4" cy="239.9" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:6.66s, 7.20s" cx="526.0" cy="265.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:7.20s" cx="526.0" cy="265.1" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:6.66s, 7.20s" cx="585.2" cy="251.2" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:7.20s" cx="585.2" cy="251.2" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:6.66s, 7.20s" cx="617.1" cy="242.3" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:7.20s" cx="617.1" cy="242.3" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:7.86s, 8.40s" cx="720.6" cy="182.7" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:8.40s" cx="720.6" cy="182.7" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:7.86s, 8.40s" cx="768.8" cy="216.9" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:8.40s" cx="768.8" cy="216.9" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:7.86s, 9.60s" cx="503.4" cy="246.3" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="503.4" cy="246.3" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:7.86s, 8.40s" cx="578.8" cy="222.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:8.40s" cx="578.8" cy="222.0" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:7.86s, 8.40s" cx="611.9" cy="195.9" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:8.40s" cx="611.9" cy="195.9" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:9.06s, 9.60s" cx="729.9" cy="150.8" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="729.9" cy="150.8" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:9.06s, 9.60s" cx="808.2" cy="186.3" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="808.2" cy="186.3" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:9.06s, 9.60s" cx="791.4" cy="171.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="791.4" cy="171.1" r="2.6" fill="black"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="870.0" cy="207.5" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v" style="animation-delay:9.06s, 9.60s" cx="560.1" cy="175.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="560.1" cy="175.1" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:9.06s, 9.60s" cx="539.0" cy="192.9" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="539.0" cy="192.9" r="2.6" fill="black"/>
+<circle class="v" style="animation-delay:9.06s, 9.60s" cx="599.4" cy="149.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:9.60s" cx="599.4" cy="149.0" r="2.6" fill="black"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="734.7" cy="115.1" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="836.6" cy="159.9" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="809.4" cy="154.4" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="841.1" cy="180.5" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="807.1" cy="147.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="542.7" cy="139.4" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="509.3" cy="164.7" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="592.8" cy="121.0" r="4.5" fill="rgb(58,154,58)"/>
+<circle class="v dernier" style="animation-delay:10.26s" cx="573.5" cy="138.3" r="4.5" fill="rgb(58,154,58)"/>
+</g>
+</svg>

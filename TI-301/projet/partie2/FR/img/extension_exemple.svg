@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="540" viewBox="0 0 640 540" font-family="sans-serif">
+<rect width="100%" height="100%" fill="white"/>
+<defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="rgb(60,60,60)"/></marker></defs>
+<line x1="182.2" y1="40.6" x2="182.2" y2="480.0" stroke="rgb(170,170,170)" stroke-width="1" stroke-dasharray="4 4"/>
+<line x1="331.9" y1="139.7" x2="331.9" y2="515.0" stroke="rgb(170,170,170)" stroke-width="1" stroke-dasharray="4 4"/>
+<line x1="110.0" y1="310.0" x2="110.0" y2="515.0" stroke="rgb(170,170,170)" stroke-width="1" stroke-dasharray="4 4"/>
+<line x1="54.0" y1="450" x2="390.0" y2="450" stroke="rgb(120,100,80)" stroke-width="2"/>
+<text x="390.0" y="468" font-size="12" text-anchor="end" fill="rgb(95,102,95)">sol</text>
+<line x1="110.0" y1="450" x2="110.0" y2="310.0" stroke="rgb(122,82,48)" stroke-width="5" stroke-linecap="round"/>
+<line x1="110.0" y1="310.0" x2="134.3" y2="172.1" stroke="rgb(122,82,48)" stroke-width="4" stroke-linecap="round"/>
+<line x1="110.0" y1="310.0" x2="217.2" y2="220.0" stroke="rgb(122,82,48)" stroke-width="4" stroke-linecap="round"/>
+<line x1="134.3" y1="172.1" x2="182.2" y2="40.6" stroke="rgb(122,82,48)" stroke-width="4" stroke-linecap="round"/>
+<line x1="134.3" y1="172.1" x2="255.6" y2="102.1" stroke="rgb(122,82,48)" stroke-width="4" stroke-linecap="round"/>
+<line x1="217.2" y1="220.0" x2="331.9" y2="139.7" stroke="rgb(122,82,48)" stroke-width="4" stroke-linecap="round"/>
+<circle cx="110.0" cy="310.0" r="4" fill="black"/>
+<text x="98.0" y="315.0" font-size="13" font-weight="bold" text-anchor="end" fill="rgb(40,40,40)">0</text>
+<text x="98.0" y="330.0" font-size="11" text-anchor="end" fill="rgb(95,102,95)">x = 0,000</text>
+<circle cx="134.3" cy="172.1" r="4" fill="black"/>
+<text x="122.3" y="177.1" font-size="13" font-weight="bold" text-anchor="end" fill="rgb(40,40,40)">1</text>
+<text x="122.3" y="192.1" font-size="11" text-anchor="end" fill="rgb(95,102,95)">x = 0,174</text>
+<circle cx="217.2" cy="220.0" r="4" fill="black"/>
+<text x="229.2" y="225.0" font-size="13" font-weight="bold" text-anchor="start" fill="rgb(40,40,40)">2</text>
+<text x="229.2" y="240.0" font-size="11" text-anchor="start" fill="rgb(95,102,95)">x = 0,766</text>
+<circle cx="182.2" cy="40.6" r="6" fill="rgb(58,154,58)"/>
+<text x="194.2" y="45.6" font-size="13" font-weight="bold" text-anchor="start" fill="rgb(40,40,40)">3</text>
+<text x="194.2" y="60.6" font-size="11" text-anchor="start" fill="rgb(95,102,95)">x = 0,516</text>
+<circle cx="255.6" cy="102.1" r="6" fill="rgb(58,154,58)"/>
+<text x="267.6" y="107.1" font-size="13" font-weight="bold" text-anchor="start" fill="rgb(40,40,40)">4</text>
+<text x="267.6" y="122.1" font-size="11" text-anchor="start" fill="rgb(95,102,95)">x = 1,040</text>
+<circle cx="331.9" cy="139.7" r="6" fill="rgb(58,154,58)"/>
+<text x="343.9" y="144.7" font-size="13" font-weight="bold" text-anchor="start" fill="rgb(40,40,40)">5</text>
+<text x="343.9" y="159.7" font-size="11" text-anchor="start" fill="rgb(95,102,95)">x = 1,585</text>
+<line x1="182.2" y1="480" x2="331.9" y2="480" stroke="rgb(58,154,58)" stroke-width="2" marker-start="url(#fl)" marker-end="url(#fl)"/>
+<text x="347.9" y="485" font-size="14" font-weight="bold" fill="rgb(58,154,58)">bourgeons seuls : 1,070</text>
+<line x1="110.0" y1="515" x2="331.9" y2="515" stroke="rgb(122,82,48)" stroke-width="2" marker-start="url(#fl)" marker-end="url(#fl)"/>
+<text x="347.9" y="520" font-size="14" font-weight="bold" fill="rgb(122,82,48)">tous les rameaux : 1,585</text>
+<circle cx="430" cy="60" r="6" fill="rgb(58,154,58)"/><text x="444" y="65" font-size="13" fill="rgb(40,40,40)">bourgeon</text>
+<circle cx="430" cy="86" r="4" fill="black"/><text x="444" y="91" font-size="13" fill="rgb(40,40,40)">extrémité d'un rameau de bois</text>
+</svg>

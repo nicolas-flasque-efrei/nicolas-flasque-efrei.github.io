@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visualiseur d'arbres et de forêts</title>
+<meta name="description" content="TI301 – Projet « La forêt et la lumière » : déposez un fichier d'arbre ou de forêt, obtenez une image PNG et un GIF animé des saisons.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap">
+<!-- KaTeX : rendu des formules écrites entre \( … \) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="alternate" hreflang="en" href="../EN/">
+<!-- même feuille de style et même script que les pages du sujet -->
+<link rel="stylesheet" href="../../FR/style.css?v=2">
+<script src="../../FR/script.js?v=2" defer></script>
+<!-- visualiseur : dessin des arbres et des forêts, dans le navigateur -->
+<link rel="stylesheet" href="visualiseur.css?v=1">
+<script src="visualiseur.js?v=2" defer></script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <p class="kicker">TI301 – Algorithmique et Structures de données 2 · Projet Informatique et Mathématiques</p>
+    <h1>La forêt et la lumière <span class="part">Visualiseur</span></h1>
+    <p class="lede">Déposez un fichier d'arbre ou de forêt écrit par votre programme : vous obtenez une image et une animation de sa pousse.</p>
+    <p class="lede"><strong>Idée originale, conception, réalisation : </strong>Nicolas FLASQUE<br><strong>Site web du projet et animations :</strong> Nicolas FLASQUE et Claude code pro - modèle Opus 5.5</p>
+  </div>
+</header>
+
+<div class="layout">
+
+<nav class="toc" aria-label="Sommaire">
+  <label class="theme">Thème
+    <select id="optTheme">
+      <option value="auto">Automatique</option>
+      <option value="light">Clair</option>
+      <option value="dark">Sombre</option>
+      <option value="neon">Neon</option>
+      <option value="klear">Klear (accessibilité)</option>
+    </select>
+  </label>
+  <p class="lang" aria-label="Langue"><a href="../FR/" lang="fr" aria-current="page"><svg class="flag" viewBox="0 0 3 2" aria-hidden="true"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#FFFFFF"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>FR</a><a href="../EN/" lang="en" hreflang="en"><svg class="flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="flag-uk"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#FFFFFF" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#flag-uk)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#FFFFFF" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>EN</a></p>
+  <p class="toc-title">Sommaire</p>
+  <ol>
+    <li><a href="#visualiser">1 Visualiser un fichier</a></li>
+    <li><a href="#resultat">2 Le résultat</a></li>
+    <li><a href="#fichiers">3 Les fichiers acceptés</a></li>
+    <li><a href="#savoir">4 Bon à savoir</a></li>
+    <li><a href="../../FR/">Partie 1</a></li>
+    <li><a href="../../partie2/FR/">Partie 2</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ================================================================ VISUALISER -->
+<section id="visualiser">
+  <h2><span class="num">1</span>Visualiser un fichier</h2>
+  <p>Déposez un fichier écrit par <code>saveTree</code> (partie 1) ou par <code>saveForest</code> (partie 2). Vous obtenez une <strong>image PNG</strong> de l'arbre ou de la forêt, et un <strong>GIF animé</strong> qui la montre pousser, saison par saison.</p>
+
+  <div id="depot" class="vz-depot" role="button" tabindex="0" aria-describedby="vzAide">
+    <p class="vz-titre">Glissez-déposez un fichier ici, ou cliquez pour le choisir</p>
+    <p id="vzAide" class="vz-aide">un fichier texte écrit par <code>saveTree</code> ou par <code>saveForest</code>, par exemple <code>data/arbre_grand.txt</code> ou <code>data/foret_exemple.txt</code></p>
+  </div>
+  <input type="file" id="vzFichier" accept=".txt,text/plain" hidden>
+
+  <div class="vz-reglages">
+    <label for="vzLargeur">Largeur de l'image
+      <select id="vzLargeur">
+        <option value="1000">1000 px</option>
+        <option value="1400">1400 px</option>
+        <option value="1600" selected>1600 px</option>
+        <option value="2000">2000 px</option>
+        <option value="3000">3000 px</option>
+      </select>
+    </label>
+    <label for="vzGif"><input type="checkbox" id="vzGif" checked> GIF animé des saisons</label>
+    <label for="vzDuree">Durée d'une saison
+      <select id="vzDuree">
+        <option value="0.1">0,1 s</option>
+        <option value="0.15" selected>0,15 s</option>
+        <option value="0.3">0,3 s</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="vz-avance" hidden>
+    <div class="vz-prog"><span></span></div>
+    <p class="vz-etat" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- ================================================================ RESULTAT -->
+<section id="resultat">
+  <h2><span class="num">2</span>Le résultat</h2>
+  <p id="resultat-vide" class="note">L'image et l'animation apparaîtront ici.</p>
+  <div id="resultat-vue" hidden>
+    <p class="vz-infos"></p>
+    <figure class="fig vz-fig">
+      <img id="vzPng" alt="Image de l'arbre ou de la forêt du fichier déposé">
+      <figcaption><a id="vzLienPng" class="vz-telecharger" href="#">Télécharger le PNG</a></figcaption>
+    </figure>
+    <figure id="vzFigGif" class="fig vz-fig">
+      <img id="vzImgGif" alt="Animation de la pousse, saison par saison">
+      <figcaption><a id="vzLienGif" class="vz-telecharger" href="#">Télécharger le GIF</a></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================================================================ FICHIERS -->
+<section id="fichiers">
+  <h2><span class="num">3</span>Les fichiers acceptés</h2>
+
+  <h3>Un arbre</h3>
+  <p>C'est le format de <code>saveTree</code>, à l'étape 4 de la partie 1. La première ligne donne l'extrémité du pied, \(x\) puis \(y\). Chaque ligne suivante décrit un rameau : son numéro, sa saison d'apparition, le numéro de son parent, sa direction, sa longueur, sa génération et son état (0 pour un bourgeon, 1 pour du bois). Les rameaux sont écrits dans l'ordre d'un <strong>parcours en largeur</strong>.</p>
+<pre class="code"><code>0.00 1.00
+1 1 0 -5.35 0.76 1 1
+2 1 0 41.42 1.29 1 1
+3 2 1 -3.28 0.97 2 1
+…</code></pre>
+
+  <h3>Une forêt</h3>
+  <p>C'est le format de <code>saveForest</code>, fournie dans <code>sauver_foret.c</code> pour la partie 2. La première ligne décrit la forêt : <code>FORET K E C HMAX A P_max saison</code>. Chaque arbre commence ensuite par une ligne <code>ARBRE id tronque nb_rameaux</code> (<code>tronque</code> vaut 1 si l'arbre est tronqué, 0 sinon), suivie de l'arbre au format de <code>saveTree</code>.</p>
+<pre class="code"><code>FORET 24 3 72 160 0.250 20000 32
+ARBRE 0 0 352
+1.50 1.07
+1 1 0 0.31 1.13 1 1
+2 2 1 -8.97 0.75 2 1
+…
+ARBRE 1 0 418
+…</code></pre>
+  <p>Les positions \(x\) ne sont pas ramenées entre 0 et \(C\) : c'est au dessin que la forêt fait le tour.</p>
+</section>
+
+<!-- ================================================================ BON A SAVOIR -->
+<section id="savoir">
+  <h2><span class="num">4</span>Bon à savoir</h2>
+  <ul>
+    <li><strong>Tout est calculé dans votre navigateur</strong> : le fichier n'est envoyé nulle part.</li>
+    <li><strong>Le dessin est une illustration.</strong> Seules les positions des rameaux viennent du fichier. Elles sont recalculées comme le fait <code>readTree</code>, à partir des directions et des longueurs arrondies à 0,01. L'épaisseur des branches, les feuilles d'érable et leurs couleurs sont ajoutées pour le dessin : elles ne font pas partie du modèle.</li>
+    <li><strong>La forêt fait le tour</strong> : une branche qui sort de l'image à droite réapparaît à gauche.</li>
+    <li><strong>Le même fichier donne toujours exactement la même image.</strong> Le dessin ne fait aucun tirage au hasard.</li>
+    <li><strong>Durée</strong> : quelques secondes pour un arbre de 5 000 rameaux ; une quinzaine de secondes pour une grande forêt (une centaine de milliers de rameaux), GIF compris. Le GIF garde au plus une quarantaine d'images : pour une longue simulation, il ne montre qu'une saison sur deux ou trois.</li>
+    <li><strong>Très grands fichiers</strong> (plusieurs centaines de milliers de rameaux) : choisissez une largeur de 1000 px, et décochez le GIF.</li>
+  </ul>
+</section>
+
+<footer class="foot">
+  <p class="credit"><svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - IA Claude code</p>
+</footer>
+
+</main>
+</div>
+</body>
+</html>
