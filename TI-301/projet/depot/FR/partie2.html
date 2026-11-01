@@ -36,6 +36,7 @@
     <li><a href="#equipe">D · Les autres membres</a></li>
     <li><a href="#interdits">À ne pas faire</a></li>
     <li><a href="#problemes">En cas de problème</a></li>
+    <li><a href="#secours">Procédure de secours</a></li>
   </ol>
 </nav>
 
@@ -62,6 +63,7 @@
       <li>La partie 2 n'ajoute que des <strong>fichiers nouveaux</strong> (16 fichiers) : aucun fichier de la partie 1 n'est modifié.</li>
       <li>Votre dépôt a été créé à partir du dépôt modèle, mais il n'a pas d'historique commun avec lui : on ne <strong>fusionne</strong> pas les deux dépôts, on <strong>copie</strong> seulement les nouveaux fichiers, en les nommant un par un.</li>
       <li><strong>Un seul membre</strong> de l'équipe fait les parties A à C ; les autres font ensuite la partie D.</li>
+      <li>Si la procédure échoue et que <a href="#problemes">En cas de problème</a> ne suffit pas, une <a href="#secours"><strong>procédure de secours</strong></a> existe : un fichier <code>.zip</code> à décompresser dans votre projet.</li>
     </ul>
   </section>
 
@@ -165,6 +167,22 @@ git push</code></pre>
         </tbody>
       </table>
     </div>
+  </section>
+
+  <section id="secours">
+    <h2><span class="h">Procédure de secours</span> <span class="who one">un seul membre</span></h2>
+    <p class="lead">Seulement si la partie B a échoué et que <a href="#problemes">En cas de problème</a> ne vous a pas permis de vous en sortir. Le <code>.zip</code> contient exactement les 16 mêmes fichiers.</p>
+    <ol class="steps">
+      <li data-p="S"><strong>Récupérez le .zip</strong> : <a href="../TI301_partie2_fichiers.zip" download><code>TI301_partie2_fichiers.zip</code></a>.</li>
+      <li data-p="S"><strong>Décompressez-le</strong> : clic droit sur le fichier téléchargé → <span class="ui">Extraire tout…</span> Vous obtenez quatre dossiers : <code>cmake</code>, <code>data</code>, <code>include</code> et <code>src</code>.</li>
+      <li data-p="S"><strong>Ajoutez les fichiers et les dossiers à votre projet</strong> : copiez ces quatre dossiers dans le dossier du projet (celui qui contient <code>CMakeLists.txt</code>). Windows fusionne chaque dossier avec celui du même nom.
+        <ul>
+          <li>Si Windows propose de <strong>remplacer</strong> un fichier, choisissez <span class="ui">Ignorer ces fichiers</span> : aucun fichier de votre partie 1 ne doit être remplacé.</li>
+        </ul>
+      </li>
+      <li data-p="S"><strong>Commitez et poussez</strong> : <span class="ui">Git → Commit</span> (<kbd>Ctrl</kbd>+<kbd>K</kbd>), cochez les 16 nouveaux fichiers (rubrique <span class="ui">Unversioned Files</span>), message « Partie 2 : fichiers fournis », <span class="ui">Commit and Push…</span></li>
+      <li data-p="S">Reprenez à la partie C (vérifier dans CLion) ; les autres membres font la partie D.</li>
+    </ol>
   </section>
 
   <footer>

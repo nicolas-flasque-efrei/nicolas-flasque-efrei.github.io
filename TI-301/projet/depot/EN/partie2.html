@@ -36,6 +36,7 @@
     <li><a href="#team">D · The other members</a></li>
     <li><a href="#dont">Do not</a></li>
     <li><a href="#troubleshooting">Troubleshooting</a></li>
+    <li><a href="#fallback">Fallback procedure</a></li>
   </ol>
 </nav>
 
@@ -62,6 +63,7 @@
       <li>Part 2 only adds <strong>new files</strong> (16 files): no file of part 1 is modified.</li>
       <li>Your repository was created from the template repository, but it has no common history with it: you do not <strong>merge</strong> the two repositories, you only <strong>copy</strong> the new files, naming them one by one.</li>
       <li><strong>Only one member</strong> of the team does parts A to C; the others then do part D.</li>
+      <li>If the procedure fails and <a href="#troubleshooting">Troubleshooting</a> is not enough, a <a href="#fallback"><strong>fallback procedure</strong></a> exists: a <code>.zip</code> file to unzip into your project.</li>
     </ul>
   </section>
 
@@ -165,6 +167,22 @@ git push</code></pre>
         </tbody>
       </table>
     </div>
+  </section>
+
+  <section id="fallback">
+    <h2><span class="h">Fallback procedure</span> <span class="who one">one member only</span></h2>
+    <p class="lead">Only if part B failed and <a href="#troubleshooting">Troubleshooting</a> did not get you out of it. The <code>.zip</code> contains exactly the same 16 files.</p>
+    <ol class="steps">
+      <li data-p="S"><strong>Get the .zip</strong>: <a href="../TI301_partie2_fichiers.zip" download><code>TI301_partie2_fichiers.zip</code></a>.</li>
+      <li data-p="S"><strong>Unzip it</strong>: right-click on the downloaded file → <span class="ui">Extract All…</span> You get four folders: <code>cmake</code>, <code>data</code>, <code>include</code> and <code>src</code>.</li>
+      <li data-p="S"><strong>Add the files and folders to your project</strong>: copy these four folders into the project folder (the one that contains <code>CMakeLists.txt</code>). Windows merges each folder with the one of the same name.
+        <ul>
+          <li>If Windows offers to <strong>replace</strong> a file, choose <span class="ui">Skip these files</span>: no file of your part 1 must be replaced.</li>
+        </ul>
+      </li>
+      <li data-p="S"><strong>Commit and push</strong>: <span class="ui">Git → Commit</span> (<kbd>Ctrl</kbd>+<kbd>K</kbd>), tick the 16 new files (<span class="ui">Unversioned Files</span> section), message “Partie 2 : fichiers fournis”, <span class="ui">Commit and Push…</span></li>
+      <li data-p="S">Go on with part C (check in CLion); the other members do part D.</li>
+    </ol>
   </section>
 
   <footer>
