@@ -78,6 +78,10 @@
 
 <!-- ================================================================ INTRO -->
 <section id="intro">
+  <div class="warn">
+    <p><strong>⚠️ ATTENTION : ceci est indispensable pour la suite du projet.</strong> Avant d'écrire la moindre ligne de la partie 2, <strong>un</strong> membre de l'équipe ajoute au dépôt de l'équipe les fichiers fournis pour cette partie, en suivant le mode d'emploi <a href="../../depot/FR/partie2.html"><strong>Récupérer les fichiers de la partie 2</strong></a> : quelques commandes à copier-coller, cinq minutes. Les autres membres font ensuite <strong>Git → Update Project</strong>.</p>
+    <p>Sans ces fichiers, pas de forêt : vous pourrez arroser votre <code>main</code> aussi longtemps que vous voudrez, rien n'y poussera.</p>
+  </div>
   <p>En partie 1, un arbre poussait seul, en pleine lumière. Il est maintenant temps de faire pousser <strong>plusieurs arbres en même temps</strong>. Et comme les arbres se font de l'ombre, la pousse de chaque arbre dépend de celle de ses voisins : un bourgeon à l'ombre pousse moins souvent, et ses rameaux sont plus courts.</p>
   <p class="warn">La partie 2 utilise les fonctions de la partie 1 : <code>growBranch</code>, <code>canGrow</code>, <code>clampDirection</code>, la file de rameaux et la structure <code>t_arbre_step</code>. Elles doivent être terminées et validées avant de commencer. Les fichiers de la partie 1 ne sont <strong>pas modifiés</strong> : tout le code de la partie 2 est écrit dans de nouveaux fichiers.</p>
 
@@ -122,7 +126,7 @@
 
     <div class="callout">
       <h4>À faire</h4>
-      <p>Écrivez la structure et les prototypes dans le fichier <code>arbre_foret.h</code>, et les définitions dans <code>arbre_foret.c</code> : ces deux fichiers sont fournis vides. Testez-les depuis <code>src/main_p2_etape1.c</code> (cible CMake <code>p2_etape_1</code>).</p>
+      <p>Écrivez la structure et les prototypes dans le fichier <code>arbre_foret.h</code>, et les définitions dans <code>arbre_foret.c</code> : ces deux fichiers sont fournis vides. Testez-les depuis <code>src/main_p2_etape1.c</code> (cible CMake <code>p2_etape_1</code>). Ce programme est fourni : il fait les essais de la validation, et affiche vos résultats avec, en dessous, les résultats attendus. Il ne compile qu'une fois toutes les fonctions de l'étape écrites.</p>
     </div>
 
     <h4>Les mesures récursives</h4>
@@ -276,7 +280,7 @@
 
     <div class="callout">
       <h4>À faire</h4>
-      <p>Écrivez la fonction suivante dans les fichiers <code>croissance_lumiere.h</code> (prototype) et <code>croissance_lumiere.c</code> (définition), à la suite du code fourni, et testez-la, avec le code fourni, depuis <code>src/main_p2_etape2.c</code> (cible CMake <code>p2_etape_2</code>).</p>
+      <p>Écrivez la fonction suivante dans les fichiers <code>croissance_lumiere.h</code> (prototype) et <code>croissance_lumiere.c</code> (définition), à la suite du code fourni, et testez-la, avec le code fourni, depuis <code>src/main_p2_etape2.c</code> (cible CMake <code>p2_etape_2</code>). Ce programme est fourni : il fait les essais de la validation, et affiche vos résultats avec, en dessous, les résultats attendus. Il ne compile qu'une fois toutes les fonctions de l'étape écrites.</p>
     </div>
 
     <div class="todo">
@@ -332,7 +336,7 @@
 
     <div class="callout">
       <h4>À faire</h4>
-      <p>Écrivez les fonctions suivantes dans <code>arbre_foret.h</code> et <code>arbre_foret.c</code>, et testez-les depuis <code>src/main_p2_etape3.c</code> (cible CMake <code>p2_etape_3</code>).</p>
+      <p>Écrivez les fonctions suivantes dans <code>arbre_foret.h</code> et <code>arbre_foret.c</code>, et testez-les depuis <code>src/main_p2_etape3.c</code> (cible CMake <code>p2_etape_3</code>). Ce programme est fourni : il fait les essais de la validation, et affiche vos résultats avec, en dessous, les résultats attendus. Il ne compile qu'une fois toutes les fonctions de l'étape écrites. Il vous reste à y écrire le test automatique de la validation, à l'endroit indiqué.</p>
       <p>La fonction <code>clampDirection</code> est définie dans <code>croissance.c</code>, sans prototype dans <code>croissance.h</code> : pour l'utiliser, écrivez son prototype, <code>float clampDirection(float);</code>, au début de <code>arbre_foret.c</code>.</p>
     </div>
 
@@ -467,7 +471,7 @@ int rowOf(t_foret *f, float y)
 
     <div class="callout">
       <h4>À faire</h4>
-      <p>Écrivez la structure <code>t_foret</code> au début du fichier <code>foret.h</code>, à l'endroit indiqué : tant qu'elle n'est pas écrite, le code fourni ne compile pas. Écrivez ensuite les prototypes des fonctions suivantes dans <code>foret.h</code>, et leurs définitions dans <code>foret.c</code>, à la suite du code fourni. Testez-les depuis <code>src/main_p2_etape4.c</code> (cible CMake <code>p2_etape_4</code>).</p>
+      <p>Écrivez la structure <code>t_foret</code> au début du fichier <code>foret.h</code>, à l'endroit indiqué : tant qu'elle n'est pas écrite, le code fourni ne compile pas. Écrivez ensuite les prototypes des fonctions suivantes dans <code>foret.h</code>, et leurs définitions dans <code>foret.c</code>, à la suite du code fourni. Testez-les depuis <code>src/main_p2_etape4.c</code> (cible CMake <code>p2_etape_4</code>). Ce programme est fourni : il fait les essais de la validation, et affiche vos résultats avec, en dessous, les résultats attendus. Il ne compile qu'une fois toutes les fonctions de l'étape écrites. Complétez-le avec vos propres cas, à l'endroit indiqué.</p>
     </div>
 
     <div class="todo">
@@ -535,7 +539,7 @@ int rowOf(t_foret *f, float y)
 
     <div class="callout">
       <h4>À faire</h4>
-      <p>Écrivez les fonctions suivantes dans <code>foret.h</code> et <code>foret.c</code>, et testez-les depuis <code>src/main_p2_etape5.c</code> (cible CMake <code>p2_etape_5</code>).</p>
+      <p>Écrivez les fonctions suivantes dans <code>foret.h</code> et <code>foret.c</code>, et testez-les depuis <code>src/main_p2_etape5.c</code> (cible CMake <code>p2_etape_5</code>). Ce programme est fourni : il fait les essais de la validation, et affiche vos résultats avec, en dessous, les résultats attendus. Il ne compile qu'une fois toutes les fonctions de l'étape écrites.</p>
     </div>
 
     <div class="todo">
@@ -552,7 +556,7 @@ int rowOf(t_foret *f, float y)
     <div class="check">
       <h4>Validation de l'étape 5</h4>
       <ul>
-        <li>Construisez à la main la colonne de l'exemple (trois extrémités, \(A = 0{,}5\)) : vous devez retrouver 1, 0,5 et 0,125.</li>
+        <li>La colonne de l'exemple, construite à la main par le programme fourni (trois extrémités, \(A = 0{,}5\)) : vous devez retrouver 1, 0,5 et 0,125.</li>
         <li>Reprenez la forêt de l'arbre <code>exemple1.txt</code> de l'étape 4. Après <code>computeLight</code>, vous devez retrouver les valeurs du tableau de lumière ci-dessus ; en particulier, les bourgeons 4, 5, 7, 8 et 9 reçoivent une lumière de 0,5 ; 0,25 ; 1 ; 1 et 1.</li>
       </ul>
     </div>
@@ -638,7 +642,7 @@ int rowOf(t_foret *f, float y)
 
     <div class="callout">
       <h4>À faire</h4>
-      <p>Écrivez les fonctions suivantes dans <code>foret.h</code> et <code>foret.c</code>, et testez-les depuis <code>src/main_p2_etape6.c</code> (cible CMake <code>p2_etape_6</code>).</p>
+      <p>Écrivez les fonctions suivantes dans <code>foret.h</code> et <code>foret.c</code>, et testez-les depuis <code>src/main_p2_etape6.c</code> (cible CMake <code>p2_etape_6</code>). Ce programme est fourni : il fait les essais de la validation, et affiche vos résultats avec, en dessous, les résultats attendus. Il ne compile qu'une fois toutes les fonctions de l'étape écrites.</p>
     </div>
 
     <div class="todo">

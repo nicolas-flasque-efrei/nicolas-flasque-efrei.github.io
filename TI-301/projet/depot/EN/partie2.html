@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Getting the files of part 2</title>
+<meta name="description" content="TI301 – Project “The Forest and the Light”: add the files provided for part 2 to your team's repository.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="alternate" hreflang="fr" href="../FR/partie2.html">
+<link rel="stylesheet" href="../style.css?v=1">
+<script src="../script.js?v=1" defer></script>
+</head>
+<body>
+
+<div class="layout">
+
+<nav class="side" aria-label="Contents">
+  <label class="theme">Theme
+    <select id="optTheme">
+      <option value="auto">Automatic</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="neon">Neon</option>
+      <option value="klear">Klear (accessibility)</option>
+    </select>
+  </label>
+  <p class="lang" aria-label="Language"><a href="../FR/partie2.html" lang="fr" hreflang="fr"><svg class="flag" viewBox="0 0 3 2" aria-hidden="true"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#FFFFFF"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>FR</a><a href="../EN/partie2.html" lang="en" aria-current="page"><svg class="flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="flag-uk"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#FFFFFF" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#flag-uk)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#FFFFFF" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>EN</a></p>
+  <p class="toc-title">Contents</p>
+  <ol class="toc">
+    <li><a href="#principle">The principle</a></li>
+    <li><a href="#before">A · Before you start</a></li>
+    <li><a href="#get">B · Get the files</a></li>
+    <li><a href="#check">C · Check in CLion</a></li>
+    <li><a href="#team">D · The other members</a></li>
+    <li><a href="#dont">Do not</a></li>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+  </ol>
+</nav>
+
+<div class="content">
+
+<header>
+  <div class="wrap">
+    <p class="kicker">TI301 – Algorithms and Data Structures 2 · Project “The Forest and the Light”</p>
+    <h1>Getting the files of part 2</h1>
+    <p>The files provided for part 2 have been added to the project's <strong>template repository</strong>:</p>
+    <div class="link-box">
+      <a href="https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627">https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627</a>
+      <button class="copy" type="button" data-copy="https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627">Copy</button>
+    </div>
+    <p>You are going to copy them into <strong>your team's</strong> repository, without touching your part 1 work. Each command is copied with the <span class="ui">Copy</span> button of its box.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="principle">
+    <h2><span class="h">The principle</span></h2>
+    <ul>
+      <li>Part 2 only adds <strong>new files</strong> (16 files): no file of part 1 is modified.</li>
+      <li>Your repository was created from the template repository, but it has no common history with it: you do not <strong>merge</strong> the two repositories, you only <strong>copy</strong> the new files, naming them one by one.</li>
+      <li><strong>Only one member</strong> of the team does parts A to C; the others then do part D.</li>
+    </ul>
+  </section>
+
+  <section id="before">
+    <h2><span class="h">A · Before you start</span> <span class="who one">one member only</span></h2>
+    <ol class="steps">
+      <li data-p="A">Open the team project in CLion.</li>
+      <li data-p="A"><strong>Get your teammates' work</strong>: <span class="ui">Git → Update Project</span> (<kbd>Ctrl</kbd>+<kbd>T</kbd>).</li>
+      <li data-p="A"><strong>Open the terminal</strong> of CLion: <span class="ui">View → Tool Windows → Terminal</span> (<kbd>Alt</kbd>+<kbd>F12</kbd>). It opens in the project folder.</li>
+      <li data-p="A"><strong>Check that all your work is committed</strong>:
+<pre><code>git status</code></pre>
+        <ul>
+          <li>The answer contains <code>nothing to commit, working tree clean</code> → go to part B.</li>
+          <li>Otherwise: <span class="ui">Git → Commit</span> (<kbd>Ctrl</kbd>+<kbd>K</kbd>), then <span class="ui">Git → Push</span> (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd>), and do step A4 again.</li>
+        </ul>
+      </li>
+    </ol>
+  </section>
+
+  <section id="get">
+    <h2><span class="h">B · Get the files of part 2</span> <span class="who one">the same member</span></h2>
+    <p class="lead">All the commands are typed in the CLion terminal, in this order.</p>
+    <ol class="steps">
+      <li data-p="B"><strong>Declare the template repository</strong> under the name <code>modele</code> (once for the whole project):
+<pre><code>git remote add modele https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627.git</code></pre>
+        <ul>
+          <li>Message <code>remote modele already exists</code>: it is already done, go to step B2.</li>
+        </ul>
+      </li>
+      <li data-p="B"><strong>Download the content of the template repository</strong>, without changing anything in your project:
+<pre><code>git fetch modele</code></pre>
+      </li>
+      <li data-p="B"><strong>Copy the 16 new files</strong> into your project. Copy the whole box: its nine lines run one after the other (if CLion asks you to confirm pasting several lines, accept).
+<pre><code>git checkout modele/main -- cmake/partie2.cmake
+git checkout modele/main -- data/foret_exemple.txt
+git checkout modele/main -- include/arbre_foret.h include/croissance_lumiere.h
+git checkout modele/main -- include/foret.h include/sauver_foret.h
+git checkout modele/main -- src/arbre_foret.c src/croissance_lumiere.c
+git checkout modele/main -- src/foret.c src/sauver_foret.c
+git checkout modele/main -- src/main_p2_etape1.c src/main_p2_etape2.c
+git checkout modele/main -- src/main_p2_etape3.c src/main_p2_etape4.c
+git checkout modele/main -- src/main_p2_etape5.c src/main_p2_etape6.c</code></pre>
+      </li>
+      <li data-p="B"><strong>Check</strong>:
+<pre><code>git status</code></pre>
+        <ul>
+          <li>You must see 16 <code>new file:</code> lines, and <strong>no</strong> <code>modified:</code> line.</li>
+          <li>A <code>modified:</code> line: stop and see <a href="#troubleshooting">Troubleshooting</a>.</li>
+        </ul>
+      </li>
+      <li data-p="B"><strong>Commit and push</strong> the new files:
+<pre><code>git commit -m "Partie 2 : fichiers fournis"
+git push</code></pre>
+      </li>
+    </ol>
+  </section>
+
+  <section id="check">
+    <h2><span class="h">C · Check in CLion</span> <span class="who one">the same member</span></h2>
+    <ol class="steps">
+      <li data-p="C"><strong>Reload the CMake project</strong>: <span class="ui">Tools → CMake → Reload CMake Project</span>, or right-click on <code>CMakeLists.txt</code> → <span class="ui">Reload CMake Project</span>.</li>
+      <li data-p="C">At the top right, the list of configurations now contains <code>p2_etape_1</code> to <code>p2_etape_6</code>, in addition to those of part 1.</li>
+      <li data-p="C">It is normal if none of these targets compiles for now: each provided program <code>src/main_p2_etapeN.c</code> runs the validation tests of its step, and only compiles once all the functions of that step are written (<code>p2_etape_1</code> after step 1, and so on).</li>
+      <li data-p="C">If a compilation error points to a part 1 file (compiled together with those of part 2), fix it first.</li>
+    </ol>
+  </section>
+
+  <section id="team">
+    <h2><span class="h">D · The other members of the team</span> <span class="who">every other member</span></h2>
+    <ol class="steps">
+      <li data-p="D">Once the first member has pushed (step B5): <span class="ui">Git → Update Project</span> (<kbd>Ctrl</kbd>+<kbd>T</kbd>).</li>
+      <li data-p="D">Reload the CMake project, as in step C1.</li>
+      <li data-p="D">You have <strong>nothing else</strong> to do: no <code>git remote add</code>, no <code>git fetch</code>, no <code>git checkout</code>.</li>
+    </ol>
+  </section>
+
+  <section id="dont">
+    <h2><span class="h">Do not</span></h2>
+    <ul class="dont">
+      <li><strong><code>git pull modele main</code> or <code>git merge modele/main</code></strong>: the two repositories have no common history, Git would report conflicts on every file of part 1.</li>
+      <li><strong>Copy whole folders</strong> (<code>git checkout modele/main -- src include</code>): your part 1 files would be replaced by those of the template repository, and your work erased.</li>
+      <li><strong>Do steps B1 to B5 with several members</strong>: one member gets the files, the others do <span class="ui">Update Project</span>.</li>
+      <li><strong>Rename or move the provided files</strong>: the <code>p2_etape_…</code> targets of <code>cmake/partie2.cmake</code> would no longer find them.</li>
+    </ul>
+  </section>
+
+  <section id="troubleshooting">
+    <h2><span class="h">Troubleshooting</span></h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Symptom</th><th>What to do</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>remote modele already exists</code></td><td>Nothing: go to step B2.</td></tr>
+          <tr><td><code>pathspec … did not match any file(s) known to git</code></td><td>Step B2 was not done, or the address of the template repository is wrong. Check with <code>git remote -v</code>: the <code>modele</code> line must show <code>https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627.git</code>. Otherwise: <code>git remote remove modele</code>, then start again at step B1.</td></tr>
+          <tr><td><code>git status</code> shows a <code>modified:</code> line at step B4</td><td>One of your files has the name of a provided file and has just been replaced. <strong>Do not commit</strong>: <code>git checkout HEAD -- &lt;file&gt;</code> gives it back your version, then tell your teacher.</td></tr>
+          <tr><td>You ran a <code>git merge</code> or a <code>git pull</code>, and Git reports conflicts</td><td><code>git merge --abort</code> cancels everything; start again at step B3.</td></tr>
+          <tr><td>The <code>p2_etape_…</code> targets do not appear</td><td>Reload the CMake project (step C1); check that <code>cmake/partie2.cmake</code> exists in the project.</td></tr>
+          <tr><td><code>Push rejected</code> at step B5</td><td><span class="ui">Git → Update Project</span> (<kbd>Ctrl</kbd>+<kbd>T</kbd>), then <code>git push</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>Back to the <a href="../../partie2/EN/">subject of part 2</a>.</p>
+  </footer>
+
+</main>
+
+</div>
+
+</div>
+
+</body>
+</html>

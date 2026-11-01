@@ -78,6 +78,10 @@
 
 <!-- ================================================================ INTRO -->
 <section id="intro">
+  <div class="warn">
+    <p><strong>⚠️ WARNING: this is essential for the rest of the project.</strong> Before writing a single line of part 2, <strong>one</strong> member of the team adds to the team's repository the files provided for this part, by following the guide <a href="../../depot/EN/partie2.html"><strong>Getting the files of part 2</strong></a>: a few commands to copy and paste, five minutes. The other members then do <strong>Git → Update Project</strong>.</p>
+    <p>Without these files, no forest: you can water your <code>main</code> for as long as you like, nothing will grow in it.</p>
+  </div>
   <p>In part 1, a tree grew on its own, in full light. It is now time to grow <strong>several trees at the same time</strong>. And since trees shade one another, the growth of each tree depends on that of its neighbours: a bud in the shade grows less often, and its branches are shorter.</p>
   <p class="warn">Part 2 uses the functions of part 1: <code>growBranch</code>, <code>canGrow</code>, <code>clampDirection</code>, the branch queue and the <code>t_arbre_step</code> structure. They must be finished and validated before you start. The files of part 1 are <strong>not modified</strong>: all the code of part 2 is written in new files.</p>
 
@@ -141,7 +145,7 @@
 
     <div class="callout">
       <h4>To do</h4>
-      <p>Write the structure and the prototypes in the file <code>arbre_foret.h</code>, and the definitions in <code>arbre_foret.c</code>: both files are provided empty. Test them from <code>src/main_p2_etape1.c</code> (CMake target <code>p2_etape_1</code>).</p>
+      <p>Write the structure and the prototypes in the file <code>arbre_foret.h</code>, and the definitions in <code>arbre_foret.c</code>: both files are provided empty. Test them from <code>src/main_p2_etape1.c</code> (CMake target <code>p2_etape_1</code>). This program is provided: it runs the validation tests, and displays your results with the expected results below them. It only compiles once all the functions of the step are written.</p>
     </div>
 
     <h4>The recursive measurements</h4>
@@ -295,7 +299,7 @@
 
     <div class="callout">
       <h4>To do</h4>
-      <p>Write the following function in the files <code>croissance_lumiere.h</code> (prototype) and <code>croissance_lumiere.c</code> (definition), after the provided code, and test it, together with the provided code, from <code>src/main_p2_etape2.c</code> (CMake target <code>p2_etape_2</code>).</p>
+      <p>Write the following function in the files <code>croissance_lumiere.h</code> (prototype) and <code>croissance_lumiere.c</code> (definition), after the provided code, and test it, together with the provided code, from <code>src/main_p2_etape2.c</code> (CMake target <code>p2_etape_2</code>). This program is provided: it runs the validation tests, and displays your results with the expected results below them. It only compiles once all the functions of the step are written.</p>
     </div>
 
     <div class="todo">
@@ -351,7 +355,7 @@
 
     <div class="callout">
       <h4>To do</h4>
-      <p>Write the following functions in <code>arbre_foret.h</code> and <code>arbre_foret.c</code>, and test them from <code>src/main_p2_etape3.c</code> (CMake target <code>p2_etape_3</code>).</p>
+      <p>Write the following functions in <code>arbre_foret.h</code> and <code>arbre_foret.c</code>, and test them from <code>src/main_p2_etape3.c</code> (CMake target <code>p2_etape_3</code>). This program is provided: it runs the validation tests, and displays your results with the expected results below them. It only compiles once all the functions of the step are written. You still have to write in it the automatic test of the validation, at the indicated place.</p>
       <p>The <code>clampDirection</code> function is defined in <code>croissance.c</code>, without a prototype in <code>croissance.h</code>: to use it, write its prototype, <code>float clampDirection(float);</code>, at the beginning of <code>arbre_foret.c</code>.</p>
     </div>
 
@@ -486,7 +490,7 @@ int rowOf(t_foret *f, float y)
 
     <div class="callout">
       <h4>To do</h4>
-      <p>Write the structure <code>t_foret</code> at the beginning of the file <code>foret.h</code>, at the indicated place: as long as it is not written, the provided code does not compile. Then write the prototypes of the following functions in <code>foret.h</code>, and their definitions in <code>foret.c</code>, after the provided code. Test them from <code>src/main_p2_etape4.c</code> (CMake target <code>p2_etape_4</code>).</p>
+      <p>Write the structure <code>t_foret</code> at the beginning of the file <code>foret.h</code>, at the indicated place: as long as it is not written, the provided code does not compile. Then write the prototypes of the following functions in <code>foret.h</code>, and their definitions in <code>foret.c</code>, after the provided code. Test them from <code>src/main_p2_etape4.c</code> (CMake target <code>p2_etape_4</code>). This program is provided: it runs the validation tests, and displays your results with the expected results below them. It only compiles once all the functions of the step are written. Complete it with your own cases, at the indicated place.</p>
     </div>
 
     <div class="todo">
@@ -554,7 +558,7 @@ int rowOf(t_foret *f, float y)
 
     <div class="callout">
       <h4>To do</h4>
-      <p>Write the following functions in <code>foret.h</code> and <code>foret.c</code>, and test them from <code>src/main_p2_etape5.c</code> (CMake target <code>p2_etape_5</code>).</p>
+      <p>Write the following functions in <code>foret.h</code> and <code>foret.c</code>, and test them from <code>src/main_p2_etape5.c</code> (CMake target <code>p2_etape_5</code>). This program is provided: it runs the validation tests, and displays your results with the expected results below them. It only compiles once all the functions of the step are written.</p>
     </div>
 
     <div class="todo">
@@ -571,7 +575,7 @@ int rowOf(t_foret *f, float y)
     <div class="check">
       <h4>Step 5 validation</h4>
       <ul>
-        <li>Build by hand the column of the example (three tips, \(A = 0.5\)): you must get 1, 0.5 and 0.125.</li>
+        <li>The column of the example, built by hand by the provided program (three tips, \(A = 0.5\)): you must get 1, 0.5 and 0.125.</li>
         <li>Take the forest of the tree <code>exemple1.txt</code> from step 4 again. After <code>computeLight</code>, you must get the values of the light table above; in particular, buds 4, 5, 7, 8 and 9 receive a light of 0.5, 0.25, 1, 1 and 1.</li>
       </ul>
     </div>
@@ -657,7 +661,7 @@ int rowOf(t_foret *f, float y)
 
     <div class="callout">
       <h4>To do</h4>
-      <p>Write the following functions in <code>foret.h</code> and <code>foret.c</code>, and test them from <code>src/main_p2_etape6.c</code> (CMake target <code>p2_etape_6</code>).</p>
+      <p>Write the following functions in <code>foret.h</code> and <code>foret.c</code>, and test them from <code>src/main_p2_etape6.c</code> (CMake target <code>p2_etape_6</code>). This program is provided: it runs the validation tests, and displays your results with the expected results below them. It only compiles once all the functions of the step are written.</p>
     </div>
 
     <div class="todo">
