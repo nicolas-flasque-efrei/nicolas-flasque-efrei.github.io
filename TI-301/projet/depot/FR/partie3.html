@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Récupérer les fichiers de la partie 3</title>
+<meta name="description" content="TI301 – Projet « La forêt et la lumière » : ajouter au dépôt de l'équipe les fichiers fournis pour la partie 3.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="alternate" hreflang="en" href="../EN/partie3.html">
+<link rel="stylesheet" href="../style.css?v=1">
+<script src="../script.js?v=1" defer></script>
+</head>
+<body>
+
+<div class="layout">
+
+<nav class="side" aria-label="Sommaire">
+  <label class="theme">Thème
+    <select id="optTheme">
+      <option value="auto">Automatique</option>
+      <option value="light">Clair</option>
+      <option value="dark">Sombre</option>
+      <option value="neon">Neon</option>
+      <option value="klear">Klear (accessibilité)</option>
+    </select>
+  </label>
+  <p class="lang" aria-label="Langue"><a href="../FR/partie3.html" lang="fr" aria-current="page"><svg class="flag" viewBox="0 0 3 2" aria-hidden="true"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#FFFFFF"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>FR</a><a href="../EN/partie3.html" lang="en" hreflang="en"><svg class="flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="flag-uk"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#FFFFFF" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#flag-uk)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#FFFFFF" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>EN</a></p>
+  <p class="toc-title">Sommaire</p>
+  <ol class="toc">
+    <li><a href="#principe">Le principe</a></li>
+    <li><a href="#avant">A · Avant de commencer</a></li>
+    <li><a href="#recuperer">B · Récupérer les fichiers</a></li>
+    <li><a href="#verifier">C · Vérifier dans CLion</a></li>
+    <li><a href="#equipe">D · Les autres membres</a></li>
+    <li><a href="#interdits">À ne pas faire</a></li>
+    <li><a href="#problemes">En cas de problème</a></li>
+    <li><a href="#secours">Procédure de secours</a></li>
+  </ol>
+</nav>
+
+<div class="content">
+
+<header>
+  <div class="wrap">
+    <p class="kicker">TI301 – Algorithmique et Structures de données 2 · Projet « La forêt et la lumière »</p>
+    <h1>Récupérer les fichiers de la partie 3</h1>
+    <p>Les fichiers fournis pour la partie 3 ont été ajoutés au <strong>dépôt modèle</strong> du projet :</p>
+    <div class="link-box">
+      <a href="https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627">https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627</a>
+      <button class="copy" type="button" data-copy="https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627">Copier</button>
+    </div>
+    <p>Vous allez les copier dans le dépôt <strong>de votre équipe</strong>, sans toucher à votre travail des parties 1 et 2. Chaque commande se copie avec le bouton <span class="ui">Copier</span> de son cadre.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="principe">
+    <h2><span class="h">Le principe</span></h2>
+    <ul>
+      <li>La partie 3 n'ajoute que des <strong>fichiers nouveaux</strong> (14 fichiers) : aucun fichier des parties 1 et 2 n'est modifié.</li>
+      <li>Votre dépôt a été créé à partir du dépôt modèle, mais il n'a pas d'historique commun avec lui : on ne <strong>fusionne</strong> pas les deux dépôts, on <strong>copie</strong> seulement les nouveaux fichiers, en les nommant un par un.</li>
+      <li><strong>Un seul membre</strong> de l'équipe fait les parties A à C ; les autres font ensuite la partie D.</li>
+      <li>Si la procédure échoue et que <a href="#problemes">En cas de problème</a> ne suffit pas, une <a href="#secours"><strong>procédure de secours</strong></a> existe : un fichier <code>.zip</code> à décompresser dans votre projet.</li>
+    </ul>
+  </section>
+
+  <section id="avant">
+    <h2><span class="h">A · Avant de commencer</span> <span class="who one">un seul membre</span></h2>
+    <ol class="steps">
+      <li data-p="A">Ouvrez le projet de l'équipe dans CLion.</li>
+      <li data-p="A"><strong>Récupérez le travail des autres</strong> : <span class="ui">Git → Update Project</span> (<kbd>Ctrl</kbd>+<kbd>T</kbd>).</li>
+      <li data-p="A"><strong>Ouvrez le terminal</strong> de CLion : <span class="ui">View → Tool Windows → Terminal</span> (<kbd>Alt</kbd>+<kbd>F12</kbd>). Il s'ouvre dans le dossier du projet.</li>
+      <li data-p="A"><strong>Vérifiez que tout votre travail est commité</strong> :
+<pre><code>git status</code></pre>
+        <ul>
+          <li>La réponse contient <code>nothing to commit, working tree clean</code> → passez à la partie B.</li>
+          <li>Sinon : <span class="ui">Git → Commit</span> (<kbd>Ctrl</kbd>+<kbd>K</kbd>), puis <span class="ui">Git → Push</span> (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd>), et recommencez l'étape A4.</li>
+        </ul>
+      </li>
+    </ol>
+  </section>
+
+  <section id="recuperer">
+    <h2><span class="h">B · Récupérer les fichiers de la partie 3</span> <span class="who one">le même membre</span></h2>
+    <p class="lead">Toutes les commandes se tapent dans le terminal de CLion, dans l'ordre.</p>
+    <ol class="steps">
+      <li data-p="B"><strong>Déclarez le dépôt modèle</strong> sous le nom <code>modele</code> (une seule fois pour tout le projet : si vous l'avez fait pour la partie 2, c'est déjà fait) :
+<pre><code>git remote add modele https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627.git</code></pre>
+        <ul>
+          <li>Message <code>remote modele already exists</code> : c'est déjà fait, passez à l'étape B2.</li>
+        </ul>
+      </li>
+      <li data-p="B"><strong>Téléchargez le contenu du dépôt modèle</strong>, sans rien modifier dans votre projet (à refaire pour la partie 3, même si vous l'avez fait pour la partie 2) :
+<pre><code>git fetch modele</code></pre>
+      </li>
+      <li data-p="B"><strong>Copiez les 14 nouveaux fichiers</strong> dans votre projet. Copiez le cadre entier : ses six lignes s'exécutent l'une après l'autre (si CLion demande de confirmer le collage de plusieurs lignes, acceptez).
+<pre><code>git checkout modele/main -- cmake/partie3.cmake
+git checkout modele/main -- data/test_analyse.csv data/test_asymetrie.csv data/test_histo.csv
+git checkout modele/main -- include/campagne.h include/statistiques.h
+git checkout modele/main -- src/campagne.c src/statistiques.c
+git checkout modele/main -- src/main_p3_etape1.c src/main_p3_etape2.c src/main_p3_etape3.c
+git checkout modele/main -- .run/p3_etape_1.run.xml .run/p3_etape_2.run.xml .run/p3_etape_3.run.xml</code></pre>
+      </li>
+      <li data-p="B"><strong>Vérifiez</strong> :
+<pre><code>git status</code></pre>
+        <ul>
+          <li>Vous devez voir 14 lignes <code>new file:</code>, et <strong>aucune</strong> ligne <code>modified:</code>.</li>
+          <li>Une ligne <code>modified:</code> : arrêtez-vous et voyez <a href="#problemes">En cas de problème</a>.</li>
+        </ul>
+      </li>
+      <li data-p="B"><strong>Commitez et poussez</strong> les nouveaux fichiers :
+<pre><code>git commit -m "Partie 3 : fichiers fournis"
+git push</code></pre>
+      </li>
+    </ol>
+  </section>
+
+  <section id="verifier">
+    <h2><span class="h">C · Vérifier dans CLion</span> <span class="who one">le même membre</span></h2>
+    <ol class="steps">
+      <li data-p="C"><strong>Rechargez le projet CMake</strong> : <span class="ui">Tools → CMake → Reload CMake Project</span>, ou clic droit sur <code>CMakeLists.txt</code> → <span class="ui">Reload CMake Project</span>.</li>
+      <li data-p="C">En haut à droite, la liste des configurations contient maintenant <code>p3_etape_1</code> à <code>p3_etape_3</code>, en plus de celles des parties 1 et 2. Celles de <code>p3_etape_1</code> et <code>p3_etape_3</code> contiennent déjà des paramètres de ligne de commande (<span class="ui">Run → Edit Configurations…</span>, champ <span class="ui">Program arguments</span>).</li>
+      <li data-p="C">C'est normal si aucune de ces cibles ne compile pour l'instant : le programme fourni <code>src/main_p3_etape2.c</code> fait les essais de validation de l'étape 2, et ne compile qu'une fois les fonctions de cette étape écrites ; <code>src/main_p3_etape1.c</code> et <code>src/main_p3_etape3.c</code> sont fournis vides : c'est vous qui les écrivez.</li>
+      <li data-p="C">Si une erreur de compilation de <code>p3_etape_1</code> désigne un fichier des parties 1 ou 2 (compilés avec ceux de la partie 3), corrigez-la d'abord.</li>
+    </ol>
+  </section>
+
+  <section id="equipe">
+    <h2><span class="h">D · Les autres membres de l'équipe</span> <span class="who">chaque autre membre</span></h2>
+    <ol class="steps">
+      <li data-p="D">Une fois que le premier membre a poussé (étape B5) : <span class="ui">Git → Update Project</span> (<kbd>Ctrl</kbd>+<kbd>T</kbd>).</li>
+      <li data-p="D">Rechargez le projet CMake, comme à l'étape C1.</li>
+      <li data-p="D">Vous n'avez <strong>rien d'autre</strong> à faire : ni <code>git remote add</code>, ni <code>git fetch</code>, ni <code>git checkout</code>.</li>
+    </ol>
+  </section>
+
+  <section id="interdits">
+    <h2><span class="h">À ne pas faire</span></h2>
+    <ul class="dont">
+      <li><strong><code>git pull modele main</code> ou <code>git merge modele/main</code></strong> : les deux dépôts n'ont pas d'historique commun, Git signalerait des conflits sur tous les fichiers des parties 1 et 2.</li>
+      <li><strong>Copier des dossiers entiers</strong> (<code>git checkout modele/main -- src include</code>) : vos fichiers des parties 1 et 2 seraient remplacés par ceux du dépôt modèle, et votre travail effacé.</li>
+      <li><strong>Faire les étapes B1 à B5 à plusieurs</strong> : un seul membre récupère les fichiers, les autres font <span class="ui">Update Project</span>.</li>
+      <li><strong>Renommer ou déplacer les fichiers fournis</strong> : les cibles <code>p3_etape_…</code> de <code>cmake/partie3.cmake</code> ne les trouveraient plus.</li>
+    </ul>
+  </section>
+
+  <section id="problemes">
+    <h2><span class="h">En cas de problème</span></h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Symptôme</th><th>Que faire</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>remote modele already exists</code></td><td>Rien : passez à l'étape B2.</td></tr>
+          <tr><td><code>pathspec … did not match any file(s) known to git</code></td><td>L'étape B2 n'a pas été faite, ou l'adresse du dépôt modèle est fausse. Vérifiez avec <code>git remote -v</code> : la ligne <code>modele</code> doit indiquer <code>https://github.com/nicolas-flasque-efrei/TI301_PRJ_2627.git</code>. Sinon : <code>git remote remove modele</code>, puis recommencez à l'étape B1.</td></tr>
+          <tr><td><code>git status</code> affiche une ligne <code>modified:</code> à l'étape B4</td><td>Un de vos fichiers porte le nom d'un fichier fourni et vient d'être remplacé. <strong>Ne commitez pas</strong> : <code>git checkout HEAD -- &lt;fichier&gt;</code> lui rend votre version, puis prévenez votre enseignant.</td></tr>
+          <tr><td>Vous avez lancé un <code>git merge</code> ou un <code>git pull</code>, et Git signale des conflits</td><td><code>git merge --abort</code> annule tout ; reprenez à l'étape B3.</td></tr>
+          <tr><td>Les cibles <code>p3_etape_…</code> n'apparaissent pas</td><td>Rechargez le projet CMake (étape C1) ; vérifiez que <code>cmake/partie3.cmake</code> existe dans le projet, et que <code>CMakeLists.txt</code> se termine par la ligne <code>include(cmake/partie3.cmake OPTIONAL)</code> ; sinon, ajoutez-la et rechargez le projet CMake.</td></tr>
+          <tr><td>Un programme <code>p3_etape_…</code> ne trouve pas un fichier de <code>data/</code> ou de <code>output/</code></td><td><span class="ui">Run → Edit Configurations…</span> → <span class="ui">Working directory</span> doit être le dossier du projet : <code>$ProjectFileDir$</code>.</td></tr>
+          <tr><td><code>Push rejected</code> à l'étape B5</td><td><span class="ui">Git → Update Project</span> (<kbd>Ctrl</kbd>+<kbd>T</kbd>), puis <code>git push</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="secours">
+    <h2><span class="h">Procédure de secours</span> <span class="who one">un seul membre</span></h2>
+    <p class="lead">Seulement si la partie B a échoué et que <a href="#problemes">En cas de problème</a> ne vous a pas permis de vous en sortir. Le <code>.zip</code> contient exactement les 14 mêmes fichiers.</p>
+    <ol class="steps">
+      <li data-p="S"><strong>Récupérez le .zip</strong> : <a href="../TI301_partie3_fichiers.zip" download><code>TI301_partie3_fichiers.zip</code></a>.</li>
+      <li data-p="S"><strong>Décompressez-le</strong> : clic droit sur le fichier téléchargé → <span class="ui">Extraire tout…</span> Vous obtenez cinq dossiers : <code>.run</code>, <code>cmake</code>, <code>data</code>, <code>include</code> et <code>src</code>.</li>
+      <li data-p="S"><strong>Ajoutez les fichiers et les dossiers à votre projet</strong> : copiez ces cinq dossiers dans le dossier du projet (celui qui contient <code>CMakeLists.txt</code>). Windows fusionne chaque dossier avec celui du même nom.
+        <ul>
+          <li>Si Windows propose de <strong>remplacer</strong> un fichier, choisissez <span class="ui">Ignorer ces fichiers</span> : aucun fichier de vos parties 1 et 2 ne doit être remplacé.</li>
+        </ul>
+      </li>
+      <li data-p="S"><strong>Commitez et poussez</strong> : <span class="ui">Git → Commit</span> (<kbd>Ctrl</kbd>+<kbd>K</kbd>), cochez les 14 nouveaux fichiers (rubrique <span class="ui">Unversioned Files</span>), message « Partie 3 : fichiers fournis », <span class="ui">Commit and Push…</span></li>
+      <li data-p="S">Reprenez à la partie C (vérifier dans CLion) ; les autres membres font la partie D.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <p>Retour au <a href="../../partie3/FR/">sujet de la partie 3</a>.</p>
+  </footer>
+
+</main>
+
+</div>
+
+</div>
+
+</body>
+</html>

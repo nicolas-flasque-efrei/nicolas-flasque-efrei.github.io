@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Forest and the Light – Part 3</title>
+<meta name="description" content="TI301 – SDD2 and Probability project: the forest and the light, part 3.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap">
+<!-- KaTeX: renders the formulas written between \( … \) (inline) or $$ … $$ (centred) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="alternate" hreflang="fr" href="../FR/">
+<!-- same style sheet and script as parts 1 and 2 -->
+<link rel="stylesheet" href="../../EN/style.css?v=2">
+<script src="../../EN/script.js?v=2" defer></script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <p class="kicker">TI301 – Algorithms and Data Structures 2 · Computer Science and Mathematics Project</p>
+    <h1>The Forest and the Light <span class="part">Part 3</span></h1>
+    <p class="lede">This project is written jointly for the SDD2 and Probability modules.</p>
+    <p class="lede"><strong>Original idea, design, implementation: </strong>Nicolas FLASQUE<br><strong>Validation for the probability module:</strong> Federico ZALAMEA, Brice JUANICO<br><strong>Project website and animations:</strong> Nicolas FLASQUE and Claude Code Pro – Opus 5.5 model</p>
+  </div>
+</header>
+
+<div class="layout">
+
+<nav class="toc" aria-label="Contents">
+  <label class="theme">Theme
+    <select id="optTheme">
+      <option value="auto">Automatic</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="neon">Neon</option>
+      <option value="klear">Klear (accessibility)</option>
+    </select>
+  </label>
+  <p class="lang" aria-label="Language"><a href="../FR/" lang="fr" hreflang="fr"><svg class="flag" viewBox="0 0 3 2" aria-hidden="true"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#FFFFFF"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>FR</a><a href="../EN/" lang="en" aria-current="page"><svg class="flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="flag-uk"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#FFFFFF" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#flag-uk)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#FFFFFF" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>EN</a></p>
+  <p class="toc-title">Contents</p>
+  <ol>
+    <li><a href="#intro">Introduction</a></li>
+    <li><a href="#campagne">1 Simulating many forests</a>
+      <ol>
+        <li><a href="#etape1">A simulation campaign</a></li>
+      </ol>
+    </li>
+    <li><a href="#resumer">2 Summarising values</a>
+      <ol>
+        <li><a href="#etape2">Building the histogram</a></li>
+      </ol>
+    </li>
+    <li><a href="#observer">3 Observing the forests</a>
+      <ol>
+        <li><a href="#etape3">The analysis tool</a></li>
+        <li><a href="#questions">The questions</a></li>
+      </ol>
+    </li>
+    <li><a href="../../EN/">Part 1</a></li>
+    <li><a href="../../partie2/EN/">Part 2</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ================================================================ INTRO -->
+<section id="intro">
+  <div class="warn">
+    <p><strong>⚠️ WARNING: this is essential for the rest of the project.</strong> Before writing a single line of part 3, <strong>one</strong> member of the team adds to the team's repository the files provided for this part, by following the guide <a href="../../depot/EN/partie3.html"><strong>Getting the files of part 3</strong></a>, as for part 2. The other members then do <strong>Git → Update Project</strong>.</p>
+  </div>
+  <p>A single forest does not teach us much: with the same settings but another seed, the result can be very different. To know the “usual” behaviour of a forest, we must simulate <strong>hundreds</strong> of them, and study the <strong>distribution</strong> of the results.</p>
+  <p>In this part, you will run simulation campaigns, write their results to files, then write a small <strong>analysis tool</strong> that summarises them and draws their histogram. You will use it to observe two measurements of the trees: their <strong>top</strong> and their <strong>extent</strong>, then their <strong>means</strong> per forest.</p>
+  <p class="warn">Part 3 uses the whole forest of part 2: <code>createForest</code>, <code>plantForest</code>, <code>simulateForest</code> and <code>freeForest</code> must be finished and validated before you start. The files of parts 1 and 2 are <strong>not modified</strong>: all the code of part 3 is written in new files.</p>
+
+  <h3 class="caption-title">Project organisation</h3>
+  <ol class="parts">
+    <li><b>Part 1</b> Grow a single tree at random, in full light, and save it to a file;</li>
+    <li><b>Part 2</b> Grow a whole forest, in which trees shade one another;</li>
+    <li class="is-current"><b>Part 3</b> Simulate hundreds of forests, and analyse the results.</li>
+  </ol>
+
+  <div class="callout">
+    <h4>New French names in the code</h4>
+    <p>As in parts 1 and 2, the names of the types, fields and files stay in French. The new words of part 3:</p>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>French</th><th>English</th><th>French</th><th>English</th></tr></thead>
+        <tbody>
+          <tr><td><code>campagne</code></td><td>campaign</td><td><code>statistiques</code></td><td>statistics</td></tr>
+          <tr><td><code>graine</code></td><td>seed</td><td><code>sortie</code></td><td>output</td></tr>
+          <tr><td><code>arbres</code>, <code>forets</code></td><td>trees, forests</td><td><code>cime_moy</code>, <code>extension_moy</code></td><td>mean top, mean extent</td></tr>
+          <tr><td><code>colonne</code></td><td>column</td><td><code>valeur</code>, <code>rang</code></td><td>value, rank</td></tr>
+          <tr><td><code>trie</code></td><td>sorted</td><td><code>effectifs</code></td><td>counts</td></tr>
+          <tr><td><code>nb_classes</code>, <code>largeur</code></td><td>number of bins, width</td><td><code>moyenne</code>, <code>ecart-type</code>, <code>mediane</code>, <code>asymetrie</code></td><td>mean, standard deviation, median, skewness</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ CAMPAGNE -->
+<section id="campagne">
+  <h2><span class="num">1</span>Simulating many forests</h2>
+  <p>A <strong>campaign</strong> simulates \(R\) forests with the same settings, but each with its own seed. After \(S\) seasons, the measurements of each forest are written to two <strong>CSV</strong> files, which can also be opened with a spreadsheet.</p>
+
+  <h3>The settings of a campaign</h3>
+  <p>Each setting is given to the program on the command line (see <a href="#etape1">step 1</a>); if it is missing, its default value is used.</p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Setting</th><th>Parameter</th><th>Role</th><th>Default</th></tr></thead>
+      <tbody>
+        <tr><td>\(K\)</td><td><code>--K</code></td><td>number of trees of each forest</td><td>50</td></tr>
+        <tr><td>\(E\)</td><td><code>--E</code></td><td>spacing: one tree every \(E\) columns</td><td>3</td></tr>
+        <tr><td>\(A\)</td><td><code>--A</code></td><td>share of light held back by each branch tip, between 0 and 1</td><td>0.25</td></tr>
+        <tr><td>\(S\)</td><td><code>--S</code></td><td>number of seasons</td><td>120</td></tr>
+        <tr><td>planting</td><td><code>--identique</code></td><td>without this parameter, the altitude of each trunk is drawn at random; with it, all the trunks are at altitude 1</td><td>random</td></tr>
+        <tr><td>\(R\)</td><td><code>--R</code></td><td>number of forests of the campaign</td><td>1</td></tr>
+        <tr><td>\(g\)</td><td><code>--graine</code></td><td>seed of the campaign: forest number \(r\) is planted with the seed \(g + r\)</td><td>1</td></tr>
+        <tr><td>output</td><td><code>--sortie</code></td><td>beginning of the name of the two result files</td><td><code>output/campagne</code></td></tr>
+        <tr><td>\(H_{max}\)</td><td>(fixed)</td><td>number of rows of the occupancy and light grids</td><td>160</td></tr>
+        <tr><td>\(P_{max}\)</td><td>(fixed)</td><td>number of branches from which a tree is truncated</td><td>20,000</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The forest: \(K\), \(E\) and \(A\)</h3>
+  <p>These are the settings of part 2. The forest is a line of \(K\) trees; tree number \(i\) is planted at \(x = i \times E + E / 2\), and the forest has \(C = K \times E\) columns. It wraps around: tree \(K - 1\) is a neighbour of tree 0.</p>
+  <ul>
+    <li>The smaller the spacing \(E\), the closer the trees, and the sooner they shade one another.</li>
+    <li>\(A\) sets the strength of the shade: each branch tip holds back the share \(A\) of the light that goes through it. With \(A = 0\), there is no shade at all, and each tree grows as in part 1; the larger \(A\), the stronger the shade.</li>
+  </ul>
+  <figure class="fig">
+    <img src="../FR/img/plantation.svg" width="800" height="440" loading="lazy" alt="A forest of 6 trees and 18 columns at season 0, with seed 101. Top, random planting: the trunks have altitudes 1.32, 0.52, 0.77, 1.05, 1.36 and 0.68. Bottom, identical planting: the six trunks are at altitude 1. The spacing E = 3 columns separates two neighbouring trees">
+    <figcaption>The planting of a forest of \(K = 6\) trees, with \(E = 3\): the same positions, but two ways of choosing the altitude of the trunks (seed 101)</figcaption>
+  </figure>
+
+  <h3>The duration: \(S\), \(H_{max}\) and \(P_{max}\)</h3>
+  <p>Each forest grows for \(S\) seasons, then its measurements are written. The other two settings of part 2 are fixed for the whole of part 3:</p>
+  <ul>
+    <li>\(H_{max} = 160\) rows are enough for 120 seasons: a tree gains at most one generation per season, and its top rises by at most 1.3 per season;</li>
+    <li>\(P_{max} = 20{,}000\): a tree that reaches this number of branches is truncated, and no longer grows. The tree file shows, in its column <code>tronque</code>, the trees that were.</li>
+  </ul>
+
+  <h3>The planting: <code>--identique</code></h3>
+  <p>By default, as in part 2, the altitude of the trunk of each tree is drawn at random between 0.5 and 1.5: some trees start a little ahead of their neighbours. With the parameter <code>--identique</code>, which has no value, all the trunks are at altitude 1: no tree starts ahead, and the differences between trees only come from the randomness of their growth.</p>
+  <p>Comparing the two plantings tells us what, in the starting point, affects the result. Beware: with the same seed, the two forests are not “the same forest with different trunks”. Random planting makes \(K\) more draws before the first season: all the draws of the growth are shifted, and the two forests are completely different.</p>
+  <figure class="fig">
+    <img src="../FR/img/identique_pousse.svg" width="800" height="360" loading="lazy" alt="Two forests of 8 trees after 20 seasons, with E = 3, A = 0.25 and seed 101: on the left, trunks with altitudes drawn at random; on the right, trunks at altitude 1. Each tree has its colour; the two forests are different">
+    <figcaption>The same seed 101, with \(K = 8\), \(E = 3\), \(A = 0.25\), after 20 seasons: random planting on the left, identical on the right (one colour per tree; branches that leave on one side come back on the other)</figcaption>
+  </figure>
+
+  <h3>Several forests: \(R\) and the seed</h3>
+  <p>Forest number \(r\), from 0 to \(R - 1\), is planted with the seed \(g + r\), where \(g\) is the seed of the campaign. All the forests have the same settings, but not the same draws: they are all different. Each one can be rebuilt on its own, with part 2 and its seed; a campaign with seed 101 and 40 forests contains the same forests as the first 40 of a campaign with seed 101 and 400 forests.</p>
+  <figure class="fig">
+    <img src="../FR/img/campagne.svg" width="800" height="300" loading="lazy" alt="The first three forests of a campaign with seed 101 (seeds 101, 102 and 103), with K = 8, E = 3, A = 0.25, random planting, after 20 seasons: three different forests">
+    <figcaption>Forests 0, 1 and 2 of a campaign with seed 101: the same settings as on the left of the previous figure, three seeds, three different forests</figcaption>
+  </figure>
+
+  <h3>The result files: <code>--sortie</code></h3>
+  <p>The campaign writes two files, whose name starts with the value of <code>--sortie</code>: <code>&lt;sortie&gt;_arbres.csv</code>, with one line per tree, and <code>&lt;sortie&gt;_forets.csv</code>, with one line per forest. Their format is described in step 1. With <code>--sortie output/C1</code>, they are <code>output/C1_arbres.csv</code> and <code>output/C1_forets.csv</code>.</p>
+
+  <article id="etape1" class="step">
+    <h3><span class="step-n">Step 1</span>A simulation campaign</h3>
+
+    <h4>Goal</h4>
+    <p>Write a program that runs a campaign whose settings are given <strong>on the command line</strong>, and that writes its results to two files.</p>
+
+    <div class="callout">
+      <h4>To do</h4>
+      <p>Write the structure and the prototypes in <code>campagne.h</code>, the definitions in <code>campagne.c</code>, and the program in <code>src/main_p3_etape1.c</code> (CMake target <code>p3_etape_1</code>). These three files are provided empty.</p>
+    </div>
+
+    <h4>The campaign</h4>
+<pre class="code"><code>typedef struct s_campagne {
+    int K, E, S;                // number of trees, spacing, number of seasons
+    double A;                   // share of light held back by a branch tip
+    int R;                      // number of forests to simulate
+    int graine;                 // forest number r is planted with the seed graine + r
+    int identique;              // 1: identical planting
+    char sortie[LONGUEUR_NOM];  // beginning of the name of the two result files
+} t_campagne;</code></pre>
+    <p>All the forests have \(H_{max} = 160\) rows and \(P_{max} = 20{,}000\): define these two values, and <code>LONGUEUR_NOM</code> (256), with <code>#define</code> in <code>campagne.h</code>.</p>
+
+    <div class="todo">
+      <h4><code>t_campagne createCampaign(void)</code></h4>
+      <p><strong>Role</strong>: creates a campaign with the default settings: \(K = 50\), \(E = 3\), \(A = 0.25\), \(S = 120\), \(R = 1\), seed 1, random planting, and <code>sortie</code> is <code>"output/campagne"</code>.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>int runCampaign(t_campagne c)</code></h4>
+      <p><strong>Role</strong>: simulates the \(R\) forests of the campaign and writes their measurements, after \(S\) seasons, to the files <code>&lt;sortie&gt;_arbres.csv</code> and <code>&lt;sortie&gt;_forets.csv</code>. It displays one line per forest, then the total computing time, and returns 1, or 0 if one of the files could not be created.</p>
+      <p><strong>Hints</strong>:</p>
+      <ul>
+        <li>for each forest: <code>createForest</code>, <code>plantForest</code> with the seed <code>c.graine + r</code>, <code>simulateForest</code>, then the lines of the files, and finally <code>freeForest</code>; only one forest is in memory at a time;</li>
+        <li>the names of the files are built with <code>sprintf(nom, "%s_arbres.csv", c.sortie)</code>;</li>
+        <li>the time is measured with <code>clock()</code> from <code>&lt;time.h&gt;</code>: <code>(double) (clock() - debut) / CLOCKS_PER_SEC</code> seconds.</li>
+      </ul>
+    </div>
+
+    <h4>The result files</h4>
+    <p>Each file starts with a comment line, which starts with <code>#</code> and recalls all the settings, then a header line, then the data. The values are separated by semicolons, and decimal numbers are written with a point.</p>
+    <p><strong>The tree file</strong> has one line per tree, that is \(R \times K\) data lines, with the measurements of part 2 (top and extent with 3 decimal places):</p>
+<pre class="code"><code># K=24 E=3 A=0.250 S=32 R=1 graine=1 identique=0 HMAX=160 P_max=20000
+foret;arbre;rameaux;hauteur;cime;extension;tronque
+0;0;352;32;33.009;17.479;0
+0;1;418;32;28.978;18.453;0
+…</code></pre>
+    <p><strong>The forest file</strong> has one line per forest: its total number of branches, then the <strong>mean</strong> of the tops and the mean of the extents of its \(K\) trees (4 decimal places):</p>
+<pre class="code"><code># K=24 E=3 A=0.250 S=32 R=1 graine=1 identique=0 HMAX=160 P_max=20000
+foret;rameaux;cime_moy;extension_moy
+0;6809;27.7260;13.7903</code></pre>
+
+    <h4>Running the program with parameters</h4>
+    <p>The settings are given on the command line, thanks to the parameters <code>argc</code> and <code>argv</code> of the <code>main</code> function. Each setting is preceded by its name, so that they can be given in any order, and some can be left out: the default value is then used.</p>
+<pre class="code"><code>p3_etape_1 --K 50 --E 3 --A 0.25 --S 120 --R 40 --graine 101 --sortie output/C1</code></pre>
+    <p>The possible parameters, their role and their default value are in the table <a href="#campagne">The settings of a campaign</a>.</p>
+<pre class="code"><code>int main(int argc, char *argv[])
+{
+    t_campagne c = createCampaign();    // default values
+    int ok = 1;
+
+    for (int i = 1; i &lt; argc &amp;&amp; ok; i++)
+    {
+        if (strcmp(argv[i], "--K") == 0 &amp;&amp; i + 1 &lt; argc)
+        {
+            c.K = atoi(argv[++i]);      // text -&gt; integer conversion
+        }
+        else if (strcmp(argv[i], "--A") == 0 &amp;&amp; i + 1 &lt; argc)
+        {
+            c.A = atof(argv[++i]);      // text -&gt; real conversion
+        }
+        // handle the other parameters in the same way
+        else
+        {
+            printf("Parametre inconnu : %s\n", argv[i]);
+            ok = 0;
+        }
+    }
+    // run the campaign if ok is still 1
+    ...
+}</code></pre>
+    <p>In CLion, the parameters are set in <span class="ui">Run → Edit Configurations…</span>, field <span class="ui">Program arguments</span>. The provided configuration <code>p3_etape_1</code> already contains those of campaign C1 (see <a href="#etape3">step 3</a>). The <code>output/</code> folder already exists in your project, and Git does not track its contents.</p>
+
+    <div class="check">
+      <h4>Step 1 validation</h4>
+      <ul>
+        <li>With <code>--K 24 --E 3 --A 0.25 --S 32 --R 1 --graine 1</code>, you get back the validation forest of step 6 of part 2: 6,809 branches; tree 0 has the line <code>0;0;352;32;33.009;17.479;0</code>, and tree 7 <code>0;7;17;8;7.879;3.941;0</code>; the line of the forest is <code>0;6809;27.7260;13.7903</code>.</li>
+        <li>With <code>--R 3</code> and the same other settings, the three forests have 6,809, 6,703 and 6,400 branches. Forest 1 of this campaign is forest 0 of a campaign with seed 2.</li>
+        <li>Two campaigns run with the same settings produce exactly the same files.</li>
+        <li>The tree file of campaign C1 (\(K = 50\), \(R = 40\)) contains 2,000 data lines, and the forest file 40; they open correctly in a spreadsheet.</li>
+        <li>An unknown parameter, or a parameter without its value (<code>--K</code> at the end of the line), displays a message and runs no simulation.</li>
+      </ul>
+    </div>
+  </article>
+</section>
+
+<!-- ================================================================ RESUMER -->
+<section id="resumer">
+  <h2><span class="num">2</span>Summarising values</h2>
+  <p>Campaign C1 gives 2,000 tree tops. To summarise these values, we use:</p>
+  <ul>
+    <li>the <strong>mean</strong> of the values;</li>
+    <li>the <strong>standard deviation</strong>, which measures whether the values are rather tight around the mean (small standard deviation) or rather spread out (large standard deviation);</li>
+    <li>the <strong>minimum</strong>, the <strong>maximum</strong>, the <strong>median</strong> (the “middle” value when the values are sorted in increasing order) and the <strong>quartiles</strong>;</li>
+    <li>the <strong>skewness</strong>: it is 0 when the values are spread symmetrically around the mean; it is positive when a few values are much <strong>larger</strong> than the others, negative when a few values are much <strong>smaller</strong>;</li>
+    <li>the <strong>histogram</strong>: the interval between the minimum and the maximum is cut into bins of the same width, and for each bin a bar is drawn whose length shows how many values fall into it.</li>
+  </ul>
+
+  <div class="callout">
+    <h4>How to compute them</h4>
+    <p>For \(n\) values \(x_1, x_2, \ldots, x_n\):</p>
+    <ul>
+      <li>mean: \(m = \dfrac{x_1 + x_2 + \cdots + x_n}{n}\);</li>
+      <li>standard deviation: the square root of the mean of the squared deviations from the mean, \(s = \sqrt{\dfrac{(x_1 - m)^2 + \cdots + (x_n - m)^2}{n}}\);</li>
+      <li>skewness: the mean of the cubed deviations from the mean, divided by \(s^3\), that is \(\dfrac{(x_1 - m)^3 + \cdots + (x_n - m)^3}{n\, s^3}\); it is 0 if \(s = 0\);</li>
+      <li>median: after sorting the values, the middle value if \(n\) is odd, the mean of the two middle values if \(n\) is even;</li>
+      <li>first and third quartiles: after sorting the values, the values at ranks \(\lceil n/4 \rceil\) and \(\lceil 3n/4 \rceil\), numbering the ranks from 1.</li>
+    </ul>
+  </div>
+
+  <article id="etape2" class="step">
+    <h3><span class="step-n">Step 2</span>Building the histogram</h3>
+
+    <h4>Goal</h4>
+    <p>Count the values of each bin, then display the histogram in the terminal, with one bar of <code>#</code> per bin. Reading the file, computing the summary and drawing the histogram as SVG are provided.</p>
+<pre class="code"><code>[    1.000 ;     4.000[      3 ######################################
+[    4.000 ;     7.000[      3 ######################################
+[    7.000 ;    10.000]      4 ##################################################</code></pre>
+
+    <p class="provided">Provided code</p>
+    <p>The <code>statistiques</code> module (<code>statistiques.h</code> and <code>statistiques.c</code>) knows <strong>nothing about forests</strong>: it works for any CSV file whose values are separated by semicolons. The following functions are written in it; read them, you are going to use them.</p>
+    <h4><code>double *readColumn(const char *nom_fichier, const char *colonne, int *p_n)</code></h4>
+    <p>Reads all the values of the column <code>colonne</code> of the file, and returns a dynamic array of these values, to be freed with <code>free</code>; <code>*p_n</code> receives their number. Lines starting with <code>#</code> are ignored; the first remaining line is the header. If the file or the column does not exist, it displays a message and returns <code>NULL</code>.</p>
+    <h4><code>void sortValues(double v[], int n)</code></h4>
+    <p>Sorts the values in increasing order, with the <code>qsort</code> function of <code>&lt;stdlib.h&gt;</code>.</p>
+    <h4><code>double computeMean(double v[], int n)</code>, <code>double computeStdDev(double v[], int n)</code>, <code>double computeSkewness(double v[], int n)</code></h4>
+    <p>Mean, standard deviation and skewness.</p>
+    <h4><code>double computeMedian(double trie[], int n)</code>, <code>double computeQuartile(double trie[], int n, int q)</code></h4>
+    <p>Median, and first (\(q = 1\)) or third (\(q = 3\)) quartile, of values that are <strong>already sorted</strong>.</p>
+    <h4><code>void displaySummary(double v[], int n)</code></h4>
+    <p>Displays the number of values, the mean, the standard deviation, the minimum, the maximum, the median, the quartiles and the skewness; the array <code>v</code> is not modified (a copy is sorted).</p>
+    <h4><code>void histoToSVG(int effectifs[], int nb_classes, double min, double largeur, const char *titre, const char *nom_fichier)</code></h4>
+    <p>Draws the histogram in an SVG file, to be opened with a browser: one bar per bin, the counts on the vertical axis, the bounds of the bins below the horizontal axis, and a title.</p>
+    <p><code>histoToSVG</code> receives exactly what your function <code>computeHistogram</code> computes: the counts, the number of bins, the minimum and the width of a bin.</p>
+
+    <div class="callout">
+      <h4>To do</h4>
+      <p>Write the following two functions in the files <code>statistiques.h</code> (prototypes) and <code>statistiques.c</code> (definitions), after the provided code, and test them from <code>src/main_p3_etape2.c</code> (CMake target <code>p3_etape_2</code>). This program is provided: it runs the tests of the validation, displays your results with, below them, the expected results, and draws each histogram in an SVG file of the <code>output/</code> folder. It only compiles once both functions are written.</p>
+    </div>
+
+    <div class="todo">
+      <h4><code>int *computeHistogram(double v[], int n, int nb_classes, double *p_min, double *p_largeur)</code></h4>
+      <p><strong>Role</strong>: cuts the interval between the minimum and the maximum of the values into <code>nb_classes</code> bins of the same width, and returns a dynamic array of the counts of the bins, to be freed with <code>free</code>. <code>*p_min</code> receives the minimum, and <code>*p_largeur</code> the width of a bin.</p>
+      <p><strong>Hints</strong>:</p>
+      <ul>
+        <li>bin \(i\) goes from \(min + i \times width\) (included) to \(min + (i + 1) \times width\) (excluded): a value \(x\) falls into bin \(\lfloor (x - min) / width \rfloor\);</li>
+        <li>with this formula, the maximum falls into bin <code>nb_classes</code>, which does not exist: it belongs to the last bin;</li>
+        <li>if all the values are equal, the width is zero: put them all into the first bin.</li>
+      </ul>
+    </div>
+
+    <div class="todo">
+      <h4><code>void displayHistogram(int effectifs[], int nb_classes, double min, double largeur)</code></h4>
+      <p><strong>Role</strong>: displays one line per bin: its bounds, its count, and a bar of <code>#</code>. The fullest bin has a bar of 50 characters; the others have a bar proportional to their count, rounded to the nearest integer.</p>
+      <p><strong>Hints</strong>: beware of integer division: \(\dfrac{3}{4} \times 50\) is not <code>3 / 4 * 50</code> in C.</p>
+    </div>
+
+    <div class="check">
+      <h4>Step 2 validation</h4>
+      <p>The provided files <code>data/test_analyse.csv</code> and <code>data/test_asymetrie.csv</code> have values chosen so that the histograms can be computed by hand: do it before running the program.</p>
+      <ul>
+        <li><code>test_analyse.csv</code>, column <code>valeur</code> (the integers from 1 to 10), 5 bins: minimum 1, width 1.8; each bin contains 2 values.</li>
+        <li>Same column, 3 bins: width 3; counts 3, 3 and 4, because the last bin contains the maximum 10.</li>
+        <li><code>test_asymetrie.csv</code>, column <code>valeur</code> (1, 1, 1, 1, 6), 5 bins: width 1; counts 4, 0, 0, 0 and 1.</li>
+        <li><code>test_histo.csv</code>, column <code>note</code> (200 marks out of 20), 10 bins: minimum 3.49, width 1.532; counts 9, 7, 18, 25, 36, 40, 23, 26, 12 and 4. This is the example below.</li>
+        <li>Open the files <code>output/test_analyse_5.svg</code>, <code>output/test_analyse_3.svg</code>, <code>output/test_asymetrie_5.svg</code> and <code>output/test_histo_10.svg</code> with a browser: the bars must have the same relative heights as your bars of <code>#</code>.</li>
+        <li>The program also displays the summary of each file, computed by the provided <code>displaySummary</code>: for the integers from 1 to 10, mean 5.5, standard deviation 2.8723, median 5.5, quartiles 3 and 8, skewness 0; for 1, 1, 1, 1, 6, mean 2, standard deviation 2, median 1, skewness 1.5. Check these values by hand with the computation rules above.</li>
+      </ul>
+      <p><strong>Example</strong>: the output of <code>p3_etape_2</code> for the file <code>test_histo.csv</code>, with 10 bins, then the drawing of <code>output/test_histo_10.svg</code>.</p>
+<pre class="code"><code>--- data/test_histo.csv, colonne note, 10 classes
+nombre de valeurs : 200
+moyenne           : 11.2434
+ecart-type        : 3.1862
+minimum           : 3.4900
+maximum           : 18.8100
+mediane           : 11.3550
+quartiles         : 9.0600 et 13.3500
+asymetrie         : -0.1825
+minimum 3.4900, largeur d'une classe 1.5320
+[    3.490 ;     5.022[      9 ###########
+[    5.022 ;     6.554[      7 #########
+[    6.554 ;     8.086[     18 #######################
+[    8.086 ;     9.618[     25 ###############################
+[    9.618 ;    11.150[     36 #############################################
+[   11.150 ;    12.682[     40 ##################################################
+[   12.682 ;    14.214[     23 #############################
+[   14.214 ;    15.746[     26 #################################
+[   15.746 ;    17.278[     12 ###############
+[   17.278 ;    18.810]      4 #####
+dessin : output/test_histo_10.svg</code></pre>
+      <figure class="fig">
+        <img src="../FR/img/test_histo_10.svg" width="900" height="520" loading="lazy" alt="Histogram with 10 bins of the 200 marks of test_histo.csv, from 3.49 to 18.81: counts 9, 7, 18, 25, 36, 40, 23, 26, 12 and 4, the fullest bin going from 11.15 to 12.68">
+        <figcaption>The drawing of <code>histoToSVG</code>: the same counts as the bars of <code>#</code></figcaption>
+      </figure>
+    </div>
+  </article>
+</section>
+
+<!-- ================================================================ OBSERVER -->
+<section id="observer">
+  <h2><span class="num">3</span>Observing the forests</h2>
+
+  <article id="etape3" class="step">
+    <h3><span class="step-n">Step 3</span>The analysis tool</h3>
+
+    <h4>Goal</h4>
+    <p>Write a program that summarises a column of a CSV file, displays its histogram in the terminal and draws it in an SVG file. The name of the file, the name of the column, the number of bins and the name of the SVG file are given on the command line:</p>
+<pre class="code"><code>p3_etape_3 output/C1_arbres.csv cime 24 output/C1_cime.svg</code></pre>
+    <h4>The summary of a column</h4>
+    <p>A CSV file is a table: each data line is a row of the table, and each name of the header denotes a column. <strong>Summarising a column</strong> means taking all the values of that column, one per data line, and describing them with a few numbers: those of <a href="#resumer">Summarising values</a>.</p>
+    <ul>
+      <li>In <code>C1_arbres.csv</code>, each line is a tree: the column <code>cime</code> contains the 2,000 tops of the 2,000 trees of the campaign, all forests together.</li>
+      <li>In <code>C1_forets.csv</code>, each line is a forest: the column <code>cime_moy</code> contains 40 values, the mean top of each of the 40 forests.</li>
+    </ul>
+    <p>The other columns of the line (the number of the forest, that of the tree…) are ignored. For example, the provided file <code>data/test_asymetrie.csv</code> has two columns:</p>
+<pre class="code"><code># fichier de test de la partie 3 : deux colonnes, la seconde asymétrique
+rang;valeur
+1;1
+2;1
+3;1
+4;1
+5;6</code></pre>
+    <p>Its column <code>valeur</code> contains the 5 values 1, 1, 1, 1 and 6. <code>readColumn("data/test_asymetrie.csv", "valeur", &amp;n)</code> stores them in an array, then <code>displaySummary</code> displays their summary:</p>
+<pre class="code"><code>nombre de valeurs : 5
+moyenne           : 2.0000
+ecart-type        : 2.0000
+minimum           : 1.0000
+maximum           : 6.0000
+mediane           : 1.0000
+quartiles         : 1.0000 et 1.0000
+asymetrie         : 1.5000</code></pre>
+    <p>It tells us that the “middle” value is 1, that the mean, 2, is pulled up by a single large value, 6, and that the positive skewness confirms it: a few values, here only one, are much larger than the others. The histogram completes this summary: it shows <strong>how</strong> the values are spread between the minimum and the maximum.</p>
+
+    <div class="callout">
+      <h4>To do</h4>
+      <p>Write the program in <code>src/main_p3_etape3.c</code> (CMake target <code>p3_etape_3</code>), provided empty: <code>readColumn</code>, <code>displaySummary</code>, your two functions of step 2, then <code>histoToSVG</code>, with the name of the column as title. Without a number of bins, it uses 20; without an SVG file name, it writes <code>output/histogramme.svg</code>; without a file or without a column, it displays how to use it. The provided configuration <code>p3_etape_3</code> already contains the parameters above: change them in <span class="ui">Run → Edit Configurations…</span> for each analysis.</p>
+    </div>
+
+    <h4>The campaigns</h4>
+    <p>Run the following two campaigns with your program of step 1. Both use \(K = 50\), \(E = 3\), \(A = 0.25\), \(S = 120\), random planting and seed 101; only the number of forests changes. Write down the time each one takes.</p>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Campaign</th><th>Forests</th><th>Parameters of <code>p3_etape_1</code></th></tr></thead>
+        <tbody>
+          <tr><td>C1</td><td>\(R = 40\), that is 2,000 trees</td><td><code>--R 40 --graine 101 --sortie output/C1</code></td></tr>
+          <tr><td>C2</td><td>\(R = 400\), that is 20,000 trees</td><td><code>--R 400 --graine 101 --sortie output/C2</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The 40 forests of C1 are the first 40 forests of C2.</p>
+
+    <div class="check">
+      <h4>Step 3 validation</h4>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>File, column</th><th>Values</th><th>Mean</th><th>Standard deviation</th><th>Minimum</th><th>Maximum</th><th>Median</th><th>Quartiles</th><th>Skewness</th></tr></thead>
+          <tbody>
+            <tr><td><code>C1_arbres.csv</code>, <code>cime</code></td><td>2,000</td><td>52.3552</td><td>39.8575</td><td>3.6910</td><td>124.7050</td><td>35.3910</td><td>20.3120 and 83.4250</td><td>0.7765</td></tr>
+            <tr><td><code>C1_arbres.csv</code>, <code>extension</code></td><td>2,000</td><td>16.3600</td><td>9.4985</td><td>0.1490</td><td>52.6930</td><td>13.8370</td><td>9.9210 and 20.8010</td><td>1.0673</td></tr>
+            <tr><td><code>C2_forets.csv</code>, <code>cime_moy</code></td><td>400</td><td>53.3789</td><td>3.0626</td><td>44.7942</td><td>65.0087</td><td>53.1833</td><td>51.1900 and 55.2460</td><td>0.3098</td></tr>
+            <tr><td><code>C2_forets.csv</code>, <code>extension_moy</code></td><td>400</td><td>16.4996</td><td>0.6016</td><td>15.0693</td><td>18.3633</td><td>16.4717</td><td>16.0582 and 16.9112</td><td>0.3126</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>The mean of the column <code>cime_moy</code> of <code>C1_forets.csv</code> is equal to that of the column <code>cime</code> of <code>C1_arbres.csv</code>: 52.3552. Why?</li>
+      </ul>
+    </div>
+  </article>
+
+  <h3 id="questions">The questions</h3>
+  <p>Answer the following questions based on your results: values and histograms. <strong>Do not try to explain</strong> the phenomena you observe: that will be the subject of the probability module. On the other hand, describe them as precisely as possible. For each histogram, look at both versions: the bars of <code>#</code> in the terminal, and the SVG drawing, easier to read, which you can attach to your answers.</p>
+
+  <div class="callout">
+    <h4>The trees, one by one</h4>
+    <ol>
+      <li>(C1) Display the histogram of the <strong>top</strong> of the 2,000 trees, with 24 bins. How many “humps” do you observe? Where are they? What does each of them represent in the forest?</li>
+      <li>(C1) Same question for the <strong>extent</strong> of the trees. Which of these two measurements has the strongest skewness? On the histogram, on which side are the values that are “much larger than the others”?</li>
+      <li>(C1) For the top, compare the mean and the median. Into which hump does the mean fall? How many trees have a top close to the mean? Is the mean a “typical” value of the top of a tree?</li>
+      <li>(C2) Display the histogram of the top of the 20,000 trees of C2. Does its shape change when ten times more forests are simulated?</li>
+    </ol>
+  </div>
+
+  <div class="callout">
+    <h4>The means, forest by forest</h4>
+    <p>Each forest gives <strong>one</strong> value of <code>cime_moy</code>: the mean of the tops of its 50 trees. The <strong>central limit theorem</strong>, which you will see in probability, states that the mean of a large number of values drawn at random has a distribution close to a symmetric bell curve, <strong>whatever</strong> the shape of the distribution of these values. Check it on your forests.</p>
+    <ol start="5">
+      <li>(C1, then C2) Display the histogram of the column <code>cime_moy</code>, with 10 bins for the 40 forests of C1, then with 20 bins for the 400 forests of C2. How many humps do you observe? Compare its shape and its skewness with those of the histogram of the top of the trees (question 1).</li>
+      <li>(C2) Same question for the column <code>extension_moy</code>, to be compared with the extent of the trees (question 2).</li>
+      <li>(C1, C2) Are the 40 means of C1 enough to recognise the shape of their distribution? Compare their skewness with that of the 400 means of C2.</li>
+      <li>The two measurements, top and extent, have very different distributions from one tree to another. What about their means per forest?</li>
+    </ol>
+  </div>
+
+  <div class="option">
+    <h4><span class="badge">Optional</span>To go further</h4>
+    <p>Let us go back to individual trees. The ones we have grown may not look like real trees! Change the growth rules, and grow weeping willows, cypresses, cedars… Write these new rules in new files, without modifying the rules of part 1, which are used by the validations.</p>
+  </div>
+</section>
+
+<footer class="foot">
+  <p class="credit"><svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - IA Claude code</p>
+</footer>
+
+</main>
+</div>
+</body>
+</html>
