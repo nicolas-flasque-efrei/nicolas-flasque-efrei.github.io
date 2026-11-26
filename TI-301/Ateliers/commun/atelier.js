@@ -42,6 +42,36 @@ const EASE = bezier(0.45, 0, 0.25, 1);
 const ph = (p, a, b) => EASE(Math.max(0, Math.min(1, (p - a) / (b - a))));
 const plural = (n, w, ws) => `${n} ${n > 1 ? (ws || w + 's') : w}`;
 
+/* ---------- Textes de l'interface : français par défaut, anglais avec lang: 'en' dans la configuration ---------- */
+const UI = {
+  fr: {
+    light: 'Clair', dark: 'Sombre', klear: 'Klear (accessibilité)', theme: 'Thème ', home: '← Tous les ateliers',
+    quick: 'Opération directe', valuePh: 'Valeur, par exemple 42', value: 'Valeur', syntax: 'Syntaxe des commandes',
+    script: 'Script <span class="hint">pris en compte en direct</span>', note: 'À retenir',
+    steps: 'Étapes <span class="hint">cliquer pour revoir</span>', empty: 'Rien à afficher pour l\'instant.', anim: 'Animation',
+    bStart: 'Retour au début du script', bFirst: 'Début de l\'opération', bPrev: 'Étape précédente (←)',
+    bPlay: 'Lecture / pause (espace)', play: 'Lecture', pause: 'Pause', bNext: 'Étape suivante (→)', bLast: 'Aller à la fin', speed: 'Vitesse ', step: 'étape', dec: ',',
+    line: (n, m) => `Ligne ${n} : ${m}`, unknown: w => `commande inconnue « ${w} ».`, anArg: 'un argument',
+    missing: (a, w) => `il manque ${a} après « ${w} ».`, notInt: (t, lo, hi) => `« ${t} » n'est pas un entier entre ${lo} et ${hi}.`,
+    noVal: w => `« ${w} » n'attend pas de valeur.`, one: w => `« ${w} » attend exactement une valeur.`,
+    atLeast: w => `il manque au moins une valeur après « ${w} ».`, atMost: w => `« ${w} » attend au plus une valeur.`,
+    qNum: 'Entrez un entier entre −999 et 999.', qEmpty: 'Saisissez une valeur.',
+  },
+  en: {
+    light: 'Light', dark: 'Dark', klear: 'Klear (accessibility)', theme: 'Theme ', home: '← All workshops',
+    quick: 'Direct operation', valuePh: 'Value, for instance 42', value: 'Value', syntax: 'Command syntax',
+    script: 'Script <span class="hint">applied as you type</span>', note: 'Key points',
+    steps: 'Steps <span class="hint">click to replay</span>', empty: 'Nothing to show yet.', anim: 'Animation',
+    bStart: 'Back to the start of the script', bFirst: 'Start of the operation', bPrev: 'Previous step (←)',
+    bPlay: 'Play / pause (space)', play: 'Play', pause: 'Pause', bNext: 'Next step (→)', bLast: 'Go to the end', speed: 'Speed ', step: 'step', dec: '.',
+    line: (n, m) => `Line ${n}: ${m}`, unknown: w => `unknown command "${w}".`, anArg: 'an argument',
+    missing: (a, w) => `${a} is missing after "${w}".`, notInt: (t, lo, hi) => `"${t}" is not an integer between ${lo} and ${hi}.`,
+    noVal: w => `"${w}" takes no value.`, one: w => `"${w}" takes exactly one value.`,
+    atLeast: w => `at least one value is missing after "${w}".`, atMost: w => `"${w}" takes at most one value.`,
+    qNum: 'Enter an integer between −999 and 999.', qEmpty: 'Enter a value.',
+  },
+};
+
 /* ---------- Petits constructeurs de scène, partagés par les ateliers ---------- */
 const S = {
   box: (k, x, y, w, h, t, o = {}) => ({ k, shape: 'box', x, y, w, h, t, ...o }),
@@ -75,7 +105,7 @@ const S = {
 
 /* ====================================================================================== */
 function init(cfg) {
-  const ID = cfg.id;
+  const ID = cfg.id, T = UI[cfg.lang] || UI.fr;
   const commands = cfg.commands || {};
   const LOOK = {};
   for (const [name, spec] of Object.entries(commands)) for (const a of [name, ...(spec.aliases || [])]) LOOK[a.toLowerCase()] = name;
@@ -84,12 +114,12 @@ function init(cfg) {
   const $ = {};
   const credit = el('span', { class: 'credit', html: '<svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - IA Claude code' });
   $.theme = el('select', { id: 'optTheme' },
-    el('option', { value: 'auto', text: 'Auto' }), el('option', { value: 'light', text: 'Clair' }),
-    el('option', { value: 'dark', text: 'Sombre' }), el('option', { value: 'neon', text: 'Neon' }),
-    el('option', { value: 'klear', text: 'Klear (accessibilité)' }));
+    el('option', { value: 'auto', text: 'Auto' }), el('option', { value: 'light', text: T.light }),
+    el('option', { value: 'dark', text: T.dark }), el('option', { value: 'neon', text: 'Neon' }),
+    el('option', { value: 'klear', text: T.klear }));
   const opts = el('div', { class: 'opts' });
   if (cfg.conv) opts.append(el('span', { class: 'conv', text: cfg.conv }));
-  opts.append(el('label', { for: 'optTheme' }, 'Thème ', $.theme));
+  opts.append(el('label', { for: 'optTheme' }, T.theme, $.theme));
   $.opts = {};
   for (const o of cfg.options || []) {
     let saved = null;
@@ -99,7 +129,7 @@ function init(cfg) {
     opts.append(el('label', { class: 'chk' }, cb, ' ' + o.label));
   }
   const header = el('header', { class: 'top' },
-    el('div', { class: 'brand' }, el('a', { class: 'home', href: 'index.html', text: '← Tous les ateliers' }),
+    el('div', { class: 'brand' }, cfg.home === false ? null : el('a', { class: 'home', href: 'index.html', text: T.home }),
       el('h1', { text: cfg.title }), credit,
       el('p', { text: cfg.subtitle || '' })),
     opts);
@@ -109,7 +139,7 @@ function init(cfg) {
     const q = cfg.quick, form = el('form', { class: 'btns', novalidate: true });
     if (q.input) {
       $.qVal = el('input', { id: 'qVal', type: 'text', autocomplete: 'off', spellcheck: 'false', inputmode: q.input === 'num' ? 'numeric' : null,
-        placeholder: q.placeholder || (q.input === 'num' ? 'Valeur, par exemple 42' : ''), 'aria-label': 'Valeur' });
+        placeholder: q.placeholder || (q.input === 'num' ? T.valuePh : ''), 'aria-label': T.value });
       form.append($.qVal);
     }
     let first = true;
@@ -120,24 +150,24 @@ function init(cfg) {
       form.append(btn);
     }
     $.qErr = el('p', { class: 'err', hidden: true });
-    side.append(el('section', { class: 'block' }, el('h2', { text: q.title || 'Opération directe' }), form, $.qErr));
+    side.append(el('section', { class: 'block' }, el('h2', { text: q.title || T.quick }), form, $.qErr));
   }
   $.gut = el('pre', { class: 'gutter', 'aria-hidden': 'true' });
   $.ta = el('textarea', { class: 'code', spellcheck: 'false', wrap: 'off', 'aria-label': 'Script' });
   $.err = el('p', { class: 'err', hidden: true });
   const helpBlock = cfg.help ? el('details', { class: 'help', open: cfg.helpOpen ? true : null },
-    el('summary', { text: 'Syntaxe des commandes' }), el('pre', { text: cfg.help })) : null;
+    el('summary', { text: T.syntax }), el('pre', { text: cfg.help })) : null;
   side.append(el('section', { class: 'block' },
-    el('h2', { html: 'Script <span class="hint">pris en compte en direct</span>' }),
+    el('h2', { html: T.script }),
     el('div', { class: 'editor' }, $.gut, $.ta), $.err, helpBlock));
   if (cfg.codes) {
     $.codeTitle = el('h2', { text: '' });
     $.listing = el('pre', { class: 'listing' });
     side.append(el('section', { class: 'block' }, $.codeTitle, $.listing));
   }
-  if (cfg.note) side.append(el('section', { class: 'block' }, el('h2', { text: cfg.noteTitle || 'À retenir' }), el('p', { class: 'note', html: cfg.note })));
+  if (cfg.note) side.append(el('section', { class: 'block' }, el('h2', { text: cfg.noteTitle || T.note }), el('p', { class: 'note', html: cfg.note })));
   $.journal = el('ol', { class: 'journal' });
-  side.append(el('section', { class: 'block' }, el('h2', { html: 'Étapes <span class="hint">cliquer pour revoir</span>' }), $.journal));
+  side.append(el('section', { class: 'block' }, el('h2', { html: T.steps }), $.journal));
 
   const ib = (id, cls, title, d) => {
     const b = el('button', { type: 'button', class: 'ib ' + (cls || ''), id, title, 'aria-label': title, html: `<svg viewBox="0 0 16 16"><path d="${d}"/></svg>` });
@@ -145,25 +175,25 @@ function init(cfg) {
   };
   $.speed = el('input', { type: 'range', id: 'speed', min: 0, max: 4, step: 1, value: 2 });
   $.speedOut = el('output', { text: '×1' });
-  $.counter = el('span', { class: 'counter', text: 'étape 0 / 0' });
+  $.counter = el('span', { class: 'counter', text: `${T.step} 0 / 0` });
   $.svg = sv('svg', { class: 'scene', preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': cfg.title });
   // contour en dégradé bleu → rouge des éléments au repos, en thème Neon (même définition que l'Atelier AVL)
   const neonStroke = sv('linearGradient', { id: 'neonStroke', x1: 0, y1: 0, x2: 1, y2: 0 }, sv('defs', {}, $.svg));
   sv('stop', { offset: 0, 'stop-color': '#0041EA' }, neonStroke); sv('stop', { offset: 1, 'stop-color': '#EA0E4C' }, neonStroke);
   $.gZ = sv('g', {}, $.svg); $.gA = sv('g', {}, $.svg); $.gI = sv('g', {}, $.svg); $.gAT = sv('g', {}, $.svg); $.gT = sv('g', {}, $.svg);
-  $.empty = el('div', { class: 'empty', hidden: true, text: cfg.emptyMsg || 'Rien à afficher pour l\'instant.' });
+  $.empty = el('div', { class: 'empty', hidden: true, text: cfg.emptyMsg || T.empty });
   $.badge = el('span', { class: 'badge', text: '—' });
   $.msg = el('p', { class: 'msg', 'aria-live': 'polite' });
   $.readout = el('p', { class: 'readout', hidden: true });
   const legend = el('ul', { class: 'legend' });
   for (const [sw, label] of cfg.legend || []) legend.append(el('li', {}, sw ? el('i', { class: 'sw ' + sw }) : null, label));
-  const stage = el('section', { class: 'stage', 'aria-label': 'Animation' },
+  const stage = el('section', { class: 'stage', 'aria-label': T.anim },
     el('div', { class: 'toolbar' },
       el('div', { class: 'transport' },
-        ib('bStart', 'start', 'Retour au début du script', ICON.start), ib('bFirst', '', "Début de l'opération", ICON.start),
-        ib('bPrev', '', 'Étape précédente (←)', ICON.prev), ib('bPlay', 'play', 'Lecture / pause (espace)', ICON.play),
-        ib('bNext', '', 'Étape suivante (→)', ICON.next), ib('bLast', '', 'Aller à la fin', ICON.last)),
-      el('label', { class: 'speed', for: 'speed' }, 'Vitesse ', $.speed, ' ', $.speedOut), $.counter),
+        ib('bStart', 'start', T.bStart, ICON.start), ib('bFirst', '', T.bFirst, ICON.start),
+        ib('bPrev', '', T.bPrev, ICON.prev), ib('bPlay', 'play', T.bPlay, ICON.play),
+        ib('bNext', '', T.bNext, ICON.next), ib('bLast', '', T.bLast, ICON.last)),
+      el('label', { class: 'speed', for: 'speed' }, T.speed, $.speed, ' ', $.speedOut), $.counter),
     el('div', { class: 'canvas' }, $.svg, $.empty),
     el('div', { class: 'narr' }, el('div', { class: 'msgrow' }, $.badge, $.msg), $.readout, legend));
   document.body.append(el('div', { class: 'app' }, header, el('main', { class: 'grid' }, side, stage)));
@@ -204,14 +234,14 @@ function init(cfg) {
     text.split('\n').forEach((raw, i) => {
       const line = raw.replace(/(#|\/\/).*$/, '').trim();
       if (!line) return;
-      const fail = m => { errs.push(`Ligne ${i + 1} : ${m}`); errLines.add(i); };
+      const fail = m => { errs.push(T.line(i + 1, m)); errLines.add(i); };
       const m = line.match(/^(\S+)\s*(.*)$/);
       let word = m[1], rest = m[2], name = LOOK[word.toLowerCase()];
       if (!name && cfg.defaultCmd && /^[-\d\[]/.test(word)) { name = cfg.defaultCmd; rest = line; }
-      if (!name) return fail(`commande inconnue « ${word} ».`);
+      if (!name) return fail(T.unknown(word));
       const spec = commands[name], kind = spec.args || 'none';
       if (kind === 'text') {
-        if (!rest) return fail(`il manque ${spec.argName || 'un argument'} après « ${word} ».`);
+        if (!rest) return fail(T.missing(spec.argName || T.anArg, word));
         if (spec.check) { const e = spec.check(rest); if (e) return fail(e); }
         out.push({ cmd: name, text: rest, vals: [], line: i });
         return;
@@ -219,13 +249,13 @@ function init(cfg) {
       const toks = rest.split(/[\s,;\[\]()]+/).filter(Boolean), vals = [];
       const lo = spec.min != null ? spec.min : -999, hi = spec.max != null ? spec.max : 999;
       for (const t of toks) {
-        if (!/^-?\d+$/.test(t) || +t < lo || +t > hi) return fail(`« ${t} » n'est pas un entier entre ${lo} et ${hi}.`);
+        if (!/^-?\d+$/.test(t) || +t < lo || +t > hi) return fail(T.notInt(t, lo, hi));
         vals.push(+t);
       }
-      if (kind === 'none' && vals.length) return fail(`« ${word} » n'attend pas de valeur.`);
-      if (kind === 'num' && vals.length !== 1) return fail(`« ${word} » attend exactement une valeur.`);
-      if (kind === 'nums' && !vals.length) return fail(`il manque au moins une valeur après « ${word} ».`);
-      if (kind === 'num?' && vals.length > 1) return fail(`« ${word} » attend au plus une valeur.`);
+      if (kind === 'none' && vals.length) return fail(T.noVal(word));
+      if (kind === 'num' && vals.length !== 1) return fail(T.one(word));
+      if (kind === 'nums' && !vals.length) return fail(T.atLeast(word));
+      if (kind === 'num?' && vals.length > 1) return fail(T.atMost(word));
       if (spec.check) { const e = spec.check(vals); if (e) return fail(e); }
       out.push({ cmd: name, vals, text: rest, line: i });
     });
@@ -276,9 +306,9 @@ function init(cfg) {
   }
   function updateUI() {
     const f = frames[cur];
-    $.counter.textContent = `étape ${cur + 1} / ${frames.length}`;
+    $.counter.textContent = `${T.step} ${cur + 1} / ${frames.length}`;
     $.playIcon.setAttribute('d', playing ? ICON.pause : ICON.play);
-    $.bPlay.setAttribute('aria-label', playing ? 'Pause' : 'Lecture');
+    $.bPlay.setAttribute('aria-label', playing ? T.pause : T.play);
     $.bPrev.disabled = $.bFirst.disabled = $.bStart.disabled = cur <= 0;
     $.bNext.disabled = $.bLast.disabled = cur >= frames.length - 1;
     if (!f) return;
@@ -688,8 +718,8 @@ function init(cfg) {
     else if (b.arg) {
       const raw = $.qVal.value.trim(), q = cfg.quick;
       let bad = '';
-      if (q.input === 'num') { if (!/^-?\d+$/.test(raw) || Math.abs(+raw) > 999) bad = 'Entrez un entier entre −999 et 999.'; }
-      else if (!raw) bad = 'Saisissez une valeur.';
+      if (q.input === 'num') { if (!/^-?\d+$/.test(raw) || Math.abs(+raw) > 999) bad = T.qNum; }
+      else if (!raw) bad = T.qEmpty;
       if (!bad && q.check) bad = q.check(raw) || '';
       $.qErr.hidden = !bad; $.qErr.textContent = bad;
       if (bad) { $.qVal.focus(); return; }
@@ -707,7 +737,7 @@ function init(cfg) {
   $.bNext.addEventListener('click', () => { pause(); show(cur + 1); });
   $.bFirst.addEventListener('click', () => { pause(); show(opStart()); });
   $.bLast.addEventListener('click', () => { pause(); show(frames.length - 1); });
-  $.speed.addEventListener('input', () => { $.speedOut.textContent = '×' + String(speed()).replace('.', ','); if (playing) loop(); });
+  $.speed.addEventListener('input', () => { $.speedOut.textContent = '×' + String(speed()).replace('.', T.dec); if (playing) loop(); });
   document.addEventListener('keydown', e => {
     if (e.target.closest('input,textarea,select')) return;
     if (e.key === ' ' && !e.target.closest('button')) { e.preventDefault(); playing ? pause() : play(); }

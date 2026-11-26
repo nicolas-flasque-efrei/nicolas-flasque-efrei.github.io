@@ -14,7 +14,8 @@
 <script>
 (() => {
 const { S, plural } = Atelier;
-const N = 8, CWD = 62, RR = 150;
+const CWD = 62, NDEF = 8, NMIN = 2, NMAX = 16;
+let N = NDEF, RR = 150;   /* NBMAX courant (commande nbmax) et rayon de l'anneau */
 
 /* ---------- Scène : le tableau (en ligne ou en anneau), first au-dessus / à l'extérieur, last en dessous / à l'intérieur ---------- */
 function scene(st, A) {
@@ -55,7 +56,7 @@ function scene(st, A) {
   ptr('first', st.first, fi, true, 'vio');
   ptr('last', st.last, li, false, 'cmp');
   if (st.val != null) items.push(S.box('val', ring ? RR + 130 : N * CWD + 30, ring ? -22 : -6, 120, 44, `val = ${st.val}`, { cls: 'new', enter: st.valFrom }));
-  if (ring) items.push(S.text('ttl', 0, RR + 95, 'les indices 0 … 7 se suivent en boucle', { cls: 'muted' }));
+  if (ring) items.push(S.text('ttl', 0, RR + 95, `les indices 0 … ${N - 1} se suivent en boucle`, { cls: 'muted' }));
   return { items, arrows };
 }
 
@@ -64,10 +65,15 @@ let tab, first, last;
 let AA;
 const V = o => scene({ tab, first, last, ...o }, AA);
 const content = () => { const mod = !AA.opt('nomod'), out = []; for (let k = first; k < last; k++) out.push(tab[mod ? k % N : k]); return out.join(' ') || 'vide'; };
-const RD = () => ['File (premier → dernier) : ', content(), `   ·   éléments : last − first = ${last} − ${first} = `, String(last - first)];
+const RD = () => ['File (premier → dernier) : ', content(), `   ·   éléments : last − first = ${last} − ${first} = `, String(last - first), '   ·   NBMAX = ', String(N)];
+const setOf = A => { const mod = !A.opt('nomod'), set = (mod ? 'q' : 'qn') + N; if (!CODES[set]) CODES[set] = { title: CODES[mod ? 'q' : 'qn'].title, lines: mk(mod, N) }; return set; };
+function setCapacity(n) {
+  N = n; RR = Math.max(150, Math.round(N * CWD * 1.15 / (2 * Math.PI)));
+  tab = Array(N).fill(null); first = 0; last = 0;
+}
 
 function doEnq(A, v) {
-  const mod = !A.opt('nomod'), set = mod ? 'q' : 'qn';
+  const mod = !A.opt('nomod'), set = setOf(A);
   const E = (o, msg, kind, line, cls) => A.emit(V(o), msg, { kind, code: [set, line], codeCls: cls, readout: RD() });
   if (last - first >= N) {
     E({}, `last − first = ${last - first} = NBMAX : la file est pleine, on ne peut pas enfiler ${v}.`, 'full', 4, 'bad');
@@ -88,7 +94,7 @@ function doEnq(A, v) {
 }
 
 function doDeq(A) {
-  const mod = !A.opt('nomod'), set = mod ? 'q' : 'qn';
+  const mod = !A.opt('nomod'), set = setOf(A);
   const E = (o, msg, kind, line, cls) => A.emit(V(o), msg, { kind, code: [set, line], codeCls: cls, readout: RD() });
   if (first === last) {
     E({}, `first = last = ${first} : la file est vide (et pas forcément à 0 !). Rien à défiler.`, 'empty', 11, 'bad');
@@ -102,8 +108,8 @@ function doDeq(A) {
   return `→ ${v}`;
 }
 
-const mk = m => [
-  'constante NBMAX = 8', '',
+const mk = (m, n) => [
+  `constante NBMAX = ${n}`, '',
   'Algorithme enqueue(p_q : t_queuetab*, val : entier)', 'début',
   m ? '    // précondition : p_q->last − p_q->first < NBMAX (pas pleine)' : '    // précondition : p_q->last < NBMAX (sinon : hors du tableau)',
   m ? '    p_q->values[p_q->last mod NBMAX] ← val' : '    p_q->values[p_q->last] ← val',
@@ -112,19 +118,22 @@ const mk = m => [
   '    // précondition : p_q->first ≠ p_q->last (pas vide)',
   m ? '    val ← p_q->values[p_q->first mod NBMAX]' : '    val ← p_q->values[p_q->first]',
   '    p_q->first ← p_q->first + 1', '    retourner val', 'fin'];
-const CODES = { q: { title: 'File avec buffer circulaire (principe)', lines: mk(true) }, qn: { title: 'File SANS modulo (principe, version naïve)', lines: mk(false) } };
+const CODES = { q: { title: 'File avec buffer circulaire (principe)', lines: mk(true, NDEF) }, qn: { title: 'File SANS modulo (principe, version naïve)', lines: mk(false, NDEF) } };
+CODES['q' + NDEF] = CODES.q; CODES['qn' + NDEF] = CODES.qn;
 
 AA = Atelier.init({
   id: 'atelier-file-circulaire',
   title: 'File et buffer circulaire',
   subtitle: 'CM3 · enfiler à la fin (last), défiler au début (first), et réutiliser les cases grâce au modulo.',
-  conv: 'FIFO · NBMAX = 8',
+  conv: 'FIFO · NBMAX réglable (nbmax)',
   options: [{ id: 'ring', label: 'vue en anneau', checked: false }, { id: 'nomod', label: 'sans modulo (paradoxe)', checked: false }],
   commands: {
+    nbmax: { args: 'num', min: NMIN, max: NMAX, aliases: ['capacite', 'capacité', 'taille'] },
     enqueue: { args: 'nums', aliases: ['enfiler', 'enq', 'e', 'in'] },
     dequeue: { args: 'num?', min: 1, max: 20, aliases: ['defiler', 'défiler', 'deq', 'out'] },
   },
-  help: `enqueue 4 8 15   enfile trois valeurs
+  help: `nbmax 5          nouvelle file vide de 5 cases (${NMIN} à ${NMAX})
+enqueue 4 8 15   enfile trois valeurs
 dequeue          défile une valeur
 dequeue 3        défile trois fois
 # commentaire`,
@@ -141,7 +150,8 @@ dequeue 3        défile trois fois
   },
   hold: { test: 1.6, enq: 1.4, deq: 1.6, empty: 2.6, full: 2.6, paradox: 3.4 },
   legend: [['acc', 'case occupée par la file'], ['ghost', 'case libérée (valeur restée)'], ['vio', 'first : où défiler'], ['cmp', 'last : où enfiler'], ['new', 'écrit / valeur obtenue']],
-  example: `enqueue 4 8 15 16 23
+  example: `nbmax 8              # taille du tableau
+enqueue 4 8 15 16 23
 dequeue 3
 enqueue 42 7 9 1     # last dépasse 8 : on repart en case 0
 dequeue 2
@@ -149,10 +159,15 @@ enqueue 5 6 3 2
 enqueue 11           # last − first = 8 : file pleine
 `,
   build(list, A) {
-    AA = A; tab = Array(N).fill(null); first = 0; last = 0;
-    A.op('début', null, () => { A.emit(V({}), 'File vide : first = last = 0.', { kind: 'start', readout: RD() }); return ''; });
-    for (const o of list) {
-      if (o.cmd === 'enqueue') o.vals.forEach(v => A.op(`enqueue ${v}`, o.line, () => doEnq(A, v)));
+    AA = A;
+    const start = () => A.emit(V({}), `File vide de NBMAX = ${N} cases : first = last = 0.`, { kind: 'start', code: [setOf(A), 0], readout: RD() });
+    let k0 = 0;
+    if (list.length && list[0].cmd === 'nbmax') k0 = 1;
+    setCapacity(k0 ? list[0].vals[0] : NDEF);
+    A.op(k0 ? `nbmax ${N}` : 'début', k0 ? list[0].line : null, () => { start(); return ''; });
+    for (const o of list.slice(k0)) {
+      if (o.cmd === 'nbmax') A.op(`nbmax ${o.vals[0]}`, o.line, () => { setCapacity(o.vals[0]); start(); return 'nouvelle file'; });
+      else if (o.cmd === 'enqueue') o.vals.forEach(v => A.op(`enqueue ${v}`, o.line, () => doEnq(A, v)));
       else for (let k = 0; k < (o.vals[0] || 1); k++) A.op('dequeue', o.line, () => doDeq(A));
     }
   },

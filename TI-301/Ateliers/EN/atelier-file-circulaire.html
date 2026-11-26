@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Queue and circular buffer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S } = Atelier;
+const plural = (n, w) => `${n} ${n > 1 ? w + 's' : w}`;
+const CWD = 62, NDEF = 8, NMIN = 2, NMAX = 16;
+let N = NDEF, RR = 150;   /* current NBMAX (nbmax command) and radius of the ring */
+
+/* ---------- Scene: the array (in a row or as a ring), first above / outside, last below / inside ---------- */
+function scene(st, A) {
+  const items = [], arrows = [], ring = A.opt('ring'), mod = !A.opt('nomod'), hl = st.hl || {};
+  const idx = k => mod ? k % N : k;
+  const fi = idx(st.first), li = idx(st.last);
+  const cellPos = i => {
+    if (!ring) return { x: i * CWD, y: 0 };
+    const a = (-90 + i * 360 / N) * Math.PI / 180;
+    return { x: RR * Math.cos(a) - (CWD - 6) / 2, y: RR * Math.sin(a) - 23, a };
+  };
+  const used = new Set();
+  for (let k = st.first; k < st.last; k++) used.add(idx(k));
+  for (let i = 0; i < N; i++) {
+    const p = cellPos(i), v = st.tab[i];
+    items.push(S.box('t' + i, p.x, p.y, CWD - 6, 46, v == null ? '' : v,
+      { cls: hl[i] || (used.has(i) ? 'acc' : v != null ? 'ghost' : ''), sub: String(i), rx: 4 }));
+  }
+  const ptr = (name, val, at, outside, cls) => {
+    const label = `${name} = ${val}` + (mod && val !== at ? `  → cell ${at}` : '');
+    const w = 30 + label.length * 7.6;
+    if (at >= N) {
+      const x = ring ? 0 : N * CWD + 10, y = ring ? (outside ? -RR - 120 : 0) : (outside ? -70 : 96);
+      items.push(S.ptr('p_' + name, x - (ring ? w / 2 : 0), y, label, { w, cls: 'bad' }));
+      items.push(S.text('out_' + name, ring ? 0 : N * CWD + 10, ring ? (outside ? -RR - 80 : 40) : (outside ? -26 : 70), 'outside the array!', { align: ring ? 'middle' : 'start', cls: 'muted' }));
+      return;
+    }
+    if (!ring) {
+      const cx = at * CWD + (CWD - 6) / 2;
+      items.push(S.ptr('p_' + name, cx - w / 2, outside ? -74 : 96, label, { w, cls }));
+      arrows.push(S.arrow('pa_' + name, { k: 'p_' + name, side: outside ? 'b' : 't' }, outside ? { k: 't' + at, side: 't' } : { x: cx, y: 70 }, { cls }));
+    } else {
+      const a = (-90 + at * 360 / N) * Math.PI / 180, r = outside ? RR + 92 : RR - 92;
+      items.push(S.ptr('p_' + name, r * Math.cos(a) - w / 2, r * Math.sin(a) - 13, label, { w, cls }));
+      arrows.push(S.arrow('pa_' + name, 'p_' + name, 't' + at, { cls }));
+    }
+  };
+  ptr('first', st.first, fi, true, 'vio');
+  ptr('last', st.last, li, false, 'cmp');
+  if (st.val != null) items.push(S.box('val', ring ? RR + 130 : N * CWD + 30, ring ? -22 : -6, 120, 44, `val = ${st.val}`, { cls: 'new', enter: st.valFrom }));
+  if (ring) items.push(S.text('ttl', 0, RR + 95, `indices 0 … ${N - 1} follow each other in a loop`, { cls: 'muted' }));
+  return { items, arrows };
+}
+
+/* ---------- Model ---------- */
+let tab, first, last;
+let AA;
+const V = o => scene({ tab, first, last, ...o }, AA);
+const content = () => { const mod = !AA.opt('nomod'), out = []; for (let k = first; k < last; k++) out.push(tab[mod ? k % N : k]); return out.join(' ') || 'empty'; };
+const RD = () => ['Queue (first in → last in): ', content(), `   ·   elements: last − first = ${last} − ${first} = `, String(last - first), '   ·   NBMAX = ', String(N)];
+const setOf = A => { const mod = !A.opt('nomod'), set = (mod ? 'q' : 'qn') + N; if (!CODES[set]) CODES[set] = { title: CODES[mod ? 'q' : 'qn'].title, lines: mk(mod, N) }; return set; };
+function setCapacity(n) {
+  N = n; RR = Math.max(150, Math.round(N * CWD * 1.15 / (2 * Math.PI)));
+  tab = Array(N).fill(null); first = 0; last = 0;
+}
+
+function doEnq(A, v) {
+  const mod = !A.opt('nomod'), set = setOf(A);
+  const E = (o, msg, kind, line, cls) => A.emit(V(o), msg, { kind, code: [set, line], codeCls: cls, readout: RD() });
+  if (last - first >= N) {
+    E({}, `last − first = ${last - first} = NBMAX: the queue is full, ${v} cannot be enqueued.`, 'full', 4, 'bad');
+    return { text: 'queue full', cls: 'bad' };
+  }
+  if (!mod && last >= N) {
+    E({}, `last = ${last}: there is no cell with index ${last}, we would go outside the array! ${v} cannot be enqueued… although the queue holds only ${plural(last - first, 'element')} and ${plural(first, 'cell')} at the start ${first > 1 ? 'are' : 'is'} free. This is the paradox that the modulo solves.`, 'paradox', 4, 'bad');
+    return { text: 'paradox: stuck', cls: 'bad' };
+  }
+  const k = mod ? last % N : last;
+  E({ hl: { [k]: 'cmp' } }, mod ? `The queue is not full (last − first = ${last - first} < ${N}). Cell where to enqueue: last % NBMAX = ${last} % ${N} = ${k}.`
+                               : `The queue is not full. Cell where to enqueue: last = ${k}.`, 'test', 4);
+  tab[k] = v;
+  E({ hl: { [k]: 'new' } }, `values[${k}] ← ${v}.`, 'enq', 5);
+  last++;
+  E({ hl: { [k]: 'new' } }, `last ← ${last}: the next element will go into cell ${mod ? `${last} % ${N} = ${last % N}` : last}.${mod && last % N === 0 && last > 0 ? ' We go back to the start of the array: this is the circular buffer.' : ''}`, 'enq', 6);
+  return `cell ${k}`;
+}
+
+function doDeq(A) {
+  const mod = !A.opt('nomod'), set = setOf(A);
+  const E = (o, msg, kind, line, cls) => A.emit(V(o), msg, { kind, code: [set, line], codeCls: cls, readout: RD() });
+  if (first === last) {
+    E({}, `first = last = ${first}: the queue is empty (and not necessarily at 0!). Nothing to dequeue.`, 'empty', 11, 'bad');
+    return { text: 'queue empty', cls: 'bad' };
+  }
+  const k = mod ? first % N : first, v = tab[k];
+  E({ hl: { [k]: 'cmp' } }, mod ? `The queue is not empty. The first one in is in cell first % NBMAX = ${first} % ${N} = ${k}.` : `The queue is not empty. The first one in is in cell first = ${k}.`, 'test', 11);
+  E({ hl: { [k]: 'cmp' }, val: v, valFrom: 't' + k }, `val ← values[${k}] = ${v}.`, 'deq', 12);
+  first++;
+  E({ val: v }, `first ← ${first}. The value ${v} stays in cell ${k}, but it is no longer part of the queue: the cell can be reused.`, 'deq', 13);
+  return `→ ${v}`;
+}
+
+const mk = (m, n) => [
+  `constant NBMAX = ${n}`, '',
+  'Algorithm enqueue(p_q : t_queuetab*, val : integer)', 'begin',
+  m ? '    // precondition: p_q->last − p_q->first < NBMAX (not full)' : '    // precondition: p_q->last < NBMAX (otherwise: outside the array)',
+  m ? '    p_q->values[p_q->last mod NBMAX] ← val' : '    p_q->values[p_q->last] ← val',
+  '    p_q->last ← p_q->last + 1', 'end', '',
+  'Algorithm dequeue(p_q : t_queuetab*) : integer', 'begin',
+  '    // precondition: p_q->first ≠ p_q->last (not empty)',
+  m ? '    val ← p_q->values[p_q->first mod NBMAX]' : '    val ← p_q->values[p_q->first]',
+  '    p_q->first ← p_q->first + 1', '    return val', 'end'];
+const CODES = { q: { title: 'Queue with a circular buffer (principle)', lines: mk(true, NDEF) }, qn: { title: 'Queue WITHOUT modulo (principle, naive version)', lines: mk(false, NDEF) } };
+CODES['q' + NDEF] = CODES.q; CODES['qn' + NDEF] = CODES.qn;
+
+AA = Atelier.init({
+  id: 'atelier-file-circulaire-en',
+  lang: 'en',
+  home: false,
+  title: 'Queue and circular buffer',
+  subtitle: 'CM3 · enqueue at the end (last), dequeue at the start (first), and reuse the cells thanks to the modulo.',
+  conv: 'FIFO · adjustable NBMAX (nbmax)',
+  options: [{ id: 'ring', label: 'ring view', checked: false }, { id: 'nomod', label: 'without modulo (paradox)', checked: false }],
+  commands: {
+    nbmax: { args: 'num', min: NMIN, max: NMAX, aliases: ['capacity', 'size'] },
+    enqueue: { args: 'nums', aliases: ['enq', 'e', 'in'] },
+    dequeue: { args: 'num?', min: 1, max: 20, aliases: ['deq', 'out'] },
+  },
+  help: `nbmax 5          new empty queue with 5 cells (${NMIN} to ${NMAX})
+enqueue 4 8 15   enqueues three values
+dequeue          dequeues one value
+dequeue 3        dequeues three times
+# comment`,
+  quick: { input: 'num', buttons: [
+    { label: 'Enqueue', cmd: 'enqueue', arg: true, primary: true },
+    { label: 'Dequeue', cmd: 'dequeue' },
+  ] },
+  codes: CODES,
+  codeDefault: 'q',
+  kinds: {
+    start: { label: 'Start', tone: 'acc' }, test: { label: 'Index', tone: 'cmp' }, enq: { label: 'Enqueue', tone: 'acc' },
+    deq: { label: 'Dequeue', tone: 'vio' }, empty: { label: 'Queue empty', tone: 'bad' }, full: { label: 'Queue full', tone: 'bad' },
+    paradox: { label: 'Paradox', tone: 'bad' },
+  },
+  hold: { test: 1.6, enq: 1.4, deq: 1.6, empty: 2.6, full: 2.6, paradox: 3.4 },
+  legend: [['acc', 'cell used by the queue'], ['ghost', 'freed cell (value left)'], ['vio', 'first: where to dequeue'], ['cmp', 'last: where to enqueue'], ['new', 'written / value obtained']],
+  example: `nbmax 8              # size of the array
+enqueue 4 8 15 16 23
+dequeue 3
+enqueue 42 7 9 1     # last goes past 8: back to cell 0
+dequeue 2
+enqueue 5 6 3 2
+enqueue 11           # last − first = 8: queue full
+`,
+  build(list, A) {
+    AA = A;
+    const start = () => A.emit(V({}), `Empty queue with NBMAX = ${N} cells: first = last = 0.`, { kind: 'start', code: [setOf(A), 0], readout: RD() });
+    let k0 = 0;
+    if (list.length && list[0].cmd === 'nbmax') k0 = 1;
+    setCapacity(k0 ? list[0].vals[0] : NDEF);
+    A.op(k0 ? `nbmax ${N}` : 'start', k0 ? list[0].line : null, () => { start(); return ''; });
+    for (const o of list.slice(k0)) {
+      if (o.cmd === 'nbmax') A.op(`nbmax ${o.vals[0]}`, o.line, () => { setCapacity(o.vals[0]); start(); return 'new queue'; });
+      else if (o.cmd === 'enqueue') o.vals.forEach(v => A.op(`enqueue ${v}`, o.line, () => doEnq(A, v)));
+      else for (let k = 0; k < (o.vals[0] || 1); k++) A.op('dequeue', o.line, () => doDeq(A));
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>
