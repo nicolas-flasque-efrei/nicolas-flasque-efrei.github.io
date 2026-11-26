@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rotations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S } = Atelier;
+const SX = 74, SY = 92;
+
+/* ---------- Structure: nodes (circles) and subtrees (triangles), linked by pointers ---------- */
+let N, top, pos;
+const isSub = k => /^[A-D]$/.test(k);
+function relayout() {
+  pos = {}; let i = 0;
+  (function walk(k, d) {
+    if (!k) return;
+    walk(N[k].left, d + 1);
+    pos[k] = { x: i++ * SX, y: d * SY };
+    walk(N[k].right, d + 1);
+  })(top, 0);
+}
+const inorder = () => { const out = []; (function w(k) { if (!k) return; w(N[k].left); out.push(k); w(N[k].right); })(top); return out; };
+
+function scene(st = {}) {
+  const items = [], arrows = [], hl = st.hl || {};
+  for (const k of Object.keys(N)) {
+    const p = pos[k]; if (!p) continue;
+    if (isSub(k)) items.push(S.tri(k, p.x, p.y - 22, 72, 62, k, { cls: hl[k] || 'ghost' }));
+    else items.push(S.circle(k, p.x, p.y, 23, k, { cls: hl[k] }));
+  }
+  for (const k of Object.keys(N)) for (const s of ['left', 'right']) {
+    const c = N[k][s]; if (!c) continue;
+    const ek = (st.ekeys && st.ekeys[`${k}.${s}`]) || `${k}.${s}`;
+    arrows.push(S.arrow(ek, k, isSub(c) ? { k: c, side: 't' } : c, { cls: (st.ecls && st.ecls[`${k}.${s}`]) || '', ctrl: pos[c] && pos[c].y < pos[k].y ? { dx: s === 'right' ? 34 : -34, dy: 0 } : null }));
+  }
+  const tp = pos[top];
+  items.push(S.ptr('racine', tp.x - 46, tp.y - 84, 'tree.root', { w: 92, cls: st.rcls }));
+  arrows.push(S.arrow('racineA', { k: 'racine', side: 'b' }, top, { cls: st.rcls || 'acc' }));
+  for (const [name, at, cls] of st.ptrs || []) {
+    const p = pos[at];
+    items.push(S.ptr('v_' + name, p.x - 140, p.y - 13, name, { w: 64, cls }));
+    arrows.push(S.arrow('v_' + name + 'A', { k: 'v_' + name, side: 'r' }, at, { cls }));
+  }
+  return { items, arrows };
+}
+
+/* ---------- One rotation, instruction by instruction ---------- */
+function rotate(A, R, dir, parent, prefix) {
+  const right = dir === 'right', s1 = right ? 'left' : 'right', s2 = right ? 'right' : 'left', set = right ? 'right' : 'left';
+  const P = N[R][s1], B = N[P][s2];
+  const rd = () => ['Inorder (BST): ', inorder().join(' < ')];
+  const E = (o, msg, kind, line) => A.emit(scene(o), prefix + msg, { kind, code: [set, line], readout: rd() });
+  E({ ptrs: [['root', R, 'vio']], hl: { [R]: 'vio' } }, `${right ? 'Right' : 'Left'} rotation on ${R}: the parameter root points to ${R}.`, 'start', 0);
+  E({ ptrs: [['root', R, 'vio'], ['pivot', P, 'cmp']], hl: { [R]: 'vio', [P]: 'cmp' } }, `pivot = root->${s1}: the pivot is ${P}, the ${right ? 'left' : 'right'} child of ${R}. It is the one that moves up.`, 'step', 2);
+  N[R][s1] = B;
+  E({ ptrs: [['root', R, 'vio'], ['pivot', P, 'cmp']], hl: { [R]: 'vio', [P]: 'cmp', [B]: 'new' }, ecls: { [`${R}.${s1}`]: 'new' } },
+    `root->${s1} = pivot->${s2}: the subtree ${B} is hooked as the ${right ? 'left' : 'right'} child of ${R}. Its values lie between ${right ? P : R} and ${right ? R : P}: the order is kept. (For now, ${P} still points to ${B} as well.)`, 'step', 3);
+  N[P][s2] = R;
+  E({ ptrs: [['root', R, 'vio'], ['pivot', P, 'cmp']], hl: { [R]: 'vio', [P]: 'cmp' }, ecls: { [`${P}.${s2}`]: 'new' } },
+    `pivot->${s2} = root: ${R} becomes the ${right ? 'right' : 'left'} child of ${P}.`, 'step', 4);
+  if (parent) N[parent.k][parent.s] = P; else top = P;
+  E({ ptrs: [['pivot', P, 'cmp']], hl: { [P]: 'cmp' }, ecls: parent ? { [`${parent.k}.${parent.s}`]: 'new' } : {}, rcls: parent ? null : 'new' },
+    `return pivot: ${parent ? `${parent.k}->${parent.s} = ${right ? 'rightRotation' : 'leftRotation'}(${parent.k}->${parent.s})` : `tree.root = ${right ? 'rightRotation' : 'leftRotation'}(tree.root)`}: ${P} takes the place of ${R}.`, 'step', [5, 7]);
+  relayout();
+  E({ hl: { [P]: 'new', [R]: 'acc' } }, `Redrawn: ${P} has moved up, ${R} has moved down ${right ? 'to the right' : 'to the left'}. The subtrees ${Object.keys(N).filter(isSub).join(', ')} have not changed, nor has the inorder.`, 'done', 7);
+}
+
+const SCEN = {
+  right: { top: 'Q', N: { Q: ['P', 'C'], P: ['A', 'B'] }, run: A => rotate(A, 'Q', 'right', null, '') },
+  left: { top: 'Q', N: { Q: ['A', 'P'], P: ['B', 'C'] }, run: A => rotate(A, 'Q', 'left', null, '') },
+  double_left: { top: 'P', N: { P: ['A', 'Q'], Q: ['R', 'D'], R: ['B', 'C'] }, run: A => {
+    A.emit(scene({ hl: { P: 'bad', Q: 'cmp' } }), 'P leans to the right, but its right child Q leans to the left (right-left case): a single rotation is not enough. Double rotation: first to the right on Q, then to the left on P.', { kind: 'start', readout: ['Inorder (BST): ', inorder().join(' < ')] });
+    rotate(A, 'Q', 'right', { k: 'P', s: 'right' }, 'Step 1 · ');
+    A.emit(scene({ hl: { P: 'bad', R: 'cmp' } }), 'After the first rotation, the configuration looks like the single case: R is the right child of P, and it leans to the same side.', { kind: 'start', readout: ['Inorder (BST): ', inorder().join(' < ')] });
+    rotate(A, 'P', 'left', null, 'Step 2 · ');
+  } },
+  double_right: { top: 'P', N: { P: ['Q', 'D'], Q: ['A', 'R'], R: ['B', 'C'] }, run: A => {
+    A.emit(scene({ hl: { P: 'bad', Q: 'cmp' } }), 'P leans to the left, but its left child Q leans to the right (left-right case): double rotation, first to the left on Q, then to the right on P.', { kind: 'start', readout: ['Inorder (BST): ', inorder().join(' < ')] });
+    rotate(A, 'Q', 'left', { k: 'P', s: 'left' }, 'Step 1 · ');
+    A.emit(scene({ hl: { P: 'bad', R: 'cmp' } }), 'After the first rotation, we are back to the single case: R is the left child of P.', { kind: 'start', readout: ['Inorder (BST): ', inorder().join(' < ')] });
+    rotate(A, 'P', 'right', null, 'Step 2 · ');
+  } },
+};
+function setup(name) {
+  const sc = SCEN[name];
+  N = {}; top = sc.top;
+  for (const [k, [l, r]] of Object.entries(sc.N)) { N[k] = { left: l, right: r }; for (const c of [l, r]) if (!N[c]) N[c] = { left: null, right: null }; }
+  for (const [k, [l, r]] of Object.entries(sc.N)) N[k] = { left: l, right: r };
+  relayout();
+}
+
+const CODES = {
+  right: { title: 'Right rotation', lines: ['t_node *rightRotation(t_node *root)', '{', '    t_node *pivot = root->left;', '    root->left = pivot->right;',
+    '    pivot->right = root;', '    return pivot;   // new root of the subtree', '}', '// call: ptr = rightRotation(ptr);'] },
+  left: { title: 'Left rotation (symmetric)', lines: ['t_node *leftRotation(t_node *root)', '{', '    t_node *pivot = root->right;', '    root->right = pivot->left;',
+    '    pivot->left = root;', '    return pivot;   // new root of the subtree', '}', '// call: ptr = leftRotation(ptr);'] },
+};
+
+Atelier.init({
+  id: 'atelier-rotations-en',
+  lang: 'en',
+  title: 'Rotations',
+  subtitle: 'Lecture #5 · single and double rotations, pointer by pointer, on nodes P, Q, R and subtrees A, B, C, D.',
+  conv: 'A, B, C, D: unchanged subtrees',
+  commands: {
+    right: { args: 'none', aliases: ['right_rotation', 'rr'] },
+    left: { args: 'none', aliases: ['left_rotation', 'lr'] },
+    double_left: { args: 'none', aliases: ['dl', 'right_left'] },
+    double_right: { args: 'none', aliases: ['dr', 'left_right'] },
+  },
+  help: `right           right rotation on Q
+left            left rotation on Q
+double_left     right on Q, then left on P
+double_right    left on Q, then right on P
+# comment`,
+  quick: { buttons: [
+    { label: 'Right rotation', cmd: 'right', primary: true }, { label: 'Left rotation', cmd: 'left' },
+    { label: 'Double left', cmd: 'double_left' }, { label: 'Double right', cmd: 'double_right' },
+  ] },
+  codes: CODES,
+  note: 'In the lecture, the function writes <code>root = pivot;</code>: this assignment only changes the local copy of the parameter. Here, the function <b>returns</b> pivot and the caller writes <code>ptr = rightRotation(ptr);</code>.',
+  noteTitle: 'Remark',
+  kinds: { start: { label: 'Situation', tone: 'acc' }, step: { label: 'Instruction', tone: 'cmp' }, done: { label: 'Result', tone: 'new' } },
+  hold: { start: 2.4, step: 2.2, done: 2.4 },
+  legend: [['vio', 'root: node moving down'], ['cmp', 'pivot: node moving up'], ['new', 'pointer changed'], ['ghost', 'subtree (unchanged)']],
+  example: `right
+left
+double_left
+`,
+  build(list, A) {
+    setup('right');
+    A.op('start', null, () => { A.emit(scene(), 'Choose a rotation: each scenario starts again from its initial configuration.', { kind: 'start', readout: ['Inorder (BST): ', inorder().join(' < ')] }); return ''; });
+    for (const o of list) A.op(o.cmd.replace('_', ' '), o.line, () => {
+      setup(o.cmd);
+      A.emit(scene(), `Initial configuration. Inorder: ${inorder().join(' < ')}.`, { kind: 'start', readout: ['Inorder (BST): ', inorder().join(' < ')] });
+      SCEN[o.cmd].run(A);
+      return 'order kept';
+    });
+  },
+});
+})();
+</script>
+</body>
+</html>

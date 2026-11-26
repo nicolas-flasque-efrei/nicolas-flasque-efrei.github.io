@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Balancing a BST</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+<script src="../commun/arbres.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const T = Arbres;
+const H = n => n ? 1 + Math.max(H(n.left), H(n.right)) : -1;
+const BF = n => H(n.left) - H(n.right);
+const fmt = b => b > 0 ? '+' + b : b < 0 ? '−' + (-b) : '0';
+const rotR = n => { const p = n.left; n.left = p.right; p.right = n; return p; };
+const rotL = n => { const p = n.right; n.right = p.left; p.left = n; return p; };
+const anyBad = n => !!n && (Math.abs(BF(n)) > 1 || anyBad(n.left) || anyBad(n.right));
+
+/* ---------- Scene: the tree, with the balance factor (BF) under each node already examined ---------- */
+let root, AA;
+function scene(st = {}) {
+  const sub = {}, subCls = {}, sub2 = {};
+  for (const n of T.nodes(root)) {
+    if (st.done && st.done.has(n.id)) { const b = BF(n); sub[n.id] = 'BF ' + fmt(b); subCls[n.id] = Math.abs(b) > 1 ? 'strong' : ''; }
+    if (AA.opt('h')) sub2[n.id] = 'h=' + H(n);
+  }
+  const hl = { ...(st.hl || {}) };
+  if (st.done) for (const n of T.nodes(root)) if (st.done.has(n.id) && !hl[n.id] && Math.abs(BF(n)) > 1) hl[n.id] = 'bad';
+  const D = T.draw(root, { hl, sub, subCls, sub2 });
+  return { items: D.items, arrows: D.arrows };
+}
+
+/* ---------- Model: BF computed in postorder, rotations as soon as a node reaches ±2, up to the root ---------- */
+function balance(A) {
+  const done = new Set();
+  let rot = 0;
+  const E = (msg, kind, hl) => A.emit(scene({ done, hl }), msg, { kind, readout: ['Height of the tree: ', String(H(root)), '   ·   rotations: ', String(rot)] });
+  if (!root) { E('The tree is empty.', 'end'); return 'empty tree'; }
+  E(`The balance factors BF = h(left) − h(right) are computed in postorder (first the children, then the node), starting from the leaves. Current height: ${H(root)}.`, 'start');
+  function bal(n, set, guard = 0) {
+    if (!n) return;
+    bal(n.left, x => { n.left = x; });
+    bal(n.right, x => { n.right = x; });
+    for (let k = 0; k < 12; k++) {
+      done.add(n.id);
+      const b = BF(n);
+      if (Math.abs(b) <= 1) {
+        E(`Node ${n.v}: h(left) = ${fmt(H(n.left)).replace('+', '')}, h(right) = ${fmt(H(n.right)).replace('+', '')}, so BF = ${fmt(b)}. ${b === 0 ? 'Perfectly balanced.' : 'Balanced (−1, 0 or +1).'}`, 'bf', { [n.id]: 'cmp' });
+        return;
+      }
+      const left = b > 0, c = left ? n.left : n.right, cb = BF(c);
+      const dbl = left ? cb < 0 : cb > 0;
+      const what = left ? (dbl ? `left rotation on ${n.v}->left (${c.v}), then right rotation on ${n.v}` : `right rotation on ${n.v}`)
+                        : (dbl ? `right rotation on ${n.v}->right (${c.v}), then left rotation on ${n.v}` : `left rotation on ${n.v}`);
+      E(`Stop! Node ${n.v}: BF = ${fmt(b)}, and its ${left ? 'left' : 'right'} child ${c.v} has BF = ${fmt(cb)}. ${dbl ? 'Double rotation' : 'Single rotation'}: ${what}.`, 'stop',
+        { [n.id]: 'bad', [c.id]: 'cmp', ...(dbl ? { [(left ? c.right : c.left).id]: 'vio' } : {}) });
+      if (dbl) {
+        if (left) n.left = rotL(c); else n.right = rotR(c);
+        rot++;
+        const p = left ? n.left : n.right;
+        E(`${left ? 'Left rotation' : 'Right rotation'} on ${c.v}: ${p.v} moves up. We are back to the single case.`, 'rot', { [n.id]: 'bad', [p.id]: 'vio' });
+      }
+      const r = left ? rotR(n) : rotL(n);
+      set(r); rot++;
+      E(`${left ? 'Right rotation' : 'Left rotation'} on ${n.v}: ${r.v} takes its place. The BF of this subtree are computed again.`, 'rot', { [r.id]: 'new' });
+      n = r;
+      if (anyBad(n.left)) bal(n.left, x => { n.left = x; });
+      if (anyBad(n.right)) bal(n.right, x => { n.right = x; });
+    }
+  }
+  bal(root, x => { root = x; });
+  E(`Done: every node has a BF of −1, 0 or +1, the tree is an AVL. Final height: ${H(root)} (${plural(rot, 'rotation')}).`, 'end');
+  return `height ${H(root)} · ${plural(rot, 'rotation')}`;
+}
+
+Atelier.init({
+  id: 'atelier-equilibrage-abr-en',
+  lang: 'en',
+  title: 'Balancing a BST',
+  subtitle: 'Lecture #5 · turning any BST into an AVL: balance factors computed in postorder, rotations up to the root.',
+  conv: 'BF = h(left) − h(right) · leaf: h = 0',
+  options: [{ id: 'h', label: 'show the heights', checked: false }],
+  commands: { bst: T.commands.bst, balance: { args: 'none', aliases: ['avl'] } },
+  help: `bst 75 59 83 42 62 90 24 87 37   builds the BST
+balance                           balances it
+# comment`,
+  quick: { buttons: [
+    { label: 'Balance', cmd: 'balance', primary: true },
+    { label: 'Lecture example', line: () => 'bst 75 59 83 42 62 90 24 87 37' },
+    { label: 'Degenerate tree', line: () => 'bst 1 2 3 4 5 6 7' },
+  ] },
+  note: '<b>BF −2</b>, right child at −1: left rotation.<br><b>BF −2</b>, right child at +1: right rotation on the child, then left rotation.<br><b>BF +2</b>, left child at +1: right rotation.<br><b>BF +2</b>, left child at −1: left rotation on the child, then right rotation.',
+  noteTitle: 'Which rotation?',
+  kinds: { tree: { label: 'Tree', tone: 'acc' }, start: { label: 'Start', tone: 'acc' }, bf: { label: 'Factor', tone: 'cmp' }, stop: { label: 'Imbalance', tone: 'bad' },
+    rot: { label: 'Rotation', tone: 'strong' }, end: { label: 'Result', tone: 'new' } },
+  hold: { tree: 1.6, start: 2, bf: 1.3, stop: 3, rot: 2.2, end: 2.8 },
+  legend: [['cmp', 'node examined'], ['bad', 'BF = ±2'], ['vio', 'node moving up (double rotation)'], ['new', 'new root of the subtree']],
+  example: `# The lecture example (slides 34 to 40)
+bst 75 59 83 42 62 90 24 87 37
+balance
+`,
+  emptyMsg: 'Create a BST with "bst".',
+  build(list, A) {
+    AA = A; T.reset(); root = null;
+    A.op('start', null, () => { A.emit(scene(), 'Create a BST with "bst", then balance it.', { kind: 'tree' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'balance') { A.op('balance', o.line, () => balance(A)); continue; }
+      const r = T.fromCommand(o);
+      A.op(r.label, o.line, () => { root = r.root; A.emit(scene(), `BST with ${plural(T.count(root), 'node')}, height ${H(root)}.`, { kind: 'tree' }); return `height ${H(root)}`; });
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

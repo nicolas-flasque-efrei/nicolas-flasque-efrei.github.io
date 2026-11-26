@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BST and insertion order</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+<script src="../commun/arbres.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const T = Arbres;
+
+/* ---------- Scene: the two trees side by side, with their insertion order and their height ---------- */
+const trees = { a: null, b: null }, orders = { a: [], b: [] };
+function scene(st = {}) {
+  const items = [], arrows = [];
+  let x = 0;
+  for (const k of ['a', 'b']) {
+    const r = trees[k];
+    const D = T.draw(r, { prefix: k, x, y: 0, hl: (st.hl || {})[k], sx: 50, sy: 74 });
+    const left = r ? D.box.x0 : x;
+    const title = `${k.toUpperCase()}: ${orders[k].join(' ') || '(empty)'}`;
+    items.push(S.text(k + 'T', left, -52, title.length > 46 ? title.slice(0, 45) + '…' : title, { align: 'start', cls: 'mono' }));
+    items.push(S.text(k + 'H', left, -30, r ? `height ${T.height(r)} · ${plural(T.count(r), 'node')}` : 'empty tree', { align: 'start', cls: 'muted' }));
+    items.push(...D.items); arrows.push(...D.arrows);
+    if (st.probe && st.probe[k]) {
+      const p = D.L.get(st.probe[k].id);
+      if (p) items.push(S.box(k + 'probe', x + p.x - 62, p.y - 38, 40, 22, st.probe[k].v, { cls: 'strong', rx: 11, fs: 12 }));
+    }
+    x = (r ? D.box.x1 : x) + 150;
+  }
+  return { items, arrows };
+}
+
+/* ---------- Model ---------- */
+function build(A, k, vals) {
+  trees[k] = null; orders[k] = [];
+  const dups = [];
+  for (const v of vals) {
+    if (!trees[k]) { trees[k] = T.node(v); orders[k].push(v); A.emit(scene({ hl: { [k]: { [trees[k].id]: 'new' } } }), `${k.toUpperCase()}: ${v} becomes the root.`, { kind: 'ins' }); continue; }
+    let n = trees[k]; const path = [], hl = {};
+    let dup = false;
+    for (;;) {
+      if (v === n.v) { dup = true; break; }
+      path.push(`${v} ${v < n.v ? '<' : '>'} ${n.v}`); hl[n.id] = 'cmp';
+      const s = v < n.v ? 'left' : 'right';
+      if (!n[s]) { n[s] = T.node(v); hl[n[s].id] = 'new'; break; }
+      n = n[s];
+    }
+    if (dup) { dups.push(v); continue; }
+    orders[k].push(v);
+    A.emit(scene({ hl: { [k]: hl } }), `${k.toUpperCase()}: ${v} is inserted as a leaf (${path.join(', ')}).`, { kind: 'ins' });
+  }
+  A.emit(scene(), `Tree ${k.toUpperCase()} built: height ${T.height(trees[k])}.${dups.length ? ` Duplicates ignored: ${dups.join(', ')}.` : ''}`, { kind: 'done' });
+  return `height ${T.height(trees[k])}`;
+}
+
+function search(A, v) {
+  const walk = r => { const out = []; let n = r; while (n) { out.push(n); if (n.v === v) break; n = v < n.v ? n.left : n.right; } return out; };
+  const pa = walk(trees.a), pb = walk(trees.b), found = p => p.length && p[p.length - 1].v === v;
+  const steps = Math.max(pa.length, pb.length);
+  if (!steps) { A.emit(scene(), 'Both trees are empty.', { kind: 'absent' }); return 'empty trees'; }
+  for (let i = 0; i < steps; i++) {
+    const hl = { a: {}, b: {} }, probe = {}, parts = [];
+    for (const [k, p] of [['a', pa], ['b', pb]]) {
+      p.slice(0, Math.min(i, p.length)).forEach(n => hl[k][n.id] = 'acc');
+      if (i < p.length) {
+        const n = p[i]; hl[k][n.id] = n.v === v ? 'new' : 'cmp'; probe[k] = { id: n.id, v };
+        parts.push(`${k.toUpperCase()} compares ${v} with ${n.v}${n.v === v ? ': found!' : v < n.v ? ': go left' : ': go right'}`);
+      } else parts.push(`${k.toUpperCase()} has already finished (${plural(p.length, 'comparison')})`);
+    }
+    A.emit(scene({ hl, probe }), `Comparison no. ${i + 1}. ${parts.join(' · ')}.`, { kind: 'cmp',
+      readout: ['Comparisons: A = ', String(Math.min(i + 1, pa.length)), '   ·   B = ', String(Math.min(i + 1, pb.length))] });
+  }
+  const res = (p, k) => `${k}: ${found(p) ? 'found' : 'absent'} in ${plural(p.length, 'comparison')}`;
+  A.emit(scene({ hl: { a: Object.fromEntries(pa.map(n => [n.id, n.v === v ? 'new' : 'acc'])), b: Object.fromEntries(pb.map(n => [n.id, n.v === v ? 'new' : 'acc'])) } }),
+    `${res(pa, 'A')}; ${res(pb, 'B')}. The same values, but not the same shape: the number of comparisons depends on the height, hence on the insertion order.`,
+    { kind: 'done', readout: ['Comparisons: A = ', String(pa.length), '   ·   B = ', String(pb.length)] });
+  return `A ${pa.length} · B ${pb.length}`;
+}
+
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+let lastA = [8, 3, 10, 1, 6, 14, 4, 7, 13];
+
+Atelier.init({
+  id: 'atelier-ordre-insertion-abr-en',
+  lang: 'en',
+  title: 'BST and insertion order',
+  subtitle: 'Lecture #4 · the same values inserted in two different orders: balanced or degenerate?',
+  conv: 'left < node < right',
+  commands: {
+    a: { args: 'nums', aliases: ['orderA', 'treeA'], check: v => v.length > 31 ? 'at most 31 values.' : '' },
+    b: { args: 'nums', aliases: ['orderB', 'treeB'], check: v => v.length > 31 ? 'at most 31 values.' : '' },
+    search: { args: 'num', aliases: ['s', 'find'] },
+  },
+  help: `a 8 3 10 1 6 14   builds tree A in this order
+b 1 3 6 8 10 14   builds tree B in this order
+search 13         searches in both trees
+# comment`,
+  quick: { input: 'num', buttons: [
+    { label: 'Search', cmd: 'search', arg: true, primary: true },
+    { label: 'B = A sorted', line: () => 'b ' + lastA.slice().sort((x, y) => x - y).join(' ') + '   # increasing order' },
+    { label: 'B = A shuffled', line: () => 'b ' + shuffle(lastA).join(' ') + '   # shuffled' },
+  ] },
+  kinds: { start: { label: 'Start', tone: 'acc' }, ins: { label: 'Insertion', tone: 'acc' }, done: { label: 'Summary', tone: 'new' },
+    cmp: { label: 'Comparison', tone: 'cmp' }, absent: { label: 'Empty', tone: 'bad' } },
+  hold: { ins: 0.7, done: 2.4, cmp: 1.6 },
+  legend: [['cmp', 'node compared / insertion path'], ['acc', 'already visited'], ['new', 'new node / found']],
+  example: `a 8 3 10 1 6 14 4 7 13     # the lecture BST
+b 1 3 4 6 7 8 10 13 14     # the same values, sorted
+search 13
+search 5
+`,
+  build(list, A) {
+    T.reset(); trees.a = trees.b = null; orders.a = []; orders.b = [];
+    A.op('start', null, () => { A.emit(scene(), 'Two empty trees: build A and B with the same values in two different orders.', { kind: 'start' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'a' || o.cmd === 'b') { if (o.cmd === 'a') lastA = o.vals.slice(); A.op(`${o.cmd} ${o.vals.join(' ')}`, o.line, () => build(A, o.cmd, o.vals)); }
+      else A.op(`search ${o.vals[0]}`, o.line, () => search(A, o.vals[0]));
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

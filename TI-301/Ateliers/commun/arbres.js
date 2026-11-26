@@ -6,6 +6,25 @@ let nid = 1;
 const reset = () => { nid = 1; };
 const node = (v, left = null, right = null) => ({ id: nid++, v, left, right });
 const MAXN = 31;
+/* Langue des messages : celle de la page (<html lang="en"> → anglais), français par défaut */
+const EN = /^en/i.test(document.documentElement.lang || '');
+const M = EN ? {
+  incomplete: 'incomplete expression: is a closing parenthesis missing?', unexpected: 'unexpected closing parenthesis.',
+  value: 'after "(", the value of the node is expected.', two: near => `a node has at most two children (near "${near}").`, end: 'end',
+  extra: rest => `extra text after the tree: "${rest}".`, big: n => `tree too large (at most ${n} nodes).`,
+  argName: 'a tree in parenthesised notation', most: n => `at most ${n} values.`,
+  help: `tree (- (+ 3 1) (/ 7 (x 3 2)))   any tree:
+     (value left right), "." = empty
+bst 8 3 10 1 6 14                 BST by insertions`,
+} : {
+  incomplete: 'expression incomplète : il manque une parenthèse fermante ?', unexpected: 'parenthèse fermante inattendue.',
+  value: 'après « ( », on attend la valeur du nœud.', two: near => `un nœud a au plus deux fils (près de « ${near} »).`, end: 'fin',
+  extra: rest => `texte en trop après l'arbre : « ${rest} ».`, big: n => `arbre trop grand (${n} nœuds au plus).`,
+  argName: 'un arbre en notation parenthésée', most: n => `${n} valeurs au plus.`,
+  help: `tree (- (+ 3 1) (/ 7 (x 3 2)))   arbre quelconque :
+     (valeur gauche droit), « . » = vide
+bst 8 3 10 1 6 14                 ABR par insertions`,
+};
 
 /* Notation parenthésée : (valeur gauche droit), « . » pour un sous-arbre vide, un symbole seul pour une feuille.
    Exemple : (- (+ 3 1) (/ 7 (x 3 2))) */
@@ -14,24 +33,24 @@ function parse(text) {
   let i = 0, count = 0;
   function T() {
     const t = toks[i];
-    if (t == null) throw new Error('expression incomplète : il manque une parenthèse fermante ?');
-    if (t === ')') throw new Error('parenthèse fermante inattendue.');
+    if (t == null) throw new Error(M.incomplete);
+    if (t === ')') throw new Error(M.unexpected);
     if (t === '.' || t === '_' || t.toLowerCase() === 'null') { i++; return null; }
     if (t !== '(') { i++; count++; return node(t); }
     i++;
     const v = toks[i];
-    if (v == null || v === '(' || v === ')') throw new Error('après « ( », on attend la valeur du nœud.');
+    if (v == null || v === '(' || v === ')') throw new Error(M.value);
     i++; count++;
     const n = node(v);
     if (toks[i] !== ')') n.left = T();
     if (toks[i] !== ')') n.right = T();
-    if (toks[i] !== ')') throw new Error(`un nœud a au plus deux fils (près de « ${toks[i] || 'fin'} »).`);
+    if (toks[i] !== ')') throw new Error(M.two(toks[i] || M.end));
     i++;
     return n;
   }
   const root = T();
-  if (i < toks.length) throw new Error(`texte en trop après l'arbre : « ${toks.slice(i).join(' ')} ».`);
-  if (count > MAXN) throw new Error(`arbre trop grand (${MAXN} nœuds au plus).`);
+  if (i < toks.length) throw new Error(M.extra(toks.slice(i).join(' ')));
+  if (count > MAXN) throw new Error(M.big(MAXN));
   return root;
 }
 const check = text => { const save = nid; try { parse(text); return ''; } catch (e) { return e.message; } finally { nid = save; } };
@@ -102,12 +121,10 @@ function draw(root, o = {}) {
 
 /* Commandes communes pour créer un arbre dans un script */
 const commands = {
-  tree: { args: 'text', argName: 'un arbre en notation parenthésée', aliases: ['arbre'], check },
-  bst: { args: 'nums', aliases: ['abr', 'insert', 'inserer', 'insérer'], check: v => v.length > MAXN ? `${MAXN} valeurs au plus.` : '' },
+  tree: { args: 'text', argName: M.argName, aliases: ['arbre'], check },
+  bst: { args: 'nums', aliases: ['abr', 'insert', 'inserer', 'insérer'], check: v => v.length > MAXN ? M.most(MAXN) : '' },
 };
-const help = `tree (- (+ 3 1) (/ 7 (x 3 2)))   arbre quelconque :
-     (valeur gauche droit), « . » = vide
-bst 8 3 10 1 6 14                 ABR par insertions`;
+const help = M.help;
 function fromCommand(o) {
   if (o.cmd === 'tree') return { root: parse(o.text), label: 'tree ' + o.text.trim() };
   const r = bst(o.vals);

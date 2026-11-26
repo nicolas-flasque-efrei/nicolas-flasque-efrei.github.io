@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sorted insertion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const X0 = 170, SP = 166, CW = S.LCW, NY = 132;
+
+/* ---------- Scene: the structure (head, tail), the cells, temp / prev above, newcell below.
+   Lecture convention: @ and a dot in each pointer field, NULL drawn as a "ground". ---------- */
+function scene(st) {
+  const items = [], arrows = [], row = st.cells, n = row.length, hl = st.hl || {};
+  const toNull = (k, x, y, dir = 'right') => { items.push(S.ground('g_' + k, x, dir === 'right' ? y - 13 : y, dir)); return { k: 'g_' + k, side: dir === 'right' ? 'l' : 't' }; };
+  const hd = st.head !== undefined ? st.head : (row[0] ? row[0].id : null);
+  const tl = st.tail !== undefined ? st.tail : (row[n - 1] ? row[n - 1].id : null);
+  items.push(...S.lstruct('L', 0, -22, ['head', 'tail'], { name: 'myhtlist', namePos: 'above-left', cls: st.Lcls }));
+  const pos = {}, posY = {};
+  row.forEach((c, i) => { pos[c.id] = X0 + i * SP; posY[c.id] = 0; });
+  if (st.nc) {
+    const t = st.gap != null ? st.gap : 0, gx = X0 + t * SP - (SP - CW) / 2;
+    pos[st.nc.id] = gx - CW / 2; posY[st.nc.id] = NY;
+  }
+  arrows.push(S.arrow('aH', { k: 'L_head', dot: true }, hd != null ? 'c' + hd : toNull('Lh', 122, 20),
+    { cls: st.hcls, ctrl: hd != null && posY[hd] === 0 && pos[hd] > X0 ? { dy: -70 } : null }));
+  arrows.push(S.arrow('aT', { k: 'L_tail', dot: true }, tl != null ? { k: 'c' + tl, side: posY[tl] > 74 ? 't' : 'bl' } : toNull('Lt', 122, 74),
+    { cls: st.tcls, elbow: tl != null ? 'hv' : null }));
+  const links = st.links || {};
+  row.forEach((c, i) => {
+    const nx = links[c.id] !== undefined ? links[c.id] : (row[i + 1] ? row[i + 1].id : null);
+    items.push(S.lcell('c' + c.id, pos[c.id], 0, c.v, { cls: hl[c.id] }));
+    arrows.push(S.arrow('n' + c.id, { k: 'c' + c.id, part: 1, dot: true }, nx != null ? 'c' + nx : toNull('c' + c.id, pos[c.id] + CW + 30, 20),
+      { cls: st.lcls && st.lcls[c.id], ctrl: nx != null && posY[nx] === 0 && pos[nx] <= pos[c.id] ? { dy: -90 } : null }));
+  });
+  if (st.nc) {
+    const c = st.nc, x = pos[c.id];
+    items.push(S.lcell('c' + c.id, x, NY, c.v, { cls: st.ncCls || 'new' }));
+    arrows.push(S.arrow('n' + c.id, { k: 'c' + c.id, part: 1, dot: true }, c.next != null ? 'c' + c.next : toNull('c' + c.id, x + CW + 30, NY + 20), { cls: st.ncNextCls || 'new' }));
+    items.push(S.ptr('p_new', x + CW / 2 - 40, NY + 76, 'newcell', { cls: 'new' }));
+    arrows.push(S.arrow('pa_new', { k: 'p_new', side: 't' }, { k: 'c' + c.id, side: 'b' }, { cls: 'new' }));
+  }
+  const P = st.ptrs || {}, same = P.temp !== undefined && P.prev !== undefined && P.temp === P.prev;
+  for (const name of ['prev', 'temp']) {
+    if (P[name] === undefined) continue;
+    const at = P[name];
+    const cx = (at != null ? pos[at] + CW / 2 : X0 + n * SP + 30) + (same ? (name === 'prev' ? -32 : 32) : 0);
+    const cls = name === 'temp' ? 'cmp' : 'vio';
+    items.push(S.ptr('p_' + name, cx - 28, -112, name, { w: 56, cls }));
+    arrows.push(S.arrow('pa_' + name, { k: 'p_' + name, side: 'b' }, at != null ? { k: 'c' + at, side: 't' } : toNull('p_' + name, cx - 13, -40, 'down'), { cls }));
+  }
+  return { items, arrows };
+}
+
+/* ---------- Model ---------- */
+let cells, nextId;
+const vals = () => cells.map(c => c.v).join(' → ') || 'empty';
+
+function doInsert(A, v) {
+  const id = nextId++, nc = { id, v, next: null }, n = cells.length, bugHead = A.opt('bug');
+  const V = o => scene({ cells, nc, ...o });
+  const E = (o, msg, kind, line, cls) => A.emit(V(o), msg, { kind, code: ['ins', line], codeCls: cls, readout: ['List: ', vals()] });
+  E({ gap: 0 }, `newcell = createCell(${v}): a new cell, its next is NULL. Now its place must be found to keep the list sorted.`, 'create', 3);
+  if (!n) {
+    E({ gap: 0 }, 'The list is empty (head and tail are NULL): this is case number 1.', 'case', 4);
+    E({ gap: 0, head: id, hcls: 'new', tail: null }, 'ptr_list->head = newcell: the new cell is the first one…', 'link', 6);
+    E({ gap: 0, head: id, tail: id, hcls: 'new', tcls: 'new' }, '… and ptr_list->tail = newcell: it is also the last one.', 'link', 7);
+    cells.push({ id, v });
+    A.emit(scene({ cells, hl: { [id]: 'new' } }), `${v} is inserted: the list holds 1 cell.`, { kind: 'done', code: ['ins', 31], codeCls: 'good', readout: ['List: ', vals()] });
+    return 'empty list → 1 cell';
+  }
+  let t = 0;
+  E({ gap: 0, ptrs: { temp: cells[0].id, prev: cells[0].id } }, 'The list is not empty: temp = ptr_list->head and prev = temp. The list will be traversed with these two pointers.', 'init', 11);
+  for (;;) {
+    const T = cells[t], Pp = cells[Math.max(0, t - 1)];
+    const ptrs = { temp: T ? T.id : null, prev: Pp.id };
+    if (!T) {
+      E({ gap: t, ptrs }, `temp is NULL: the whole list was traversed without finding a value greater than ${v}. It will have to be inserted at the end of the list.`, 'stop', 13);
+      break;
+    }
+    if (T.v < v) {
+      E({ gap: t, ptrs, hl: { [T.id]: 'cmp' } }, `temp->value = ${T.v} < ${v}: it cannot be inserted here, we must move on.`, 'cmp', 13);
+      t++;
+      E({ gap: t, ptrs: { temp: cells[t] ? cells[t].id : null, prev: T.id } },
+        `prev = temp, then temp = temp->next: prev "remembers" the cell ${T.v}, temp moves ${cells[t] ? 'to ' + cells[t].v : 'to NULL'}.`, 'move', [15, 16]);
+    } else {
+      E({ gap: t, ptrs, hl: { [T.id]: 'cmp' } }, `temp->value = ${T.v} ≥ ${v}: we stop, newcell must be placed BEFORE temp. We cannot go backwards… hence prev.`, 'stop', 13);
+      break;
+    }
+  }
+  const T = cells[t], Pp = cells[Math.max(0, t - 1)], ptrs = { temp: T ? T.id : null, prev: Pp.id };
+  if (t === 0) {
+    if (bugHead) {
+      E({ gap: 0, ptrs }, 'temp has not moved (prev == temp == head)… but this version forgot the special case of the head: it applies the general case.', 'bug', 18, 'bad');
+      E({ gap: 0, ptrs, links: { [Pp.id]: id }, lcls: { [Pp.id]: 'bad' } }, `prev->next = newcell: ${Pp.v} now points to ${v}…`, 'bug', 25, 'bad');
+      nc.next = T.id;
+      E({ gap: 0, ptrs, links: { [Pp.id]: id }, lcls: { [Pp.id]: 'bad' }, ncNextCls: 'bad', ncCls: 'bad' },
+        `…and newcell->next = temp: ${v} points to ${T.v}. The list loops (${T.v} → ${v} → ${T.v} → …), head has not changed and ${v} is not at the head: the list is corrupted!`, 'bug', 26, 'bad');
+      A.emit(scene({ cells }), `This wrong insertion is cancelled. The "insertion at the head" case (temp == ptr_list->head) must modify ptr_list->head.`, { kind: 'bug', code: ['ins', 18], codeCls: 'bad', readout: ['List: ', vals()] });
+      return { text: 'infinite loop!', cls: 'bad' };
+    }
+    E({ gap: 0, ptrs }, 'temp has not moved (temp == ptr_list->head): this is an insertion at the head, a special case.', 'case', 18);
+    nc.next = T.id;
+    E({ gap: 0, ptrs }, `newcell->next = ptr_list->head: ${v} points to the former first cell (${T.v}).`, 'link', 20);
+    E({ gap: 0, ptrs, head: id, hcls: 'new' }, `ptr_list->head = newcell: ${v} becomes the first cell. tail does not change.`, 'link', 21);
+  } else {
+    E({ gap: t, ptrs }, T ? `General case: it is inserted between prev (${Pp.v}) and temp (${T.v}).` : `Insertion after prev (${Pp.v}), the last cell.`, 'case', 23);
+    E({ gap: t, ptrs, links: { [Pp.id]: id }, lcls: { [Pp.id]: 'new' } }, `prev->next = newcell: the next one of ${Pp.v} becomes ${v}.`, 'link', 25);
+    nc.next = T ? T.id : null;
+    E({ gap: t, ptrs, links: { [Pp.id]: id }, lcls: { [Pp.id]: 'new' } },
+      T ? `newcell->next = temp: the next one of ${v} is ${T.v}. The chain is complete again.` : 'newcell->next = temp: temp is NULL, newcell is at the end of the chain.', 'link', 26);
+    if (!T) {
+      E({ gap: t, ptrs, links: { [Pp.id]: id }, lcls: { [Pp.id]: 'new' }, tail: id, tcls: 'new' },
+        `temp == NULL: it was inserted at the end, ptr_list->tail = newcell must be updated (otherwise tail would still point to ${Pp.v}).`, 'link', [27, 28]);
+    } else {
+      E({ gap: t, ptrs, links: { [Pp.id]: id }, lcls: { [Pp.id]: 'new' } }, 'temp ≠ NULL: the last cell has not changed, tail stays as it is.', 'case', 27);
+    }
+  }
+  cells.splice(t, 0, { id, v });
+  A.emit(scene({ cells, hl: { [id]: 'new' } }), `${v} is inserted at its place: ${vals()}.`, { kind: 'done', code: ['ins', 31], codeCls: 'good', readout: ['List: ', vals()] });
+  return t === 0 ? 'at the head' : t === n ? 'at the end (tail updated)' : `between ${cells[t - 1].v} and ${cells[t + 1].v}`;
+}
+
+const CODES = { ins: { title: 'insertOrderedHtList()', lines: [
+  'void insertOrderedHtList(t_ht_list *ptr_list, int val)', '{', '    t_cell *newcell, *prev, *temp;', '    newcell = createCell(val);',
+  '    if (isEmptyHtList(*ptr_list) == 1)  // case 1: empty list', '    {', '        ptr_list->head = newcell;', '        ptr_list->tail = newcell;', '    }',
+  '    else', '    {', '        temp = ptr_list->head;', '        prev = temp;', '        while ((temp != NULL) && (temp->value < newcell->value))', '        {',
+  '            prev = temp;', '            temp = temp->next;', '        }', '        if (temp == ptr_list->head)       // insertion at the head', '        {',
+  '            newcell->next = ptr_list->head;', '            ptr_list->head = newcell;', '        }', '        else', '        {',
+  '            prev->next = newcell;', '            newcell->next = temp;', '            if (temp == NULL)             // insertion at the end',
+  '                ptr_list->tail = newcell;', '        }', '    }', '}'] } };
+
+Atelier.init({
+  id: 'atelier-liste-ht-triee-en',
+  lang: 'en',
+  title: 'Sorted insertion',
+  subtitle: 'Lecture #2 · inserting a value at its place in a sorted "head + tail" list, with temp and prev.',
+  conv: 'list sorted in increasing order',
+  options: [{ id: 'bug', label: 'forget the "insertion at the head" case', checked: false }],
+  commands: {
+    insert: { args: 'nums', aliases: ['ins', 'i', 'add'] },
+    clear: { args: 'none', aliases: ['empty', 'reset'] },
+  },
+  defaultCmd: 'insert',
+  help: `insert 4 1 6   inserts each value at its place
+clear          starts again from an empty list
+# comment`,
+  quick: { input: 'num', buttons: [
+    { label: 'Insert', cmd: 'insert', arg: true, primary: true },
+    { label: 'Clear', cmd: 'clear', ghost: true },
+  ] },
+  codes: CODES,
+  kinds: {
+    start: { label: 'Start', tone: 'acc' }, create: { label: 'Creation', tone: 'new' }, case: { label: 'Case', tone: 'acc' },
+    init: { label: 'Initialisation', tone: 'acc' }, cmp: { label: 'Comparison', tone: 'cmp' }, move: { label: 'Moving on', tone: 'cmp' },
+    stop: { label: 'Place found', tone: 'vio' }, link: { label: 'Linking', tone: 'new' }, done: { label: 'Result', tone: 'new' },
+    bug: { label: 'Error', tone: 'bad' },
+  },
+  hold: { create: 1.6, case: 1.6, init: 1.6, cmp: 1.4, move: 1.2, stop: 2, link: 1.8, done: 2, bug: 2.8 },
+  legend: [['cmp', 'temp (cell compared)'], ['vio', 'prev'], ['new', 'newcell and new links'], ['bad', 'error']],
+  emptyMsg: 'The list is empty.',
+  example: `# Each insertion keeps the list sorted.
+insert 4          # case 1: empty list
+insert 1 6        # in the middle… then at the end (tail)
+insert 3          # between 1 and 4
+insert -3         # at the head: special case
+`,
+  build(list, A) {
+    cells = []; nextId = 1;
+    A.op('start', null, () => { A.emit(scene({ cells }), 'Start: myhtlist = createHtList(), head and tail are NULL.', { kind: 'start' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'insert') o.vals.forEach(v => A.op(`insert ${v}`, o.line, () => doInsert(A, v)));
+      else A.op('clear', o.line, () => { cells = []; A.emit(scene({ cells }), 'The list is cleared: head and tail are NULL.', { kind: 'start' }); return 'empty'; });
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

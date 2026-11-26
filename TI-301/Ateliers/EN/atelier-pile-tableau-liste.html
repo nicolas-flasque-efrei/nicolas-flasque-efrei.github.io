@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stack: array or list</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const NBMAX = 8, CWD = 56, LY = 236, LX0 = 170, SP = 166, CW = S.LCW;
+
+/* ---------- Scene: the array stack (values + nbElts) at the top, the list stack (head + cells) at the bottom ---------- */
+function scene(st) {
+  const items = [], arrows = [], tab = st.tab, nb = st.nb, hl = st.hl || {};
+  items.push(S.text('t_tab', 0, -40, `With an array: t_stacktab (NBMAX = ${NBMAX})`, { align: 'start', cls: 'muted' }));
+  for (let i = 0; i < NBMAX; i++) {
+    const used = i < nb, v = tab[i];
+    items.push(S.box('t' + i, i * CWD, 0, CWD - 4, 44, v == null ? '' : v,
+      { cls: hl['t' + i] || (used ? 'acc' : v != null ? 'ghost' : ''), sub: String(i), rx: 4 }));
+  }
+  const nx = Math.min(nb, NBMAX) * CWD + (CWD - 4) / 2;
+  items.push(S.ptr('nb', nx - 52, 84, `nbElts = ${nb}`, { w: 104, cls: st.nbCls }));
+  arrows.push(S.arrow('nbA', { k: 'nb', side: 't' }, { x: nx, y: 68 }, { cls: st.nbCls || 'acc' }));
+  if (st.val != null) items.push(S.box('val', NBMAX * CWD + 40, 0, 100, 44, `val = ${st.val}`, { cls: 'new', enter: st.valFrom }));
+  if (st.err) items.push(S.text('err', NBMAX * CWD + 40, 22, st.err, { align: 'start', cls: 'mono', fs: 14 }));
+
+  items.push(S.text('t_lst', 0, LY - 64, 'With a list: t_stacklist (the top is at the head)', { align: 'start', cls: 'muted' }));
+  const toNull = (k, x, y) => { items.push(S.ground('g_' + k, x, y - 13)); return { k: 'g_' + k, side: 'l' }; };
+  const row = st.lst, lh = st.lhead !== undefined ? st.lhead : (row[0] ? row[0].id : null);
+  items.push(...S.lstruct('S', 0, LY - 22, ['head'], { name: 'stack', namePos: 'below-left', cls: st.Scls }));
+  const pos = {};
+  row.forEach((c, i) => { pos[c.id] = LX0 + i * SP; });
+  if (st.nc) pos[st.nc.id] = LX0 - 20;
+  const yOf = id => st.nc && id === st.nc.id ? LY + 110 : LY;
+  arrows.push(S.arrow('aS', { k: 'S_head', dot: true }, lh != null ? 'l' + lh : toNull('S', 120, LY + 20),
+    { cls: st.Scls, ctrl: lh != null && yOf(lh) === LY && pos[lh] > LX0 ? { dy: -70 } : null }));
+  const all = st.nc ? [st.nc, ...row] : row;
+  for (const c of all) {
+    const i = row.indexOf(c), nxt = c === st.nc ? c.next : (row[i + 1] ? row[i + 1].id : null);
+    items.push(S.lcell('l' + c.id, pos[c.id], yOf(c.id), c.v, { cls: hl['l' + c.id] || (c === st.nc ? 'new' : '') }));
+    arrows.push(S.arrow('ln' + c.id, { k: 'l' + c.id, part: 1, dot: true }, nxt != null ? 'l' + nxt : toNull('l' + c.id, pos[c.id] + CW + 30, yOf(c.id) + 20),
+      { cls: c === st.nc ? 'new' : '' }));
+  }
+  return { items, arrows };
+}
+
+/* ---------- Model: the two stacks evolve side by side ---------- */
+let tab, nb, lst, nextId;
+const content = () => tab.slice(0, nb).join(' ') || 'empty';
+const RD = v => v == null ? ['Stack (bottom → top): ', content()] : ['Stack (bottom → top): ', content(), '   ·   value obtained: ', String(v)];
+const V = o => scene({ tab, nb, lst, ...o });
+
+function doPush(A, v) {
+  const E = (o, msg, kind, line, cls) => A.emit(V(o), msg, { kind, code: ['push', line], codeCls: cls, readout: RD() });
+  if (nb >= NBMAX) {
+    E({ nbCls: 'bad' }, `isFullStack: nbElts = ${NBMAX} = NBMAX, the array is full. ${v} cannot be pushed (the list version, for its part, is never full: only the available memory limits it).`, 'full', 2, 'bad');
+    return { text: 'stack full (array)', cls: 'bad' };
+  }
+  E({}, `nbElts = ${nb} < NBMAX: there is still room. The next free cell has index nbElts = ${nb}.`, 'test', 2);
+  const id = nextId++, nc = { id, v, next: lst[0] ? lst[0].id : null };
+  tab[nb] = v;
+  E({ hl: { ['t' + nb]: 'new' }, nc }, `Array: values[nbElts] ← ${v}, direct access in O(1). List: new cell, newcell->next ← head.`, 'push', 4);
+  nb++; lst.unshift({ id, v });
+  E({ hl: { ['t' + (nb - 1)]: 'new', ['l' + id]: 'new' }, nbCls: 'new', Scls: 'new' },
+    `Array: nbElts ← ${nb}. List: head ← newcell (insertion at the head, O(1) as well). ${v} is at the top of both stacks.`, 'push', 5);
+  return `top = ${v}`;
+}
+
+function doPop(A) {
+  const checked = A.opt('check'), set = checked ? 'popB' : 'popA';
+  const E = (o, msg, kind, line, cls, val) => A.emit(V(o), msg, { kind, code: [set, line], codeCls: cls, readout: RD(val) });
+  if (!nb) {
+    if (checked) {
+      E({ nbCls: 'bad' }, 'isEmptyStack(*p_stack) is true: the stack is empty. pop returns 0 to signal that no value was retrieved (*p_val is not modified).', 'empty', [3, 5], 'bad');
+      return { text: 'empty → returns 0', cls: 'bad' };
+    }
+    E({ nbCls: 'bad', err: 'Assertion failed: p_stack->nbElts > 0' }, 'assert(p_stack->nbElts > 0) is false: the program stops with an error. This version requires isEmptyStack to be checked BEFORE calling pop.', 'empty', 5, 'bad');
+    return { text: 'assert fails!', cls: 'bad' };
+  }
+  const v = tab[nb - 1], top = lst[0];
+  E({ hl: { ['t' + (nb - 1)]: 'cmp', ['l' + top.id]: 'cmp' } }, `The stack is not empty (nbElts = ${nb}). The top is in the cell with index nbElts − 1 = ${nb - 1}.`, 'test', checked ? 3 : 5);
+  E({ hl: { ['t' + (nb - 1)]: 'cmp', ['l' + top.id]: 'cmp' }, val: v, valFrom: 't' + (nb - 1) },
+    `Array: val ← values[${nb - 1}] = ${v}. List: val ← head->value.`, 'pop', checked ? [7, 8] : [6, 7], 'on', v);
+  nb--;
+  E({ hl: { ['l' + top.id]: 'bad' }, lhead: lst[1] ? lst[1].id : null, val: v, nbCls: 'cmp', Scls: 'cmp' },
+    `Array: nbElts ← ${nb}. The value ${v} is still in cell ${nb}, but it is no longer part of the stack. List: head ← head->next, then free of the former head.`, 'pop', checked ? 9 : 8, 'on', v);
+  lst.shift();
+  E({ val: v }, `pop returns ${v}${checked ? ' in *p_val, and 1 to say that everything went well' : ''}.`, 'done', checked ? 10 : 9, 'good', v);
+  return `→ ${v}`;
+}
+
+function doTop(A) {
+  const E = (o, msg, kind, line, cls, val) => A.emit(V(o), msg, { kind, code: ['top', line], codeCls: cls, readout: RD(val) });
+  if (!nb) { E({ nbCls: 'bad' }, 'The stack is empty: there is nothing to look at (same precondition as pop).', 'empty', 2, 'bad'); return { text: 'empty stack', cls: 'bad' }; }
+  const v = tab[nb - 1];
+  E({ hl: { ['t' + (nb - 1)]: 'cmp', ['l' + lst[0].id]: 'cmp' }, val: v, valFrom: 't' + (nb - 1) },
+    `top returns the top ${v} (values[nbElts − 1] or head->value) WITHOUT removing it: nbElts and head do not change.`, 'top', 3, 'good', v);
+  return `top = ${v}`;
+}
+
+function doEmpty(A) {
+  const e = nb === 0;
+  A.emit(V({ nbCls: e ? 'new' : 'cmp' }), `isEmptyStack: nbElts == 0? ${e ? 'yes, the stack is empty (returns 1)' : `no, nbElts = ${nb} (returns 0)`}. With the list: head == NULL?`,
+    { kind: 'test', code: ['empty', 2], codeCls: 'good', readout: RD() });
+  return e ? 'empty' : 'not empty';
+}
+
+const CODES = {
+  push: { title: 'push() — array (principle)', lines: ['Algorithm push(p_stack : t_stacktab*, val : integer)', 'begin',
+    '    // precondition: the stack is not full (nbElts < NBMAX)', '    // the next free cell has index nbElts',
+    '    p_stack->values[p_stack->nbElts] ← val', '    p_stack->nbElts ← p_stack->nbElts + 1', 'end'] },
+  popA: { title: 'pop() — version requiring a non-empty stack', lines: ['int pop(t_stacktab *p_stack)', '{', '    int val;', '    int position;',
+    '    // require the stack not to be empty', '    assert(p_stack->nbElts > 0);  // otherwise: runtime error',
+    '    position = p_stack->nbElts;', '    val = p_stack->values[position-1];', '    p_stack->nbElts = position - 1;', '    return val;', '}'] },
+  popB: { title: 'pop() — version that checks', lines: ['int pop(t_stacktab *p_stack, int *p_val)', '{', '    int position;',
+    '    if (isEmptyStack(*p_stack))', '    {', '        return 0;  // no value to extract', '    }', '    position = p_stack->nbElts;',
+    '    *p_val = p_stack->values[position-1];', '    p_stack->nbElts = position - 1;', '    return 1;      // a value was retrieved', '}'] },
+  top: { title: 'top() — looking at the top (principle)', lines: ['Algorithm top(s : t_stacktab) : integer', 'begin',
+    '    // precondition: the stack is not empty', '    return s.values[s.nbElts − 1]', 'end'] },
+  empty: { title: 'isEmptyStack()', lines: ['int isEmptyStack(t_stacktab s)', '{', '    return (s.nbElts == 0);', '}'] },
+};
+
+Atelier.init({
+  id: 'atelier-pile-tableau-liste-en',
+  lang: 'en',
+  title: 'Stack: array or list',
+  subtitle: 'Lecture #3 · the same operations push / pop / top on two implementations, side by side.',
+  conv: 'LIFO: last in, first out',
+  options: [{ id: 'check', label: 'pop that checks (returns 0 / 1)', checked: false }],
+  commands: {
+    push: { args: 'nums', aliases: ['p'] },
+    pop: { args: 'num?', min: 1, max: 20, aliases: [] },
+    top: { args: 'none', aliases: ['peek'] },
+    isempty: { args: 'none', aliases: ['empty', 'isemptystack'] },
+  },
+  help: `push 3 7 1   pushes 3, then 7, then 1
+pop          pops one value
+pop 2        pops twice
+top          looks at the top
+isempty      is the stack empty?
+# comment`,
+  quick: { input: 'num', buttons: [
+    { label: 'Push', cmd: 'push', arg: true, primary: true },
+    { label: 'Pop', cmd: 'pop' },
+    { label: 'Top', cmd: 'top' },
+    { label: 'Empty?', cmd: 'isempty', ghost: true },
+  ] },
+  codes: CODES,
+  kinds: {
+    start: { label: 'Start', tone: 'acc' }, test: { label: 'Test', tone: 'cmp' }, push: { label: 'Push', tone: 'acc' },
+    pop: { label: 'Pop', tone: 'vio' }, top: { label: 'Top', tone: 'new' }, done: { label: 'Result', tone: 'new' },
+    empty: { label: 'Stack empty', tone: 'bad' }, full: { label: 'Stack full', tone: 'bad' },
+  },
+  hold: { test: 1.4, push: 1.8, pop: 1.9, top: 2, done: 1.6, empty: 2.8, full: 2.8 },
+  legend: [['acc', 'cell in use (in the stack)'], ['ghost', 'cell outside the stack (value left)'], ['cmp', 'top read'], ['new', 'written / value obtained'], ['bad', 'removed / error']],
+  example: `push 3 7 1
+top
+pop
+pop
+push 9
+pop 3        # the third time, the stack is empty!
+`,
+  build(list, A) {
+    tab = Array(NBMAX).fill(null); nb = 0; lst = []; nextId = 1;
+    A.op('start', null, () => { A.emit(V({}), 'Two empty stacks: nbElts = 0 for the array, head = NULL for the list.', { kind: 'start', readout: RD() }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'push') o.vals.forEach(v => A.op(`push ${v}`, o.line, () => doPush(A, v)));
+      else if (o.cmd === 'pop') for (let k = 0; k < (o.vals[0] || 1); k++) A.op('pop', o.line, () => doPop(A));
+      else if (o.cmd === 'top') A.op('top', o.line, () => doTop(A));
+      else A.op('isempty', o.line, () => doEmpty(A));
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

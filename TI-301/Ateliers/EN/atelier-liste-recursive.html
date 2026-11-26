@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recursion on lists</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const X0 = 160, SP = 166, CW = S.LCW, FY = 128, FH = 32, FG = 40, FX = 26;
+
+/* ---------- Scene: the list at the top (lecture convention @ / NULL), the call stack below ---------- */
+function scene(st) {
+  const items = [], arrows = [], hl = st.hl || {}, subs = st.subs || {};
+  const row = st.cells;
+  const toNull = (k, x, y) => { items.push(S.ground('g_' + k, x, y - 13)); return { k: 'g_' + k, side: 'l' }; };
+  items.push(...S.lstruct('L', 0, -22, ['head'], { name: 'L' }));
+  arrows.push(S.arrow('aL', { k: 'L_head', dot: true }, st.head != null ? 'c' + st.head : toNull('L', 120, 20)));
+  row.forEach((c, i) => {
+    const nx = row[i + 1], x = X0 + i * SP;
+    items.push(S.lcell('c' + c.id, x, 0, c.v, { cls: hl[c.id], sub: subs[c.id] }));
+    if (nx) arrows.push(S.arrow('n' + c.id, { k: 'c' + c.id, part: 1, dot: true }, 'c' + nx.id, { cls: nx.freed ? 'bad dash' : '' }));
+    else if (!c.dangling) arrows.push(S.arrow('n' + c.id, { k: 'c' + c.id, part: 1, dot: true }, toNull('c' + c.id, x + CW + 30, 20)));
+  });
+  if (st.calls.length) items.push(S.text('hdr', 0, FY - 14, 'Call stack (the most recent at the bottom)', { align: 'start', cls: 'muted' }));
+  st.calls.forEach((f, d) => {
+    items.push(S.box('f' + d, d * FX, FY + d * FG, Math.max(250, 30 + f.label.length * 8.2), FH, f.label, { cls: 'frame ' + f.st, rx: 6 }));
+  });
+  return { items, arrows };
+}
+
+/* ---------- Model ---------- */
+let cells, head, nextId;
+const MODES = {
+  display: { set: 'display', cell: 'displayCellRec', list: 'displayListRec(L)' },
+  reverse: { set: 'reverse', cell: 'displayCellRecRev', list: 'displayListRecRev(L)' },
+  free: { set: 'free', cell: 'freeCellRec', list: 'freeListRec(&L)' },
+  freebad: { set: 'freebad', cell: 'freeCellRecWrong', list: 'freeListRecWrong(&L)' },
+};
+
+function run(A, mode) {
+  const M = MODES[mode], n = cells.length, calls = [], out = [], hl = {}, subs = {};
+  const view = () => scene({ cells, head, calls: calls.map(c => ({ ...c })), hl: { ...hl }, subs: { ...subs } });
+  const rd = () => mode === 'display' || mode === 'reverse' ? ['Screen: ', out.join(' ') || '(nothing)'] : null;
+  const E = (msg, kind, line, cls) => A.emit(view(), msg, { kind, code: [M.set, line], codeCls: cls, readout: rd() });
+  const lbl = i => `${M.cell}(${i < n ? '@' + cells[i].v : 'NULL'})`;
+  const isFree = mode === 'free' || mode === 'freebad';
+
+  calls.push({ label: M.list, st: 'run' });
+  E(`Call of ${M.list}: it only starts the recursion on the head of the list, of type t_cell *.`, 'call', 11);
+  calls[0].st = 'wait';
+  /* Going down: a new call per cell, then a last one with NULL */
+  for (let i = 0; i <= n; i++) {
+    calls.push({ label: lbl(i), st: 'run' });
+    if (i < n) hl[cells[i].id] = 'cmp';
+    E(i < n ? `Call of ${lbl(i)}: a new frame is pushed, the previous call waits for it to return.`
+            : `Call of ${lbl(i)}: we have gone past the last cell.`, 'call', i === 0 ? 11 : mode === 'freebad' ? 5 : mode === 'display' ? 5 : 4);
+    if (i === n) {
+      calls[i + 1].st = 'done';
+      E(`ptr_cell is NULL: the condition is false, nothing to do. This is the base case: the function ends without a new call.`, 'stop', 2, 'bad');
+      calls.pop();
+      break;
+    }
+    E(`ptr_cell ≠ NULL: there is still a cell to process (${cells[i].v}).`, 'test', 2);
+    if (mode === 'display') {
+      out.push(cells[i].v); hl[cells[i].id] = 'new';
+      E(`printf prints ${cells[i].v} BEFORE the recursive call: the values come out in the order of the list.`, 'act', 4);
+    } else if (mode === 'freebad') {
+      cells[i].freed = true; hl[cells[i].id] = 'bad'; subs[cells[i].id] = 'freed';
+      E(`free(ptr_cell): the cell ${cells[i].v} is freed BEFORE its field next has been read…`, 'bug', 4, 'bad');
+      if (i + 1 <= n) E(`…and the next call reads ptr_cell->next in a memory area already freed: undefined behaviour! The program may seem to work, print anything or crash.`, 'bug', 5, 'bad');
+    } else {
+      E(`Nothing is done right away: the recursive call on ptr_cell->next is made first.`, 'call', 4);
+    }
+    calls[i + 1].st = 'wait';
+    if (hl[cells[i].id] === 'cmp') hl[cells[i].id] = isFree ? '' : 'acc';
+  }
+  /* Going back up: the calls end from the most recent to the oldest */
+  for (let i = n - 1; i >= 0; i--) {
+    const c = cells[i], lb = calls[i + 1].label;
+    calls[i + 1].st = 'run';
+    if (mode === 'reverse') {
+      out.push(c.v); hl[c.id] = 'new';
+      E(`Back in ${lb}: the recursive call is over, printf now prints ${c.v}. The values come out in reverse order.`, 'act', 5);
+    } else if (mode === 'free') {
+      hl[c.id] = 'bad'; subs[c.id] = 'free';
+      E(`Back in ${lb}: the rest is already freed, the cell ${c.v} can be freed without losing anything.`, 'act', 5);
+      cells.splice(i, 1);
+      if (i > 0) cells[i - 1].dangling = true;
+    } else {
+      E(`Back in ${lb}: the recursive call was its last instruction, it ends in turn.`, 'ret', 7);
+    }
+    calls[i + 1].st = 'done';
+    E(`${lb} ends: its frame is removed from the call stack.`, 'ret', 7);
+    calls.pop();
+  }
+  calls[0].st = 'run';
+  if (isFree) {
+    if (mode === 'freebad') { cells = []; }
+    head = null;
+    E(`Back in ${M.list}: ptr_list->head ← NULL, the list is empty and no longer points to freed memory.`, 'act', 12);
+  }
+  calls[0].st = 'done';
+  E(mode === 'display' ? `End: the list was displayed in order (${out.join(' ') || 'nothing'}).`
+    : mode === 'reverse' ? `End: the list was displayed backwards (${out.join(' ') || 'nothing'}), without any auxiliary list: the call stack remembered the cells.`
+    : mode === 'free' ? `End: ${plural(n, 'cell freed', 'cells freed')}, from the last one to the first one, without ever reading a cell already freed.`
+    : `End… but this code is wrong: each call read the field next of a cell already freed. The next one must be read before freeing.`,
+    mode === 'freebad' ? 'bug' : 'done', mode === 'free' || mode === 'freebad' ? 13 : 12, mode === 'freebad' ? 'bad' : 'good');
+  calls.pop();
+  for (const c of cells) { delete c.dangling; delete c.freed; }
+  A.emit(scene({ cells, head, calls: [] }), 'The call stack is empty: we are back in the main program.', { kind: 'done', code: [M.set, -1], readout: rd() });
+  if (mode === 'display' || mode === 'reverse') return out.join(' ') || 'empty list';
+  return { text: mode === 'free' ? plural(n, 'cell freed', 'cells freed') : 'illegal accesses!', cls: mode === 'free' ? 'ok' : 'bad' };
+}
+
+function doList(A, vals) {
+  cells = vals.map(v => ({ id: nextId++, v }));
+  head = cells.length ? cells[0].id : null;
+  A.emit(scene({ cells, head, calls: [] }), `New list: ${vals.join(' → ')} (${plural(vals.length, 'cell')}).`, { kind: 'build' });
+  return plural(vals.length, 'cell');
+}
+
+const head2 = ['void displayListRec(t_list list)', '{', '    displayCellRec(list.head); // start at the head', '}'];
+const CODES = {
+  display: { title: 'Recursive display', lines: [
+    'void displayCellRec(t_cell *ptr_cell)', '{', '    if (ptr_cell != NULL)', '    {', '        printf("%d ", ptr_cell->value);',
+    '        displayCellRec(ptr_cell->next); // recursive call', '    }', '}', '', ...head2] },
+  reverse: { title: 'Reversed recursive display', lines: [
+    'void displayCellRecRev(t_cell *ptr_cell)', '{', '    if (ptr_cell != NULL)', '    {', '        displayCellRecRev(ptr_cell->next); // first the rest',
+    '        printf("%d ", ptr_cell->value);  // then the cell', '    }', '}', '', 'void displayListRecRev(t_list list)', '{', '    displayCellRecRev(list.head);', '}'] },
+  free: { title: 'Recursive freeing (principle)', lines: [
+    'Algorithm freeCellRec(ptr_cell : t_cell*)', 'begin', '    if ptr_cell ≠ NULL then', '        // the order of the two instructions is essential',
+    '        freeCellRec(ptr_cell->next)   // first the rest', '        free(ptr_cell)                // then the cell', '    end if', 'end', '',
+    'Algorithm freeListRec(ptr_list : t_list*)', 'begin', '    freeCellRec(ptr_list->head)', '    ptr_list->head ← NULL', 'end'] },
+  freebad: { title: 'Freeing in the wrong order (WRONG)', lines: [
+    'Algorithm freeCellRecWrong(ptr_cell : t_cell*)', 'begin', '    if ptr_cell ≠ NULL then', '        // reversed order: ERROR',
+    '        free(ptr_cell)                     // too early!', '        freeCellRecWrong(ptr_cell->next)   // reads a freed cell', '    end if', 'end', '',
+    'Algorithm freeListRecWrong(ptr_list : t_list*)', 'begin', '    freeCellRecWrong(ptr_list->head)', '    ptr_list->head ← NULL', 'end'] },
+};
+
+Atelier.init({
+  id: 'atelier-liste-recursive-en',
+  lang: 'en',
+  title: 'Recursion on lists',
+  subtitle: 'Lecture #1 · recursive display and freeing of a list, with the call stack.',
+  conv: 'green: active call · blue: waiting · red: finished',
+  commands: {
+    list: { args: 'nums', aliases: ['create'] },
+    display: { args: 'none', aliases: ['print', 'show'] },
+    reverse: { args: 'none', aliases: ['backwards', 'rev'] },
+    free: { args: 'none', aliases: ['destroy'] },
+    freebad: { args: 'none', aliases: ['free_wrong', 'wrong'] },
+  },
+  help: `list 12 -3 5   creates the list 12 → -3 → 5
+display        recursive display
+reverse        reversed recursive display
+free           recursive freeing (correct)
+freebad        freeing in the wrong order
+# comment`,
+  quick: { buttons: [
+    { label: 'Display', cmd: 'display', primary: true },
+    { label: 'Display backwards', cmd: 'reverse' },
+    { label: 'Free', cmd: 'free' },
+    { label: 'Free (wrong)', cmd: 'freebad', ghost: true },
+    { label: 'New list', line: () => 'list ' + Array.from({ length: 3 + Math.floor(Math.random() * 2) }, () => Math.floor(Math.random() * 99) - 30).join(' ') },
+  ] },
+  codes: CODES,
+  kinds: {
+    build: { label: 'List', tone: 'acc' }, call: { label: 'Call', tone: 'new' }, test: { label: 'Test', tone: 'cmp' },
+    act: { label: 'Processing', tone: 'acc' }, stop: { label: 'Base case', tone: 'bad' }, ret: { label: 'Return', tone: 'vio' },
+    bug: { label: 'Error', tone: 'bad' }, done: { label: 'Finished', tone: 'new' },
+  },
+  hold: { call: 1.3, test: 1.1, act: 1.7, stop: 2, ret: 1, bug: 2.6, done: 2 },
+  legend: [['new', 'active call'], ['acc', 'waiting call'], ['bad', 'finished call / cell freed'], ['cmp', 'cell processed by the active call']],
+  emptyMsg: 'The list is empty.',
+  example: `list 12 -3 5
+display
+reverse
+free
+`,
+  build(list, A) {
+    cells = []; head = null; nextId = 1;
+    A.op('start', null, () => { A.emit(scene({ cells, head, calls: [] }), 'Start of the script: the list is empty.', { kind: 'build' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'list') A.op(`list ${o.vals.join(' ')}`, o.line, () => doList(A, o.vals));
+      else A.op(o.cmd, o.line, () => run(A, o.cmd));
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

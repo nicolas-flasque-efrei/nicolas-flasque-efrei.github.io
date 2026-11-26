@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Is it a BST?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+<script src="../commun/arbres.js"></script>
+<style>
+/* appel en cours : même couleur que le nœud actif (le vert est réservé à « renvoie 1 ») */
+.it.frame.run rect{fill:var(--cmp-soft);stroke:var(--cmp)}
+</style>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const T = Arbres;
+
+/* ---------- Tools: bounds, intervals, "instant" checks ---------- */
+const fb = b => b === -Infinity ? '−∞' : b === Infinity ? '+∞' : String(b);
+const I = (a, b) => `[${fb(a)} ; ${fb(b)}]`;
+const num = n => +n.v;
+const cap = s => s[0].toUpperCase() + s.slice(1);
+const nonNumeric = n => !n ? null : !/^-?\d+$/.test(String(n.v)) ? n : nonNumeric(n.left) || nonNumeric(n.right);
+const isNodeBST = (n, mn, mx) => !n || (num(n) >= mn && num(n) <= mx && isNodeBST(n.left, mn, num(n) - 1) && isNodeBST(n.right, num(n) + 1, mx));
+const find = (n, p) => !n ? null : p(n) ? n : find(n.left, p) || find(n.right, p);
+const sub = (n, out = []) => { if (n) { out.push(n); sub(n.left, out); sub(n.right, out); } return out; };
+/* first node (prefix order) with a descendant on the wrong side */
+function violation(n) {
+  if (!n) return null;
+  const v = num(n);
+  const l = find(n.left, d => num(d) >= v); if (l) return { anc: n, d: l, side: 'L' };
+  const r = find(n.right, d => num(d) <= v); if (r) return { anc: n, d: r, side: 'R' };
+  return violation(n.left) || violation(n.right);
+}
+const why = x => x.side === 'L' ? `${x.d.v} is in the left subtree of ${x.anc.v} although ${x.d.v} ${num(x.d) === num(x.anc) ? '=' : '>'} ${x.anc.v}`
+                                 : `${x.d.v} is in the right subtree of ${x.anc.v} although ${x.d.v} ${num(x.d) === num(x.anc) ? '=' : '<'} ${x.anc.v}`;
+
+/* ---------- Scene: the tree, the interval of each node, the call stack on the right ---------- */
+let root;
+const fresh = nulls => ({ hl: {}, sub: {}, subCls: {}, ecls: {}, nulls, calls: [] });
+function scene(st) {
+  const D = T.draw(root, { sx: 64, hl: st.hl, sub: st.sub, subCls: st.subCls, ecls: st.ecls, nulls: st.nulls, nullSub: st.sub });
+  const items = D.items, arrows = D.arrows, fx = D.box.x1 + 80;
+  for (const it of items) if (it.shape === 'circle') it.subPos = 'left';   // on the left of the node: the edges leave from the top and the bottom
+  if (st.calls.length) items.push(S.text('hdr', fx, D.box.y0 - 6, 'Call stack', { align: 'start', cls: 'muted' }));
+  st.calls.forEach((f, d) => items.push(S.box('f' + d, fx + d * 14, D.box.y0 + 12 + d * 36, Math.max(200, 26 + f.label.length * 8), 30, f.label, { cls: 'frame ' + f.st, rx: 6 })));
+  return { items, arrows };
+}
+const snap = st => ({ ...st, hl: { ...st.hl }, sub: { ...st.sub }, subCls: { ...st.subCls }, ecls: { ...st.ecls }, calls: st.calls.map(c => ({ ...c })) });
+function guard(A) {
+  const bad = nonNumeric(root);
+  if (!bad) return false;
+  A.emit(scene(fresh(false)), `"${bad.v}" is not an integer: the BST property compares integer values.`, { kind: 'fail' });
+  return true;
+}
+
+/* ---------- isBST: each node receives an interval [min ; max] inherited from its ancestors ---------- */
+function runCheck(A) {
+  if (guard(A)) return 'non-integer values';
+  const st = fresh(A.opt('nulls'));
+  const E = (msg, kind, line, cls, readout) => A.emit(scene(snap(st)), msg, { kind, code: ['bst', line], codeCls: cls || 'on', readout });
+  const top = () => st.calls[st.calls.length - 1];
+  st.calls.push({ label: 'isBST(t)', st: 'run' });
+  E(root ? `isBST(t) starts the check on the root ${root.v}, with the widest possible interval: ${I(-Infinity, Infinity)} (INT_MIN and INT_MAX).`
+         : 'isBST(t) on an empty tree: the root is NULL.', 'call', 13);
+
+  function rec(n, mn, mx, sMin, sMax, parent, side) {
+    const label = `isNodeBST(${n ? n.v : 'NULL'}, ${fb(mn)}, ${fb(mx)})`;
+    const where = parent ? `the ${side === 'L' ? 'left' : 'right'} child of ${parent.v}` : 'the root';
+    top().st = 'wait';
+    if (!n) {
+      if (st.nulls || !parent) {
+        const key = parent ? `${parent.id}${side}` : null;
+        st.calls.push({ label, st: 'run' });
+        if (key) { st.hl[key] = 'new'; st.sub[key] = I(mn, mx); st.ecls[key] = 'new'; }
+        E(`${parent ? cap(where) + ' is NULL' : 'The tree is empty'}: an empty tree is a BST, the call returns 1. This is the base case.`, 'stop', [2, 3], 'good');
+        st.calls.pop();
+      }
+      top().st = 'run';
+      return 1;
+    }
+    const v = num(n), ro = ['Value ', String(n.v), ' · inherited interval ', I(mn, mx)];
+    st.calls.push({ label, st: 'run' });
+    st.hl[n.id] = 'cmp'; st.sub[n.id] = I(mn, mx); st.subCls[n.id] = 'strong';
+    if (parent) st.ecls[n.id] = 'acc';
+    E(!parent ? `Call on the root: isNodeBST(${n.v}, −∞, +∞). No ancestor, hence no constraint.`
+      : side === 'L' ? `Call on ${where}: all its values must be < ${parent.v}. The max bound becomes ${parent.v} − 1 = ${mx}, the min bound ${fb(mn)} is inherited as is.`
+                     : `Call on ${where}: all its values must be > ${parent.v}. The min bound becomes ${parent.v} + 1 = ${mn}, the max bound ${fb(mx)} is inherited as is.`,
+      'call', 0, 'on', ro);
+
+    if (v < mn || v > mx) {
+      const src = v > mx ? sMax : sMin, prev = st.hl[src.id];
+      st.hl[n.id] = 'bad'; st.hl[src.id] = 'vio';
+      let msg = v > mx ? `${v} > ${mx}: outside the interval! ${v} is in the left subtree of ${src.v}, it should be < ${src.v}.`
+                       : `${v} < ${mn}: outside the interval! ${v} is in the right subtree of ${src.v}, it should be > ${src.v}.`;
+      if (src !== parent) msg += ` Comparing ${v} with its parent ${parent.v} only would not have detected it: the bound comes from a higher ancestor.`;
+      E(msg + ' The call returns 0.', 'fail', [4, 5], 'bad', ro);
+      st.hl[src.id] = prev; st.subCls[n.id] = '';
+      if (parent) st.ecls[n.id] = 'bad';
+      st.calls.pop(); top().st = 'run';
+      return 0;
+    }
+    const next = n.left || n.right || st.nulls ? 'The left subtree is checked first.' : 'It is a leaf: its two subtrees are empty, hence BSTs.';
+    E(!parent ? `${v} is in ${I(mn, mx)}: of course, the root has no constraint. ${next}`
+              : `${v} is in ${I(mn, mx)}: the value meets the constraints of all its ancestors. ${next}`, 'test', 4, 'good', ro);
+
+    st.hl[n.id] = 'acc'; st.subCls[n.id] = '';
+    const l = rec(n.left, mn, v - 1, sMin, n, n, 'L');
+    st.hl[n.id] = 'cmp'; st.subCls[n.id] = 'strong';
+    if (!l) {
+      st.hl[n.id] = 'bad'; st.subCls[n.id] = '';
+      if (parent) st.ecls[n.id] = 'bad';
+      E(`Back in isNodeBST(${n.v}): the left subtree is not a BST. No need to look on the right: the call returns 0 at once.`, 'ret', [6, 7], 'bad');
+      st.calls.pop(); top().st = 'run';
+      return 0;
+    }
+    if (n.left || st.nulls) E(`Back in isNodeBST(${n.v}): the left subtree is a BST. The right subtree is checked, with a min bound of ${v} + 1 = ${v + 1}.`, 'ret', 6);
+
+    st.hl[n.id] = 'acc'; st.subCls[n.id] = '';
+    const r = rec(n.right, v + 1, mx, n, sMax, n, 'R');
+    st.hl[n.id] = r ? 'new' : 'bad';
+    if (parent) st.ecls[n.id] = r ? 'new' : 'bad';
+    E(r ? `Back in isNodeBST(${n.v}): ${n.left || n.right ? 'on the left as on the right, it is a BST' : 'it is a leaf within its interval'}. The call returns 1.`
+        : `Back in isNodeBST(${n.v}): the right subtree is not a BST. The call returns 0.`, 'ret', 8, r ? 'good' : 'bad');
+    st.calls.pop(); top().st = 'run';
+    return r;
+  }
+
+  const res = rec(root, -Infinity, Infinity, null, null, null, null);
+  const left = sub(root).filter(n => !st.hl[n.id]).length;
+  E(res ? `isBST(t) returns 1: the tree is a BST.${root ? ' Every node was within the interval set by all its ancestors.' : ''}`
+        : `isBST(t) returns 0: the tree is not a BST.${left ? ` ${cap(plural(left, 'node'))} ${left > 1 ? 'were' : 'was'} not examined: the first 0 goes straight back up to the root.` : ''}`,
+    'end', 13, res ? 'good' : 'bad');
+  return { text: res ? '1: BST' : '0: not a BST', cls: res ? 'ok' : 'bad' };
+}
+
+/* ---------- The trap: comparing each node with its two children only ---------- */
+function runNaive(A) {
+  if (guard(A)) return 'non-integer values';
+  const st = fresh(A.opt('nulls'));
+  const E = (msg, kind, line, cls) => A.emit(scene(snap(st)), msg, { kind, code: ['naive', line], codeCls: cls || 'on' });
+  const top = () => st.calls[st.calls.length - 1];
+  function rec(n, parent, side) {
+    if (!n) {
+      if (st.nulls && parent) {
+        const key = `${parent.id}${side}`;
+        top().st = 'wait';
+        st.calls.push({ label: 'naive(NULL)', st: 'run' });
+        st.hl[key] = 'new';
+        E(`The ${side === 'L' ? 'left' : 'right'} child of ${parent.v} is NULL: naive(NULL) returns 1. This is the base case.`, 'stop', [2, 3], 'good');
+        st.calls.pop(); top().st = 'run';
+      }
+      return 1;
+    }
+    if (top()) top().st = 'wait';
+    st.calls.push({ label: `naive(${n.v})`, st: 'run' });
+    const v = num(n), parts = [];
+    let bad = null;
+    st.hl[n.id] = 'cmp';
+    if (n.left) {
+      const ok = num(n.left) < v; st.ecls[n.left.id] = ok ? 'new' : 'bad';
+      parts.push(`left child ${n.left.v} ${ok ? '<' : '≥'} ${v} ${ok ? '✓' : '✗'}`); if (!ok) bad = [4, 5];
+    }
+    if (n.right && !bad) {
+      const ok = num(n.right) > v; st.ecls[n.right.id] = ok ? 'new' : 'bad';
+      parts.push(`right child ${n.right.v} ${ok ? '>' : '≤'} ${v} ${ok ? '✓' : '✗'}`); if (!ok) bad = [6, 7];
+    }
+    const pop = () => { st.calls.pop(); if (top()) top().st = 'run'; };
+    if (bad) { st.hl[n.id] = 'bad'; E(`naive(${n.v}): ${parts.join(', ')}. The call returns 0.`, 'fail', bad, 'bad'); pop(); return 0; }
+    if (!n.left && !n.right && !st.nulls) { st.hl[n.id] = 'new'; E(`naive(${n.v}): ${n.v} is a leaf, nothing to compare. The call returns 1.`, 'ok', [2, 8], 'good'); pop(); return 1; }
+    E(parts.length ? `naive(${n.v}): ${parts.join(', ')}. The comparisons with the children are correct; we go down into the subtrees.`
+                   : `naive(${n.v}): ${n.v} is a leaf, nothing to compare. naive is still called on its two NULL children.`, 'test', [4, 6], 'good');
+    st.hl[n.id] = 'acc';
+    const r = rec(n.left, n, 'L') && rec(n.right, n, 'R');
+    st.hl[n.id] = r ? 'new' : 'bad';
+    E(`Back in naive(${n.v}): ${r ? 'both subtrees passed the test. The call returns 1.' : 'a subtree failed. The call returns 0.'}`, 'ret', 8, r ? 'good' : 'bad');
+    pop();
+    return r;
+  }
+  if (!root) { E('Empty tree: naive(NULL) returns 1.', 'end', [2, 3], 'good'); return '1'; }
+  const res = rec(root, null, null), truth = isNodeBST(root, -Infinity, Infinity);
+  if (res && !truth) {
+    const x = violation(root);
+    st.hl[x.d.id] = 'bad'; st.hl[x.anc.id] = 'vio';
+    E(`The naive test answers 1… and yet the tree is NOT a BST: ${why(x)}. Each parent-child comparison was right: all the ancestors must be taken into account, hence the min and max bounds of isNodeBST.`, 'trap', 0, 'bad');
+    return { text: '1: false positive!', cls: 'bad' };
+  }
+  E(`The naive test returns ${res}, like isBST: here it is not wrong. This is no guarantee: try it on tree 4 of the lab.`, 'end', 8, res ? 'good' : 'bad');
+  return `${res} (like isBST)`;
+}
+
+const CODES = {
+  bst: { title: 'isNodeBST() and isBST() (principle)', lines: [
+    'Algorithm isNodeBST(pn : t_node*, min, max : integer) : integer', 'begin',
+    '    if pn = NULL then', '        return 1           // empty tree: a BST',
+    '    if pn->value < min or pn->value > max then', '        return 0           // outside [min ; max]',
+    '    if isNodeBST(pn->left, min, pn->value - 1) = 0 then', '        return 0           // on the left: < pn->value',
+    '    return isNodeBST(pn->right, pn->value + 1, max)', 'end', '',
+    'Algorithm isBST(t : t_tree) : integer', 'begin', '    return isNodeBST(t.root, -∞, +∞)   // INT_MIN, INT_MAX', 'end'] },
+  naive: { title: 'The trap: comparing with the children only', lines: [
+    'Algorithm naive(pn : t_node*) : integer     // WRONG in general!', 'begin',
+    '    if pn = NULL then', '        return 1',
+    '    if pn->left ≠ NULL and pn->left->value ≥ pn->value then', '        return 0',
+    '    if pn->right ≠ NULL and pn->right->value ≤ pn->value then', '        return 0',
+    '    return naive(pn->left) and naive(pn->right)', 'end'] },
+};
+
+const TP = ['(8 (3 1 6) (10 . 14))', '(8 (3 1 6) (10 12 14))', '(50 (30 20 40) (70 60 80))', '(50 (30 20 55) (70 60 80))'];
+
+Atelier.init({
+  id: 'atelier-verif-abr-en',
+  lang: 'en',
+  title: 'Is it a BST?',
+  subtitle: 'Lab #4 · checking the BST property with bounds [min ; max] inherited from the ancestors, and the trap of the parent-child test.',
+  conv: 'on the left: values < node · on the right: values > node',
+  options: [{ id: 'nulls', label: 'show the calls on NULL', checked: false }],
+  commands: { ...T.commands,
+    check: { args: 'none', aliases: ['isbst', 'bst?'] },
+    naive: { args: 'none', aliases: [] } },
+  help: T.help + `
+check                             isBST, step by step
+naive                             the parent-child test (trap)
+# comment`,
+  quick: { buttons: [
+    { label: 'isBST', cmd: 'check', primary: true }, { label: 'Naive test', cmd: 'naive' },
+    ...TP.map((v, i) => ({ label: `Tree ${i + 1}`, line: () => `tree ${v}`, ghost: true })),
+  ] },
+  codes: CODES,
+  note: 'Comparing a node with its two children is not enough: each node must respect <b>all</b> its ancestors. Going down, we therefore pass an interval [min ; max]: on the left of v, max becomes v − 1; on the right, min becomes v + 1.',
+  kinds: {
+    tree: { label: 'Tree', tone: 'acc' }, call: { label: 'Call', tone: 'cmp' }, test: { label: 'Test', tone: 'new' },
+    stop: { label: 'Base case', tone: 'new' }, ok: { label: 'True', tone: 'new' }, fail: { label: 'Failure', tone: 'bad' },
+    ret: { label: 'Return', tone: 'acc' }, trap: { label: 'Trap', tone: 'bad' }, end: { label: 'Result', tone: 'vio' },
+  },
+  hold: { tree: 1.8, call: 1.6, test: 1.4, stop: 1.1, ok: 1.4, fail: 2.6, ret: 1.1, trap: 4, end: 3 },
+  legend: [['cmp', 'current call'], ['acc', 'waiting for a child'], ['new', 'returns 1'], ['bad', 'returns 0'], ['vio', 'ancestor setting the bound'], ['ghost', 'empty subtree (NULL)']],
+  example: `# tree 4 of the lab: 55 is below 30… but on the left of 50
+tree (50 (30 20 55) (70 60 80))
+naive
+check
+`,
+  emptyMsg: 'Create a tree with "tree" or "bst".',
+  build(list, A) {
+    T.reset(); root = null;
+    A.op('start', null, () => { A.emit(scene(fresh(false)), 'Create a tree ("tree" or "bst"), then run a check.', { kind: 'tree' }); return ''; });
+    const RUN = { check: runCheck, naive: runNaive };
+    for (const o of list) {
+      if (RUN[o.cmd]) { A.op(o.cmd, o.line, () => RUN[o.cmd](A)); continue; }
+      const r = T.fromCommand(o);
+      A.op(r.label, o.line, () => {
+        root = r.root;
+        A.emit(scene(fresh(false)), root ? `New tree with ${plural(T.count(root), 'node')}.${r.dups && r.dups.length ? ` Duplicates ignored: ${r.dups.join(', ')}.` : ''}` : 'New tree: empty.', { kind: 'tree' });
+        return plural(T.count(root), 'node');
+      });
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

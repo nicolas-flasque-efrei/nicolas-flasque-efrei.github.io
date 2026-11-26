@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Height and number of nodes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+<script src="../commun/arbres.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const T = Arbres;
+const STC = { run: 'new', wait: 'acc', done: 'vio' };
+const CFG = {
+  height: { fn: 'nodeHeight', v: 'h', nul: -1, set: 'height', name: 'height', L: { test: 2, nul: 3, left: 4, right: 5, ret: 6 } },
+  count: { fn: 'nodeCount', v: 'n', nul: 0, set: 'count', name: 'number of nodes', L: { test: 2, nul: 3, left: 4, right: 5, ret: 6 } },
+};
+
+/* ---------- Scene: the tree (with its NULLs if asked) and the values sent back, the call stack on the right ---------- */
+let root;
+function scene(st, A) {
+  const hl = {}, sub = {}, subCls = {};
+  for (const [id, s] of Object.entries(st.state || {})) hl[id] = STC[s];
+  for (const [id, v] of Object.entries(st.val || {})) { sub[id] = v; subCls[id] = 'strong'; }
+  const D = T.draw(root, { hl, sub, subCls, nulls: A.opt('nulls'), nullSub: st.val, });
+  const items = D.items, arrows = D.arrows, fx = D.box.x1 + 80;
+  if (st.calls && st.calls.length) items.push(S.text('hdr', fx, D.box.y0 - 6, 'Call stack', { align: 'start', cls: 'muted' }));
+  (st.calls || []).forEach((f, d) => items.push(S.box('f' + d, fx + d * 14, D.box.y0 + 12 + d * 36, Math.max(200, 26 + f.label.length * 8), 30, f.label, { cls: 'frame ' + f.st, rx: 6 })));
+  return { items, arrows };
+}
+
+/* ---------- Model: postorder computation, the value of a node depends on those of its two children ---------- */
+function compute(A, what) {
+  const C = CFG[what], calls = [], state = {}, val = {}, showNulls = A.opt('nulls');
+  const E = (msg, kind, line, cls) => A.emit(scene({ calls: calls.map(c => ({ ...c })), state: { ...state }, val: { ...val } }, A), msg,
+    { kind, code: [C.set, line], codeCls: cls });
+  const fmt = v => `${C.v} = ${v}`;
+  function rec(n, parent, side) {
+    if (!n) {
+      const key = parent ? `${parent.id}${side}` : null;
+      if (showNulls || !parent) {
+        calls.push({ label: `${C.fn}(NULL)`, st: 'run' });
+        if (key) val[key] = fmt(C.nul);
+        E(`${parent ? `The ${side === 'L' ? 'left' : 'right'} child of ${parent.v} is NULL` : 'The tree is empty'}: the ${C.name} of an empty tree is ${C.nul}. This is the base case.`, 'stop', C.L.nul, 'bad');
+        calls.pop();
+      }
+      return C.nul;
+    }
+    calls.push({ label: `${C.fn}(${n.v})`, st: 'run' }); state[n.id] = 'run';
+    E(parent ? `Call on the ${side === 'L' ? 'left' : 'right'} child of ${parent.v}: ${C.fn}(${n.v}).` : `Call on the root: ${C.fn}(${n.v}).`, 'call', C.L.test);
+    calls[calls.length - 1].st = 'wait'; state[n.id] = 'wait';
+    const l = rec(n.left, n, 'L');
+    calls[calls.length - 1].st = 'run'; state[n.id] = 'run';
+    if (n.left || showNulls) E(`Back in ${C.fn}(${n.v}): on the left, ${C.v} = ${l}.`, 'ret', C.L.left);
+    calls[calls.length - 1].st = 'wait'; state[n.id] = 'wait';
+    const r = rec(n.right, n, 'R');
+    calls[calls.length - 1].st = 'run'; state[n.id] = 'run';
+    if (n.right || showNulls) E(`Back in ${C.fn}(${n.v}): on the right, ${C.v} = ${r}.`, 'ret', C.L.right);
+    const res = what === 'height' ? 1 + Math.max(l, r) : 1 + l + r;
+    state[n.id] = 'done'; val[n.id] = fmt(res); calls[calls.length - 1].st = 'done';
+    E(what === 'height' ? `Postorder processing: 1 + max(${l}, ${r}) = ${res}. ${C.fn}(${n.v}) returns ${res}.`
+                        : `Postorder processing: 1 + ${l} + ${r} = ${res}. ${C.fn}(${n.v}) returns ${res}.`, 'calc', C.L.ret);
+    calls.pop();
+    return res;
+  }
+  const res = rec(root, null, null);
+  E(`Result: the ${C.name} of the tree is ${res}. Each value could only be computed after those of its two children: this is a postorder computation.`, 'end', C.L.ret, 'good');
+  return `${C.name} = ${res}`;
+}
+
+const CODES = {
+  height: { title: 'nodeHeight() — postorder computation', lines: [
+    'int nodeHeight(t_node *pn)', '{', '    if (pn == NULL)', '        return -1;          // height of an empty tree',
+    '    int leftHeight = nodeHeight(pn->left);    // recursion on the left', '    int rightHeight = nodeHeight(pn->right);  // recursion on the right',
+    '    return 1 + max(leftHeight, rightHeight);  // then processing', '}'] },
+  count: { title: 'Number of nodes (principle)', lines: [
+    'Algorithm nodeCount(pn : t_node*) : integer', 'begin', '    if pn = NULL then', '        return 0                     // empty tree',
+    '    nbL ← nodeCount(pn->left)', '    nbR ← nodeCount(pn->right)', '    return 1 + nbL + nbR             // the node + its two subtrees', 'end'] },
+};
+
+Atelier.init({
+  id: 'atelier-hauteur-recursive-en',
+  lang: 'en',
+  title: 'Height and number of nodes',
+  subtitle: 'Lecture #4 · two recursive postorder computations: each node waits for the results of its two children.',
+  conv: 'height of an empty tree = −1 · of a leaf = 0',
+  options: [{ id: 'nulls', label: 'show the calls on NULL', checked: true }],
+  commands: { ...T.commands, height: { args: 'none', aliases: ['h'] }, count: { args: 'none', aliases: ['nodecount'] } },
+  help: T.help + `
+height                            computes the height
+count                             counts the nodes
+# comment`,
+  quick: { buttons: [
+    { label: 'Height', cmd: 'height', primary: true }, { label: 'Number of nodes', cmd: 'count' },
+    { label: 'Lecture BST', line: () => 'bst 8 3 10 1 6 14 4 7 13', ghost: true },
+  ] },
+  codes: CODES,
+  kinds: {
+    tree: { label: 'Tree', tone: 'acc' }, call: { label: 'Call', tone: 'new' }, stop: { label: 'Base case', tone: 'bad' },
+    ret: { label: 'Return', tone: 'acc' }, calc: { label: 'Computation', tone: 'vio' }, end: { label: 'Result', tone: 'new' },
+  },
+  hold: { tree: 1.6, call: 1.1, stop: 1.2, ret: 1, calc: 1.8, end: 2.8 },
+  legend: [['new', 'active call'], ['acc', 'waiting for the children'], ['vio', 'value computed'], ['ghost', 'empty subtree (NULL)']],
+  example: `bst 8 3 10 1 6 14
+height
+count
+`,
+  emptyMsg: 'Create a tree with "tree" or "bst".',
+  build(list, A) {
+    T.reset(); root = null;
+    A.op('start', null, () => { A.emit(scene({}, A), 'Create a tree with "tree" or "bst", then run a computation.', { kind: 'tree' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'height' || o.cmd === 'count') { A.op(o.cmd, o.line, () => compute(A, o.cmd)); continue; }
+      const r = T.fromCommand(o);
+      A.op(r.label, o.line, () => { root = r.root; A.emit(scene({}, A), `New tree with ${plural(T.count(root), 'node')}.`, { kind: 'tree' }); return plural(T.count(root), 'node'); });
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postfix evaluation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const TW = 58, SLOT = 48, TY = 120, CX = 230;
+const OPS = { '+': (a, b) => a + b, '-': (a, b) => a - b, '*': (a, b) => a * b, '/': (a, b) => Math.trunc(a / b) };
+const norm = t => t === 'x' || t === 'X' || t === '×' ? '*' : t === '÷' ? '/' : t;
+const tokens = text => text.trim().split(/\s+/).filter(Boolean).map(norm);
+
+/* ---------- Scene: the expression at the top, the stack (tube) on the left, the computation area on the right ---------- */
+function scene(st) {
+  const items = [], arrows = [], tk = st.toks, hl = st.thl || {};
+  tk.forEach((t, i) => items.push(S.box('tk' + i, i * TW, 0, TW - 6, 44, t === '*' ? '×' : t,
+    { cls: hl[i] || (i < st.i ? 'ghost' : ''), fs: String(t).length > 3 ? 13 : 16 })));
+  const ci = Math.max(-1, Math.min(tk.length, st.i));
+  items.push(S.ptr('cur', ci * TW + (TW - 6) / 2 - 28, -60, st.i < 0 ? 'start' : st.i >= tk.length ? 'end' : 'read', { w: 56, cls: 'cmp' }));
+  arrows.push(S.arrow('curA', { k: 'cur', side: 'b' }, { x: ci * TW + (TW - 6) / 2, y: -2 }, { cls: 'cmp' }));
+  const depth = Math.max(4, st.depth), bottom = TY + depth * SLOT + 12;
+  items.push(S.box('tube', 0, TY, 96, bottom - TY, '', { cls: 'zone', layer: 'back', rx: 10, sub: 'stack', subCls: 'strong' }));
+  st.stack.forEach((it, k) => items.push(S.box('s' + it.id, 10, bottom - 6 - (k + 1) * SLOT, 76, SLOT - 6, it.v,
+    { cls: (st.shl && st.shl[it.id]) || 'acc', enter: it.from, fs: String(it.v).length > 4 ? 12 : 16 })));
+  if (st.calc) {
+    const c = st.calc, y = TY + 30;
+    items.push(S.text('calcT', CX, y - 26, 'computation: a operator b', { align: 'start', cls: 'muted' }));
+    if (c.a) items.push(S.box('s' + c.a.id, CX, y, 76, 42, c.a.v, { cls: 'cmp', sub: 'a' }));
+    items.push(S.box('op', CX + 86, y, 42, 42, c.op === '*' ? '×' : c.op, { cls: 'vio', enter: 'tk' + st.i }));
+    if (c.b) items.push(S.box('s' + c.b.id, CX + 138, y, 76, 42, c.b.v, { cls: 'cmp', sub: 'b (top)' }));
+    if (c.r) {
+      items.push(S.text('eq', CX + 232, y + 21, '=', { cls: 'big mono' }));
+      items.push(S.box('s' + c.r.id, CX + 252, y, 86, 42, c.r.v, { cls: c.err ? 'bad' : 'new', fs: String(c.r.v).length > 5 ? 12 : 16 }));
+    }
+  }
+  if (st.result != null) items.push(S.box('res', CX, TY + 140, 200, 46, st.result, { cls: st.ok ? 'new' : 'bad', fs: 15 }));
+  return { items, arrows };
+}
+
+/* ---------- Model ---------- */
+let nextId;
+function evaluate(A, text) {
+  const toks = tokens(text), stack = [];
+  let depth = 0, d = 0;
+  for (const t of toks) { if (OPS[t]) d = Math.max(0, d - 1); else d++; depth = Math.max(depth, d); }
+  const V = (i, o = {}) => scene({ toks, i, depth, stack: stack.map(x => ({ ...x })), ...o });
+  const E = (i, o, msg, kind, line, cls) => A.emit(V(i, o), msg, { kind, code: ['algo', line], codeCls: cls, readout: ['Stack (bottom → top): ', stack.map(s => s.v).join(' ') || 'empty'] });
+  E(-1, {}, `Evaluation of "${toks.join(' ').replace(/\*/g, '×')}": it is read from left to right with an empty stack.`, 'start', 0);
+  for (let i = 0; i < toks.length; i++) {
+    const t = toks[i];
+    if (!OPS[t]) {
+      const it = { id: nextId++, v: +t, from: 'tk' + i };
+      stack.push(it);
+      E(i, { thl: { [i]: 'cmp' } }, `"${t}" is a number: it is pushed.`, 'push', 3);
+      delete it.from;
+      continue;
+    }
+    E(i, { thl: { [i]: 'vio' } }, `"${t === '*' ? '×' : t}" is an operator: it applies to the last two values, which are at the top of the stack.`, 'op', 4);
+    if (stack.length < 2) {
+      E(i, { thl: { [i]: 'bad' }, result: 'ill-formed expression', ok: false },
+        `Two values should be popped, but the stack holds only ${stack.length}: an operand is missing. The postfix expression is ill-formed.`, 'bad', 5, 'bad');
+      return { text: 'an operand is missing', cls: 'bad' };
+    }
+    const b = stack.pop();
+    E(i, { thl: { [i]: 'vio' }, calc: { op: t, b } }, `b ← pop: b = ${b.v}. Careful, the first value popped is the RIGHT operand.`, 'pop', 5);
+    const a = stack.pop();
+    E(i, { thl: { [i]: 'vio' }, calc: { op: t, a, b } }, `a ← pop: a = ${a.v}.`, 'pop', 6);
+    if (t === '/' && b.v === 0) {
+      E(i, { thl: { [i]: 'bad' }, calc: { op: t, a, b, r: { id: nextId++, v: 'error' }, err: true }, result: 'division by zero', ok: false },
+        `${a.v} / 0: division by zero, the computation is impossible.`, 'bad', 7, 'bad');
+      return { text: 'division by zero', cls: 'bad' };
+    }
+    const r = { id: nextId++, v: OPS[t](a.v, b.v) };
+    E(i, { thl: { [i]: 'vio' }, calc: { op: t, a, b, r } },
+      `a ${t === '*' ? '×' : t} b is computed: ${a.v} ${t === '*' ? '×' : t} ${b.v} = ${r.v}${t === '/' ? ' (integer division)' : ''}.`, 'calc', 7);
+    stack.push(r);
+    E(i, { thl: { [i]: 'new' } }, `The result ${r.v} is pushed: it will be an operand of the next operators.`, 'push', 7);
+  }
+  if (stack.length !== 1) {
+    E(toks.length, { result: stack.length ? `${stack.length} values left` : 'empty stack', ok: false },
+      stack.length ? `End of the expression, but the stack holds ${stack.length} values: ${plural(stack.length - 1, 'operator')} ${stack.length > 2 ? 'are' : 'is'} missing. The expression is ill-formed.`
+                   : 'End of the expression, but the stack is empty: there is no result.', 'bad', 8, 'bad');
+    return { text: 'ill-formed', cls: 'bad' };
+  }
+  E(toks.length, { result: `result = ${stack[0].v}`, ok: true, shl: { [stack[0].id]: 'new' } },
+    `End of the expression: exactly one value is left in the stack, it is the result: ${stack[0].v}.`, 'done', 8, 'good');
+  return { text: `= ${stack[0].v}`, cls: 'ok' };
+}
+
+Atelier.init({
+  id: 'atelier-postfixe-en',
+  lang: 'en',
+  title: 'Postfix evaluation',
+  subtitle: 'Lecture #3 (bonus) · computing an expression in postfix notation with a stack, without parentheses or priorities.',
+  conv: 'operands first, operator next',
+  commands: {
+    eval: { args: 'text', argName: 'an expression', aliases: ['evaluate', 'compute'],
+      check: t => {
+        const bad = tokens(t).find(x => !/^-?\d+$/.test(x) && !OPS[x]);
+        if (bad) return `"${bad}" is neither an integer nor an operator (+ - × /).`;
+        if (tokens(t).length > 25) return 'expression too long (at most 25 elements).';
+        return '';
+      } },
+  },
+  defaultCmd: 'eval',
+  help: `eval 3 4 + 2 *    (3 + 4) × 2
+3 1 + 7 3 2 * / -  a line starting with a number
+operators: + - * (or x) /
+separate each element with a space
+# comment`,
+  quick: { input: 'text', placeholder: 'For instance 3 4 + 2 *', check: t => {
+      const bad = tokens(t).find(x => !/^-?\d+$/.test(x) && !OPS[x]);
+      return bad ? `"${bad}" is neither an integer nor an operator.` : '';
+    }, buttons: [{ label: 'Evaluate', cmd: 'eval', arg: true, primary: true }] },
+  codes: { algo: { title: 'Principle (pseudo-code)', lines: [
+    'stack ← empty', 'for each element e of the expression:', '  if e is a number:', '    push(stack, e)', '  else (e is an operator):',
+    '    b ← pop(stack)       // the top: right operand', '    a ← pop(stack)', '    push(stack, a e b)', 'result ← pop(stack)  // 1 value must be left'] } },
+  kinds: {
+    start: { label: 'Start', tone: 'acc' }, push: { label: 'Push', tone: 'acc' }, op: { label: 'Operator', tone: 'vio' },
+    pop: { label: 'Pop', tone: 'cmp' }, calc: { label: 'Computation', tone: 'new' }, done: { label: 'Result', tone: 'new' }, bad: { label: 'Error', tone: 'bad' },
+  },
+  hold: { start: 1.4, push: 1.1, op: 1.4, pop: 1.3, calc: 1.8, done: 2.6, bad: 3 },
+  legend: [['cmp', 'element read / operands'], ['vio', 'operator'], ['acc', 'value in the stack'], ['new', 'result'], ['bad', 'error']],
+  example: `# One postfix expression per line.
+eval 3 4 + 2 *            # (3 + 4) × 2
+eval 3 1 + 7 3 2 * / -    # the expression tree of lecture #4
+eval 5 1 2 + 4 * + 3 -
+eval 2 3 + *              # an operand is missing
+`,
+  build(list, A) {
+    nextId = 1;
+    A.op('start', null, () => { A.emit({ items: [], arrows: [] }, 'Enter a postfix expression, for instance 3 4 + 2 *.', { kind: 'start' }); return ''; });
+    for (const o of list) A.op(tokens(o.text).join(' ').replace(/\*/g, '×'), o.line, () => evaluate(A, o.text));
+  },
+  emptyMsg: 'Enter a postfix expression, for instance 3 4 + 2 *.',
+});
+})();
+</script>
+</body>
+</html>

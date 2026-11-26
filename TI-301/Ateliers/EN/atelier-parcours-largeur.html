@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Breadth-first traversal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+<script src="../commun/arbres.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const T = Arbres;
+
+/* ---------- Scene: the tree with its levels, the queue of t_node * below, cur on the left of the queue ---------- */
+let root;
+function scene(st, A) {
+  const hl = { ...(st.hl || {}) }, sub = {}, subCls = {};
+  for (const [id, k] of Object.entries(st.order || {})) { sub[id] = '#' + k; subCls[id] = 'strong'; }
+  const D = T.draw(root, { hl, sub, subCls });
+  const items = D.items, arrows = D.arrows, stack = A.opt('stack');
+  if (root) for (let d = 0; d <= T.height(root); d++) items.push(S.text('lv' + d, D.box.x0 - 30, d * 80, 'level ' + d, { align: 'end', cls: 'muted' }));
+  if (!st.q) return { items, arrows };
+  const qy = D.box.y1 + 74, qx = D.box.x0 + 110;
+  items.push(S.text('qT', qx, qy - 22, stack ? 'Stack of t_node * (pop on the right, at the top)' : 'Queue of t_node * (dequeue on the left, enqueue on the right)', { align: 'start', cls: 'muted' }));
+  items.push(S.box('qZ', qx - 8, qy - 6, Math.max(240, st.q.length * 54 + 12), 56, '', { cls: 'zone', layer: 'back', rx: 10 }));
+  st.q.forEach((n, i) => items.push(S.box('q' + n.id, qx + i * 54, qy, 46, 44, n.v, { cls: 'acc', enter: 'n' + n.id })));
+  if (st.cur) {
+    items.push(S.box('cur' + st.cur.id, qx - 140, qy, 96, 44, 'cur → ' + st.cur.v, { cls: 'cmp', enter: 'q' + st.cur.id, fs: 13 }));
+    arrows.push(S.arrow('curA', 'cur' + st.cur.id, 'n' + st.cur.id, { cls: 'cmp dash', ctrl: { dx: -60, dy: 0 } }));
+  } else items.push(S.box('curNone', qx - 140, qy, 96, 44, 'cur', { cls: 'ghost', fs: 13 }));
+  return { items, arrows };
+}
+
+/* ---------- Model ---------- */
+function bfs(A) {
+  const stack = A.opt('stack'), q = [], hl = {}, order = {}, out = [];
+  const W = stack ? { s: 'stack', put: 'push', puts: 'pushed', take: 'pop', S: 'The stack' } : { s: 'queue', put: 'enqueue', puts: 'enqueued', take: 'dequeue', S: 'The queue' };
+  const E = (msg, kind, line, o = {}, cls) => A.emit(scene({ q: q.slice(), hl: { ...hl }, order: { ...order }, ...o }, A), msg,
+    { kind, code: [stack ? 'dfs' : 'bfs', line], codeCls: cls, readout: ['Output: ', out.join(' ') || '(nothing)'] });
+  E(`An empty ${W.s} is created.`, 'init', 2);
+  if (!root) { E('The tree is empty: nothing to traverse.', 'end', 3, {}, 'bad'); return 'empty tree'; }
+  q.push(root); hl[root.id] = 'acc';
+  E(`The root ${root.v} is ${W.puts}.`, 'put', 3);
+  while (q.length) {
+    const cur = stack ? q.pop() : q.shift();
+    hl[cur.id] = 'cmp';
+    E(`${W.S} is not empty: cur ← ${W.take}() = ${cur.v}${stack ? ' (the last one in)' : ' (the first one in)'}.`, 'take', [4, 5], { cur });
+    out.push(cur.v); order[cur.id] = out.length;
+    E(`cur is processed: print ${cur.v} (no. ${out.length}).`, 'visit', 6, { cur });
+    const kids = stack ? [cur.left, cur.right] : [cur.left, cur.right];
+    const names = ['left', 'right'];
+    kids.forEach((k, i) => {
+      if (!k) return;
+      q.push(k); hl[k.id] = 'acc';
+      E(`The ${names[i]} child of ${cur.v} exists: it is ${W.puts} (${k.v}).`, 'put', 7 + i, { cur });
+    });
+    if (!cur.left && !cur.right) E(`${cur.v} is a leaf: nothing to ${W.put}.`, 'leaf', [7, 8], { cur });
+    hl[cur.id] = 'new';
+  }
+  E(stack ? `${W.S} is empty: end. With a stack, we get a depth-first traversal (the root, then the last child pushed first): ${out.join(' ')}.`
+          : `${W.S} is empty: end of the breadth-first traversal, level by level and from left to right: ${out.join(' ')}.`, 'end', 4, {}, 'good');
+  return out.join(' ');
+}
+
+const pseudo = (s, put, take) => ['Algorithm traversal(t : t_tree)', `var ${s} : ${s === 'q' ? 'queue' : 'stack'} of t_node*, cur : t_node*`,
+  `${s} ← ${s === 'q' ? 'emptyQueue' : 'emptyStack'}()`, `if t.root ≠ NULL : ${put}(${s}, t.root)`, `While (${s} is not empty)`,
+  `    cur ← ${take}(${s})`, '    process(cur)                 // here: print', `    if cur->left ≠ NULL : ${put}(${s}, cur->left)`,
+  `    if cur->right ≠ NULL : ${put}(${s}, cur->right)`];
+const CODES = {
+  bfs: { title: 'Breadth-first traversal (principle)', lines: pseudo('q', 'enqueue', 'dequeue') },
+  dfs: { title: 'Same algorithm with a STACK', lines: pseudo('s', 'push', 'pop') },
+};
+
+Atelier.init({
+  id: 'atelier-parcours-largeur-en',
+  lang: 'en',
+  title: 'Breadth-first traversal',
+  subtitle: 'Lecture #4 · visiting the tree level by level, from left to right, thanks to a queue.',
+  conv: 'queue of t_node *: first in, first out',
+  options: [{ id: 'stack', label: 'use a stack instead of a queue', checked: false }],
+  commands: { ...T.commands, bfs: { args: 'none', aliases: ['breadth', 'traversal', 'run'] } },
+  help: T.help + `
+bfs                               runs the traversal
+# comment`,
+  quick: { buttons: [
+    { label: 'Traverse', cmd: 'bfs', primary: true },
+    { label: 'Lecture tree', line: () => 'tree (- (+ 3 1) (/ 7 (x 3 2)))', ghost: true },
+    { label: 'Lecture BST', line: () => 'bst 8 3 10 1 6 14 4 7 13', ghost: true },
+  ] },
+  codes: CODES,
+  kinds: {
+    tree: { label: 'Tree', tone: 'acc' }, init: { label: 'Initialisation', tone: 'acc' }, put: { label: 'Insertion', tone: 'acc' },
+    take: { label: 'Removal', tone: 'cmp' }, visit: { label: 'Processing', tone: 'new' }, leaf: { label: 'Leaf', tone: '' }, end: { label: 'Result', tone: 'new' },
+  },
+  hold: { tree: 1.6, init: 1.2, put: 1.3, take: 1.5, visit: 1.4, leaf: 1, end: 2.8 },
+  legend: [['acc', 'node waiting in the queue'], ['cmp', 'cur: current node'], ['new', 'node processed (#k: rank)']],
+  example: `# The lecture tree: expected output - + / 3 1 7 x 3 2
+tree (- (+ 3 1) (/ 7 (x 3 2)))
+bfs
+`,
+  emptyMsg: 'Create a tree with "tree" or "bst".',
+  build(list, A) {
+    T.reset(); root = null;
+    A.op('start', null, () => { A.emit(scene({}, A), 'Create a tree with "tree" or "bst", then run the traversal.', { kind: 'tree' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'bfs') { A.op('bfs', o.line, () => bfs(A)); continue; }
+      const r = T.fromCommand(o);
+      A.op(r.label, o.line, () => {
+        root = r.root;
+        A.emit(scene({}, A), `New tree with ${plural(T.count(root), 'node')} on ${plural(T.height(root) + 1, 'level')}.`, { kind: 'tree' });
+        return plural(T.count(root), 'node');
+      });
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TI301 workshops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+<style>
+/* Home page: a table of contents of the workshops, sorted by lecture */
+html,body{height:auto}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 16px 48px;display:flex;flex-direction:column;gap:28px}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.head h1{font-family:var(--f-display);font-size:34px;letter-spacing:-.02em;margin:0}
+.head p{margin:6px 0 0;color:var(--muted);max-width:62ch;line-height:1.5}
+.cm{display:flex;flex-direction:column;gap:12px}
+.cm h2{margin:0;display:flex;align-items:baseline;gap:12px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.cm h2 b{font-family:var(--f-mono);font-size:12px;letter-spacing:0;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--ink);text-decoration:none;transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.card strong{font-size:16px}
+.card span{color:var(--muted);line-height:1.45;font-size:13.5px}
+.card em{font-style:normal;font-family:var(--f-mono);font-size:11.5px;color:var(--accent)}
+:root[data-theme="neon"] .card{border-color:transparent;box-shadow:0 1px 3px rgba(16,24,40,.08),0 1px 2px rgba(16,24,40,.04)}
+.foot{color:var(--muted);font-size:13px;line-height:1.6}
+.theme{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div>
+      <h1>TI301 workshops</h1>
+      <p>Step-by-step animations for the data structures of the course: write a short script, then play each step with the player.</p>
+      <p><a href="../index.html" hreflang="fr" lang="fr">Version française</a></p>
+      <p class="credit"><svg class="copyleft" viewBox="0 0 24 24" role="img" aria-label="Copyleft"><circle cx="12" cy="12" r="10.5"></circle><path d="M8.6 8.2a5.2 5.2 0 1 1 0 7.6"></path></svg>Nicolas FLASQUE - IA Claude code</p>
+    </div>
+    <label class="theme" for="optTheme">Theme
+      <select id="optTheme"><option value="auto">Auto</option><option value="light">Light</option><option value="dark">Dark</option><option value="neon">Neon</option><option value="klear">Klear (accessibility)</option></select></label>
+  </header>
+
+  <section class="cm">
+    <h2><b>Lecture #1</b> Singly linked lists</h2>
+    <div class="cards">
+      <a class="card" href="atelier-liste.html"><strong>Singly linked list</strong><span>Insertion at the head, display, search and counting with a pointer curr. And the trap of the display that moves L.head.</span><em>add · display · search · count · naive</em></a>
+      <a class="card" href="atelier-liste-recursive.html"><strong>Recursion on lists</strong><span>Recursive display (forwards and backwards) and freeing, with the call stack.</span><em>display · reverse · free · freebad</em></a>
+    </div>
+  </section>
+
+  <section class="cm">
+    <h2><b>Lecture #2</b> Advanced lists</h2>
+    <div class="cards">
+      <a class="card" href="atelier-liste-ht-triee.html"><strong>Sorted insertion</strong><span>Inserting at its place in a head + tail list with temp and prev: empty list, at the head, in the middle, at the end.</span><em>insert</em></a>
+      <a class="card" href="atelier-liste-circulaire.html"><strong>Circular list</strong><span>The last cell points to the first one: linking at the head and at the tail, deletions, display.</span><em>addhead · addtail · delete · display</em></a>
+    </div>
+  </section>
+
+  <section class="cm">
+    <h2><b>Lecture #3</b> Stacks and queues</h2>
+    <div class="cards">
+      <a class="card" href="atelier-pile-tableau-liste.html"><strong>Stack: array or list</strong><span>push, pop and top on both implementations side by side, empty stack and full stack.</span><em>push · pop · top · isempty</em></a>
+      <a class="card" href="atelier-file-circulaire.html"><strong>Queue and circular buffer</strong><span>first, last and the modulo; ring view, adjustable NBMAX, and the paradox of the unusable empty queue without modulo.</span><em>enqueue · dequeue · nbmax</em></a>
+      <a class="card" href="atelier-pile.html"><strong>Bracket matching with a stack</strong><span>Checking that an expression with ( ) and [ ] is well parenthesised.</span><em>one expression per line</em></a>
+      <a class="card" href="atelier-postfixe.html"><strong>Postfix evaluation</strong><span>Bonus: computing a postfix expression with a stack, link with the postorder traversal.</span><em>eval 3 4 + 2 *</em></a>
+    </div>
+  </section>
+
+  <section class="cm">
+    <h2><b>Lecture #4</b> Binary trees</h2>
+    <div class="cards">
+      <a class="card" href="atelier-parcours-profondeur.html"><strong>Depth-first traversal</strong><span>Prefix, infix and postfix on the expression tree of the lecture, with the call stack.</span><em>prefix · infix · postfix</em></a>
+      <a class="card" href="atelier-parcours-largeur.html"><strong>Breadth-first traversal</strong><span>Level by level thanks to a queue of t_node *; and what changes with a stack.</span><em>bfs</em></a>
+      <a class="card" href="atelier-hauteur-recursive.html"><strong>Height and number of nodes</strong><span>Two recursive postorder computations: the values go up from the leaves to the root.</span><em>height · count</em></a>
+      <a class="card" href="atelier-recherche-abr.html"><strong>Searching in a BST</strong><span>Smaller: on the left, greater: on the right; the discarded subtrees.</span><em>insert · search</em></a>
+      <a class="card" href="atelier-ordre-insertion-abr.html"><strong>BST and insertion order</strong><span>The same values in two orders: balanced or degenerate tree, and number of comparisons.</span><em>a · b · search</em></a>
+      <a class="card" href="atelier-verif-abr.html"><strong>Is it a BST?</strong><span>isBST with bounds [min ; max] inherited from the ancestors, and the trap of the parent-child test only.</span><em>tree · check · naive</em></a>
+      <a class="card" href="atelier-categories-arbres.html"><strong>Categories of trees</strong><span>Strict, complete, perfect, degenerate: each definition checked on the tree of your choice.</span><em>tree (A (B) (C))</em></a>
+    </div>
+  </section>
+
+  <section class="cm">
+    <h2><b>Lecture #5</b> AVL</h2>
+    <div class="cards">
+      <a class="card" href="atelier-rotations.html"><strong>Rotations</strong><span>Single and double rotations, pointer by pointer, with the subtrees A, B, C, D.</span><em>right · left · double_left · double_right</em></a>
+      <a class="card" href="atelier-equilibrage-abr.html"><strong>Balancing a BST</strong><span>The lecture example: balance factors in postorder and rotations up to the root.</span><em>bst · balance</em></a>
+      <a class="card" href="atelier-avl.html"><strong>AVL workshop</strong><span>Insertion, deletion and search in an AVL, with heights and balance factors.</span><em>insert · delete · search</em></a>
+    </div>
+  </section>
+
+  <p class="foot">Each workshop remembers its script in the browser. The functions left as tutorial / lab exercises are shown in pseudo-code (principle), the others in C, as in the course material.</p>
+</div>
+<script>
+(() => {
+  const sel = document.getElementById('optTheme');
+  sel.value = document.documentElement.dataset.theme || 'auto';
+  sel.addEventListener('change', () => {
+    const t = sel.value;
+    if (t === 'auto') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
+    try { localStorage.setItem('ateliers-ti301-theme', t); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>

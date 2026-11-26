@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Depth-first traversal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+<script src="../commun/arbres.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const T = Arbres;
+const FN = { prefix: 'prefixTraversal', infix: 'infixTraversal', postfix: 'postfixTraversal' };
+const NAME = { prefix: 'prefix', infix: 'infix', postfix: 'postfix' };
+const ORDER = { prefix: ['print', 'left', 'right'], infix: ['left', 'print', 'right'], postfix: ['left', 'right', 'print'] };
+const LINES = { prefix: { print: 4, left: 5, right: 6 }, infix: { left: 4, print: 5, right: 6 }, postfix: { left: 4, right: 5, print: 6 } };
+const STC = { run: 'new', wait: 'acc', done: 'bad' };
+
+/* ---------- Scene: the tree on the left, the call stack on the right ---------- */
+let root;
+function scene(st, A) {
+  const hl = {}, sub = {}, subCls = {};
+  for (const [id, s] of Object.entries(st.state || {})) hl[id] = STC[s];
+  for (const [id, k] of Object.entries(st.order || {})) { sub[id] = '#' + k; subCls[id] = 'strong'; }
+  if (st.nullHl) hl[st.nullHl] = 'cmp';
+  const D = T.draw(root, { hl, sub, subCls, nulls: A.opt('nulls') });
+  const items = D.items, arrows = D.arrows;
+  const fx = D.box.x1 + 80;
+  if (st.calls && st.calls.length) items.push(S.text('hdr', fx, D.box.y0 - 6, 'Call stack', { align: 'start', cls: 'muted' }));
+  (st.calls || []).forEach((f, d) => items.push(S.box('f' + d, fx + d * 14, D.box.y0 + 12 + d * 36, Math.max(200, 26 + f.label.length * 8), 30, f.label, { cls: 'frame ' + f.st, rx: 6 })));
+  return { items, arrows };
+}
+
+/* ---------- Model ---------- */
+function traverse(A, kind) {
+  const calls = [], state = {}, order = {}, out = [], fn = FN[kind], L = LINES[kind], showNulls = A.opt('nulls');
+  const E = (msg, k, line, cls, extra = {}) => A.emit(scene({ calls: calls.map(c => ({ ...c })), state: { ...state }, order: { ...order }, ...extra }, A), msg,
+    { kind: k, code: [kind, line], codeCls: cls, readout: ['Output: ', out.join(' ') || '(nothing)'] });
+  if (!root) { E('The tree is empty: the call on the root (NULL) does nothing.', 'stop', 2, 'bad'); return 'empty tree'; }
+  function rec(n, parent, side) {
+    const sideTxt = side === 'left' ? 'left' : 'right';
+    if (!n) {
+      if (showNulls) {
+        calls.push({ label: `${fn}(NULL)`, st: 'run' });
+        E(`Call on the ${sideTxt} child of ${parent.v}, which is NULL: pn == NULL, the function does nothing and ends at once.`, 'stop', 2, 'bad', { nullHl: `${parent.id}${side === 'left' ? 'L' : 'R'}` });
+        calls.pop();
+      }
+      return;
+    }
+    calls.push({ label: `${fn}(${n.v})`, st: 'run' }); state[n.id] = 'run';
+    E(parent ? `Recursive call on the ${sideTxt} child of ${parent.v}: ${fn}(${n.v}) is pushed, ${parent.v} waits for it to return.`
+             : `Call on the root: ${fn}(${n.v}).`, 'call', parent ? L[side] : 2);
+    for (const step of ORDER[kind]) {
+      if (step === 'print') {
+        out.push(n.v); order[n.id] = out.length;
+        E(`print(${n.v}): ${n.v} is no. ${out.length} of the output.${kind === 'prefix' ? ' In prefix order, the node is processed BEFORE its two subtrees.' : kind === 'infix' ? ' In infix order, the node is processed BETWEEN its two subtrees.' : ' In postfix order, the node is processed AFTER its two subtrees.'}`, 'print', L.print);
+        continue;
+      }
+      const child = n[step];
+      if (!child && !showNulls) continue;
+      calls[calls.length - 1].st = 'wait'; state[n.id] = 'wait';
+      rec(child, n, step);
+      calls[calls.length - 1].st = 'run'; state[n.id] = 'run';
+      if (child || showNulls) E(`Back in ${fn}(${n.v}): the ${step === 'left' ? 'left' : 'right'} subtree is done.`, 'ret', L[step]);
+    }
+    calls[calls.length - 1].st = 'done'; state[n.id] = 'done';
+    E(`${fn}(${n.v}) has finished its work: its frame is removed from the call stack.`, 'done', 8);
+    calls.pop();
+  }
+  rec(root, null, null);
+  E(`${NAME[kind][0].toUpperCase() + NAME[kind].slice(1)} traversal done: ${out.join(' ')}.`, 'end', 8, 'good');
+  return out.join(' ');
+}
+
+const mk = (kind) => {
+  const body = { print: '        print(pn->value);', left: '        ' + FN[kind] + '(pn->left);   // call on the left', right: '        ' + FN[kind] + '(pn->right);  // call on the right' };
+  return { title: `${NAME[kind][0].toUpperCase() + NAME[kind].slice(1)} traversal`, lines: [`void ${FN[kind]}(t_node *pn)`, '{', '    if (pn != NULL)', '    {', ...ORDER[kind].map(s => body[s]), '    }', '    return;', '}'] };
+};
+const CODES = { prefix: mk('prefix'), infix: mk('infix'), postfix: mk('postfix') };
+
+Atelier.init({
+  id: 'atelier-parcours-profondeur-en',
+  lang: 'en',
+  title: 'Depth-first traversal',
+  subtitle: 'Lecture #4 · prefix, infix and postfix: where the print goes with respect to the two recursive calls.',
+  conv: 'green: active call · blue: waiting · red: finished',
+  options: [{ id: 'nulls', label: 'show the calls on NULL', checked: false }],
+  commands: {
+    ...T.commands,
+    prefix: { args: 'none', aliases: ['preorder', 'pre'] },
+    infix: { args: 'none', aliases: ['inorder', 'in'] },
+    postfix: { args: 'none', aliases: ['postorder', 'post'] },
+  },
+  help: T.help + `
+prefix | infix | postfix          runs a traversal
+# comment`,
+  quick: { buttons: [
+    { label: 'Prefix', cmd: 'prefix', primary: true }, { label: 'Infix', cmd: 'infix' }, { label: 'Postfix', cmd: 'postfix' },
+    { label: 'Lecture tree', line: () => 'tree (- (+ 3 1) (/ 7 (x 3 2)))', ghost: true },
+    { label: 'Lecture BST', line: () => 'bst 8 3 10 1 6 14 4 7 13', ghost: true },
+  ] },
+  codes: CODES,
+  kinds: {
+    tree: { label: 'Tree', tone: 'acc' }, call: { label: 'Call', tone: 'new' }, print: { label: 'Print', tone: 'cmp' },
+    ret: { label: 'Return', tone: 'acc' }, done: { label: 'Finished', tone: 'bad' }, stop: { label: 'NULL', tone: 'bad' }, end: { label: 'Result', tone: 'new' },
+  },
+  hold: { tree: 1.6, call: 1.2, print: 1.6, ret: 1, done: 1, stop: 1.2, end: 2.6 },
+  legend: [['new', 'active call'], ['acc', 'waiting call'], ['bad', 'finished call'], ['', '#k: rank in the output']],
+  example: `# The expression tree of the lecture, then the three traversals.
+tree (- (+ 3 1) (/ 7 (x 3 2)))
+prefix
+infix
+postfix
+`,
+  emptyMsg: 'Create a tree with "tree" or "bst".',
+  build(list, A) {
+    T.reset(); root = null;
+    A.op('start', null, () => { A.emit(scene({}, A), 'Create a tree with "tree" or "bst", then run a traversal.', { kind: 'tree' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'tree' || o.cmd === 'bst') {
+        const r = T.fromCommand(o);
+        A.op(r.label, o.line, () => {
+          root = r.root;
+          A.emit(scene({}, A), `New tree with ${plural(T.count(root), 'node')}, of height ${T.height(root)}.${r.dups && r.dups.length ? ` Duplicates ignored: ${r.dups.join(', ')}.` : ''}`, { kind: 'tree' });
+          return plural(T.count(root), 'node');
+        });
+      } else A.op(o.cmd, o.line, () => traverse(A, o.cmd));
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>

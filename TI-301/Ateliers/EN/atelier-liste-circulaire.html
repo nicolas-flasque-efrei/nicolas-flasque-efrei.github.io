@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Circular list</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="../commun/atelier.css">
+<script src="../commun/atelier.js"></script>
+</head>
+<body>
+<script>
+(() => {
+const { S, plural } = Atelier;
+const X0 = 170, SP = 166, CW = S.LCW, NY = 150;
+
+/* ---------- Scene: head / tail, the cells, and the arrow from the last one to the first one.
+   Lecture convention: @ and a dot in each pointer field, NULL drawn as a "ground". ---------- */
+function scene(st) {
+  const items = [], arrows = [], row = st.cells, n = row.length, hl = st.hl || {}, subs = st.subs || {};
+  const toNull = (k, x, y) => { items.push(S.ground('g_' + k, x, y - 13)); return { k: 'g_' + k, side: 'l' }; };
+  const hd = st.head !== undefined ? st.head : (row[0] ? row[0].id : null);
+  const tl = st.tail !== undefined ? st.tail : (row[n - 1] ? row[n - 1].id : null);
+  items.push(...S.lstruct('L', 0, -22, ['head', 'tail'], { name: 'mycirclist', namePos: 'above-left' }));
+  const pos = {};
+  row.forEach((c, i) => { pos[c.id] = X0 + i * SP; });
+  let ncx = null;
+  if (st.nc) { ncx = st.ncAt === 'end' ? X0 + n * SP : 40; pos[st.nc.id] = ncx; }
+  const yOf = id => st.nc && id === st.nc.id ? NY : 0;
+  arrows.push(S.arrow('aH', { k: 'L_head', dot: true }, hd != null ? 'c' + hd : toNull('Lh', 122, 20),
+    { cls: st.hcls, ctrl: hd != null && yOf(hd) === 0 && pos[hd] > X0 ? { dy: -80 } : null }));
+  arrows.push(S.arrow('aT', { k: 'L_tail', dot: true }, tl != null ? { k: 'c' + tl, side: yOf(tl) ? 't' : 'bl' } : toNull('Lt', 122, 74),
+    { cls: st.tcls, elbow: tl != null ? 'hv' : null }));
+  const links = st.links || {};
+  const all = st.nc ? [...row, st.nc] : row;
+  for (const c of all) {
+    const i = row.indexOf(c);
+    const def = i >= 0 ? (row[i + 1] ? row[i + 1].id : (n ? row[0].id : null)) : null;
+    const nx = links[c.id] !== undefined ? links[c.id] : (c === st.nc ? st.nc.next : def);
+    const x = pos[c.id], y = yOf(c.id);
+    items.push(S.lcell('c' + c.id, x, y, c.v, { cls: c === st.nc ? (st.ncCls || 'new') : hl[c.id], sub: subs[c.id] }));
+    if (nx == null) { arrows.push(S.arrow('n' + c.id, { k: 'c' + c.id, part: 1, dot: true }, toNull('c' + c.id, x + CW + 30, y + 20))); continue; }
+    const back = yOf(nx) === y && pos[nx] <= x;
+    arrows.push(S.arrow('n' + c.id, { k: 'c' + c.id, part: 1, dot: true }, back ? { k: 'c' + nx, side: nx === c.id ? 'b' : 'bl' } : 'c' + nx,
+      { cls: (st.lcls && st.lcls[c.id]) || (back ? 'acc' : ''), ctrl: back ? (nx === c.id ? { dx: 46, dy: 110 } : { dy: 230 }) : null }));
+  }
+  const P = st.ptrs || {}, same = P.temp != null && P.prev != null && P.temp === P.prev;
+  for (const name of ['prev', 'temp']) {
+    if (P[name] == null) continue;
+    const cx = pos[P[name]] + CW / 2 + (same ? (name === 'prev' ? -32 : 32) : 0), cls = name === 'temp' ? 'cmp' : 'vio';
+    items.push(S.ptr('p_' + name, cx - 28, -112, name, { w: 56, cls }));
+    arrows.push(S.arrow('pa_' + name, { k: 'p_' + name, side: 'b' }, { k: 'c' + P[name], side: 't' }, { cls }));
+  }
+  if (st.nc) {
+    items.push(S.ptr('p_new', ncx + CW / 2 - 40, NY + 76, 'newcell', { cls: 'new' }));
+    arrows.push(S.arrow('pa_new', { k: 'p_new', side: 't' }, { k: 'c' + st.nc.id, side: 'b' }, { cls: 'new' }));
+  }
+  return { items, arrows };
+}
+
+/* ---------- Model ---------- */
+let cells, nextId;
+const vals = () => cells.length ? cells.map(c => c.v).join(' → ') + ' → (back to ' + cells[0].v + ')' : 'empty';
+const RD = () => ['List: ', vals()];
+
+function doAdd(A, v, atEnd) {
+  const set = atEnd ? 'addTail' : 'addHead', id = nextId++, nc = { id, v, next: null }, n = cells.length;
+  const E = (o, msg, kind, line) => A.emit(scene({ cells, nc, ncAt: atEnd ? 'end' : 'start', ...o }), msg, { kind, code: [set, line], readout: RD() });
+  E({}, `newcell = createCell(${v}): a new cell, its next is NULL for now.`, 'create', 2);
+  if (!n) {
+    E({}, 'The list is empty (head is NULL): the new cell will be both the first and the last one.', 'case', 3);
+    nc.next = id;
+    E({}, 'newcell->next = newcell: it must point to the first one… that is, to itself!', 'link', 5);
+    E({ head: id, hcls: 'new', tail: null }, 'ptr_list->head = newcell: it is the first one…', 'link', 6);
+    E({ head: id, tail: id, hcls: 'new', tcls: 'new' }, '… and ptr_list->tail = newcell: it is also the last one.', 'link', 7);
+    cells.push({ id, v });
+    A.emit(scene({ cells, hl: { [id]: 'new' } }), `${v} is the only cell: it points to itself.`, { kind: 'done', code: [set, 15], codeCls: 'good', readout: RD() });
+    return '1 cell';
+  }
+  const first = cells[0], last = cells[n - 1];
+  nc.next = first.id;
+  if (!atEnd) {
+    E({}, `newcell->next = ptr_list->head: the new cell points to the current first one (${first.v}).`, 'link', 11);
+    E({ head: id, hcls: 'new' }, `ptr_list->head = newcell: ${v} becomes the first one.`, 'link', 12);
+    E({ head: id, hcls: 'new', links: { [last.id]: id }, lcls: { [last.id]: 'new' } },
+      `ptr_list->tail->next = newcell: the last one (${last.v}) must point to the NEW first one. Without tail, the whole list would have to be traversed to find it.`, 'link', 13);
+    cells.unshift({ id, v });
+  } else {
+    E({}, `newcell->next = ptr_list->head: like any last cell, the new one points to the first one (${first.v}).`, 'link', 11);
+    E({ links: { [last.id]: id }, lcls: { [last.id]: 'new' } }, `ptr_list->tail->next = newcell: the former last one (${last.v}) points to the new one.`, 'link', 12);
+    E({ links: { [last.id]: id }, lcls: { [last.id]: 'new' }, tail: id, tcls: 'new' }, 'ptr_list->tail = newcell: the new one becomes the last one. head does not change.', 'link', 13);
+    cells.push({ id, v });
+  }
+  A.emit(scene({ cells, hl: { [id]: 'new' } }), `${v} is ${atEnd ? 'at the tail' : 'at the head'}: ${vals()}.`, { kind: 'done', code: [set, 15], codeCls: 'good', readout: RD() });
+  return atEnd ? 'at the tail' : 'at the head';
+}
+
+function doDelete(A, v) {
+  const E = (o, msg, kind, line, cls) => A.emit(scene({ cells, ...o }), msg, { kind, code: ['del', line], codeCls: cls, readout: RD() });
+  const n = cells.length;
+  if (!n) { E({}, 'The list is empty: nothing to delete.', 'absent', 3, 'bad'); return { text: 'empty list', cls: 'bad' }; }
+  const first = cells[0], last = cells[n - 1];
+  if (first.v === v) {
+    E({ hl: { [first.id]: 'cmp' } }, `The first cell holds ${v}: this is the "deletion at the head" case.`, 'case', 4);
+    if (n === 1) {
+      E({ hl: { [first.id]: 'cmp' } }, 'head == tail: it is the only cell. The general method would not work (its next one is itself)!', 'case', 6);
+      E({ hl: { [first.id]: 'bad' }, subs: { [first.id]: 'free' } }, 'free(ptr_list->head): the cell is freed…', 'free', 8, 'bad');
+      cells = [];
+      E({}, '… then head = tail = NULL: the list is empty.', 'link', 9);
+      return 'only cell deleted';
+    }
+    const second = cells[1];
+    E({ ptrs: { temp: first.id }, hl: { [first.id]: 'cmp' } }, 'temp = ptr_list->head: the address of the cell to delete is kept.', 'init', 13);
+    E({ ptrs: { temp: first.id }, head: second.id, hcls: 'new', hl: { [first.id]: 'cmp' } }, `ptr_list->head = temp->next: the new first one is ${second.v}.`, 'link', 14);
+    E({ ptrs: { temp: first.id }, head: second.id, hcls: 'new', links: { [last.id]: second.id }, lcls: { [last.id]: 'new' }, hl: { [first.id]: 'cmp' } },
+      `ptr_list->tail->next = ptr_list->head: the last one (${last.v}) points to the new first one.`, 'link', 15);
+    E({ ptrs: { temp: first.id }, head: second.id, links: { [last.id]: second.id }, hl: { [first.id]: 'bad' }, subs: { [first.id]: 'free' } },
+      `free(temp): the former first one (${v}) is freed.`, 'free', 16, 'bad');
+    cells.shift();
+    A.emit(scene({ cells }), `${v} is deleted: ${vals()}.`, { kind: 'done', code: ['del', 18], codeCls: 'good', readout: RD() });
+    return 'at the head';
+  }
+  let pi = 0, ti = 1 % n;
+  E({ ptrs: { prev: first.id, temp: cells[ti].id }, hl: { [first.id]: 'mute' } },
+    `The first one does not hold ${v}. prev = head, temp = prev->next: the rest is traversed with two pointers.`, 'init', [20, 21]);
+  while (ti !== 0 && cells[ti].v !== v) {
+    E({ ptrs: { prev: cells[pi].id, temp: cells[ti].id }, hl: { [cells[ti].id]: 'cmp' } }, `temp->value = ${cells[ti].v} ≠ ${v} and temp is not back on head: we move on.`, 'cmp', 22);
+    pi = ti; ti = (ti + 1) % n;
+    E({ ptrs: { prev: cells[pi].id, temp: cells[ti].id } }, ti === 0 ? `prev = temp, temp = temp->next: temp is back on the first cell, we have gone all the way round.` : `prev = temp, temp = temp->next.`, 'move', [24, 25]);
+  }
+  if (ti === 0) {
+    E({ ptrs: { prev: cells[pi].id, temp: cells[0].id } }, `temp == head: we have gone all the way round without finding ${v}. Nothing to delete.`, 'absent', 27, 'bad');
+    return { text: 'absent', cls: 'bad' };
+  }
+  const T = cells[ti], Pp = cells[pi], after = cells[(ti + 1) % n];
+  E({ ptrs: { prev: Pp.id, temp: T.id }, hl: { [T.id]: 'cmp' } }, `temp->value = ${v}: found! prev points to the previous one (${Pp.v}).`, 'case', 22);
+  E({ ptrs: { prev: Pp.id, temp: T.id }, links: { [Pp.id]: after.id }, lcls: { [Pp.id]: 'new' }, hl: { [T.id]: 'cmp' } },
+    `prev->next = temp->next: ${Pp.v} "skips" ${v} and points to ${after.v}${after === first ? ' (the first one: the loop is kept)' : ''}.`, 'link', 28);
+  const isLast = T === last;
+  if (isLast) E({ ptrs: { prev: Pp.id, temp: T.id }, links: { [Pp.id]: after.id }, tail: Pp.id, tcls: 'new', hl: { [T.id]: 'cmp' } },
+    `temp == tail: the last one is deleted, the one before it becomes the last one: ptr_list->tail = prev.`, 'link', [29, 30]);
+  E({ ptrs: { prev: Pp.id, temp: T.id }, links: { [Pp.id]: after.id }, tail: isLast ? Pp.id : undefined, hl: { [T.id]: 'bad' }, subs: { [T.id]: 'free' } },
+    `free(temp): the cell ${v} is freed.`, 'free', 31, 'bad');
+  cells.splice(ti, 1);
+  A.emit(scene({ cells }), `${v} is deleted: ${vals()}.`, { kind: 'done', code: ['del', 32], codeCls: 'good', readout: RD() });
+  return isLast ? 'at the tail (tail updated)' : 'in the middle';
+}
+
+function doDisplay(A) {
+  const out = [], n = cells.length;
+  const E = (o, msg, kind, line, cls) => A.emit(scene({ cells, ...o }), msg, { kind, code: ['disp', line], codeCls: cls, readout: ['Screen: ', out.join(' ') || '(nothing)'] });
+  if (!n) { E({}, 'temp = l.head is NULL: empty list, nothing to display.', 'absent', 3); return 'empty list'; }
+  E({ ptrs: { temp: cells[0].id } }, 'temp = l.head. A circular list has no NULL at the end: the stopping condition will be "we are back to the first one".', 'init', 2);
+  for (let i = 0; i < n; i++) {
+    out.push(cells[i].v);
+    E({ ptrs: { temp: cells[i].id }, hl: { [cells[i].id]: 'cmp' } }, `printf prints ${cells[i].v}.`, 'visit', 6);
+    const j = (i + 1) % n;
+    E({ ptrs: { temp: cells[j].id } }, j === 0 ? 'temp ← temp->next: temp is back on head (the next one of the last one is the first one): we stop.' : `temp = temp->next: we move to ${cells[j].v}.`,
+      j === 0 ? 'stop' : 'move', j === 0 ? 8 : 7, j === 0 ? 'good' : 'on');
+  }
+  return out.join(' ');
+}
+
+const head3 = ['    t_cell *newcell = createCell(val);', '    if (ptr_list->head == NULL)          // empty list', '    {',
+  '        newcell->next = newcell;         // it points to itself', '        ptr_list->head = newcell;', '        ptr_list->tail = newcell;', '    }', '    else', '    {'];
+const CODES = {
+  addHead: { title: 'Linking at the head', lines: ['void addHeadCirc(t_circ_list *ptr_list, int val)', '{', ...head3,
+    '        newcell->next = ptr_list->head;', '        ptr_list->head = newcell;', '        ptr_list->tail->next = newcell;  // the last one points to the new one', '    }', '}'] },
+  addTail: { title: 'Linking at the tail (principle)', lines: ['Algorithm addTailCirc(ptr_list : t_circ_list*, val : integer)', 'begin',
+    '    newcell ← createCell(val)', '    if ptr_list->head = NULL then         // empty list', '        // the new one is the first and the last one',
+    '        newcell->next ← newcell', '        ptr_list->head ← newcell', '        ptr_list->tail ← newcell', '    else',
+    '        // the new one goes after the last one', '        // and points to the first one', '        newcell->next ← ptr_list->head',
+    '        ptr_list->tail->next ← newcell', '        ptr_list->tail ← newcell', '    end if', 'end'] },
+  del: { title: 'Deleting a value (principle)', lines: [
+    'Algorithm deleteCirc(ptr_list : t_circ_list*, val : integer)', 'var temp, prev : t_cell*', 'begin', '    if ptr_list->head = NULL : end              // empty list',
+    '    if ptr_list->head->value = val then         // at the head', '        // two sub-cases', '        if ptr_list->head = ptr_list->tail then    // only cell',
+    '            // the general case would not work', '            free(ptr_list->head)', '            ptr_list->head ← NULL ; ptr_list->tail ← NULL', '        else',
+    '            // new first one, the last one points to it,', '            // then the former first one is freed', '            temp ← ptr_list->head',
+    '            ptr_list->head ← temp->next', '            ptr_list->tail->next ← ptr_list->head', '            free(temp)', '        end if', '        end of the algorithm', '    end if',
+    '    prev ← ptr_list->head', '    temp ← prev->next', '    while temp ≠ ptr_list->head and temp->value ≠ val', '        // move on with both pointers',
+    '        prev ← temp', '        temp ← temp->next', '    end while', '    if temp = ptr_list->head : end              // not found',
+    '    prev->next ← temp->next                     // temp is "skipped"', '    if temp = ptr_list->tail then               // it was the last one',
+    '        ptr_list->tail ← prev', '    free(temp)', 'end'] },
+  disp: { title: 'Displaying a circular list (principle)', lines: [
+    'Algorithm displayCirc(l : t_circ_list)', 'var temp : t_cell*', 'temp ← l.head', 'if temp = NULL : end                 // empty list', 'repeat',
+    '    // print, then move on', '    print(temp->value)', '    temp ← temp->next', 'until temp = l.head                 // back to the first one', 'end'] },
+};
+
+Atelier.init({
+  id: 'atelier-liste-circulaire-en',
+  lang: 'en',
+  title: 'Circular list',
+  subtitle: 'Lecture #2 · the last cell points to the first one: linking at the head and at the tail, deletions.',
+  conv: 't_circ_list = t_ht_list (head, tail)',
+  commands: {
+    addhead: { args: 'nums', aliases: ['head'] },
+    addtail: { args: 'nums', aliases: ['tail', 'end'] },
+    delete: { args: 'num', aliases: ['del', 'd', 'remove'] },
+    display: { args: 'none', aliases: ['print', 'show'] },
+  },
+  help: `addhead 5 8    linking at the head (8 will be first)
+addtail 2      linking at the tail
+delete 8       deletes a value
+display        displays (stops when back to head)
+# comment`,
+  quick: { input: 'num', buttons: [
+    { label: 'At the head', cmd: 'addhead', arg: true, primary: true },
+    { label: 'At the tail', cmd: 'addtail', arg: true },
+    { label: 'Delete', cmd: 'delete', arg: true },
+    { label: 'Display', cmd: 'display' },
+  ] },
+  codes: CODES,
+  kinds: {
+    start: { label: 'Start', tone: 'acc' }, create: { label: 'Creation', tone: 'new' }, case: { label: 'Case', tone: 'acc' },
+    link: { label: 'Linking', tone: 'new' }, done: { label: 'Result', tone: 'new' }, init: { label: 'Initialisation', tone: 'acc' },
+    cmp: { label: 'Comparison', tone: 'cmp' }, move: { label: 'Moving on', tone: 'cmp' }, visit: { label: 'Current cell', tone: 'cmp' },
+    free: { label: 'Freeing', tone: 'bad' }, absent: { label: 'Absent', tone: 'bad' }, stop: { label: 'Full circle', tone: 'vio' },
+  },
+  hold: { create: 1.5, case: 1.8, link: 1.9, done: 2, init: 1.6, cmp: 1.3, move: 1.1, visit: 1.2, free: 1.6, absent: 2.4, stop: 2 },
+  legend: [['line', 'next of the last one → first one'], ['cmp', 'temp'], ['vio', 'prev'], ['new', 'new links'], ['bad', 'cell freed']],
+  emptyMsg: 'The list is empty (head = tail = NULL).',
+  example: `addhead 5        # empty list: 5 points to itself
+addhead 8 3      # at the head: tail->next must follow
+addtail 9        # at the tail
+display
+delete 3         # at the head
+delete 9         # the last one: tail changes
+delete 7         # absent
+`,
+  build(list, A) {
+    cells = []; nextId = 1;
+    A.op('start', null, () => { A.emit(scene({ cells }), 'Start: empty circular list, head and tail are NULL.', { kind: 'start' }); return ''; });
+    for (const o of list) {
+      if (o.cmd === 'addhead' || o.cmd === 'addtail') o.vals.forEach(v => A.op(`${o.cmd} ${v}`, o.line, () => doAdd(A, v, o.cmd === 'addtail')));
+      else if (o.cmd === 'delete') A.op(`delete ${o.vals[0]}`, o.line, () => doDelete(A, o.vals[0]));
+      else A.op('display', o.line, () => doDisplay(A));
+    }
+  },
+});
+})();
+</script>
+</body>
+</html>
